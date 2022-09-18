@@ -41,56 +41,12 @@ Script for installing dependencies
 
 ## Developer Installation Tools Before running
 
-https://docs.docker.com/engine/install/
-        make sure to make a .wslconfig configuring the docker ram usage to at least 8 gb
-https://ubuntu.com/tutorials/install-ubuntu-desktop#1-overview
-
-
-## Docker Automation of Installations
- pip install PyOpenGL PyOpenGL_accelerate 
- sudo apt install freeglut3
- RUN ["pip3", "install", "PyOpenGL"]
- RUN ["pip3", "install", "PyOpenGL_accelerate"]
- RUN ["sudo apt", "install", "freeglut3"]
-
-sudo pip3 install git+https://github.com/mcfletch/pyopengl.git@227f9c66976d9f5dadf62b9a97e6beaec84831ca#subdirectory=accelerate
- Requirement already satisfied: pip in /home/vscode/.local/lib/python3.10/site-packages (22.2.2)
- Requirement already satisfied: pip in /home/vscode/.local/lib/python3.10/site-packages (22.2.2)
-### If a npm dependency is needed we can run NPM in python translation mode. 
- sudo apt install nodejs if needed
- sudo apt install npm if needed
-
-The following content in between *** *** is for this scenario of needing nodejs
-
-***
-ARG NODE_VERSION="none"
-RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
-***
-
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.com/dungeonmazese/game.git
-git branch -M main
-git push -uf origin main
-```
+run the script environment.sh by git bash terminal and enter bash environment.txt
 
 
 
 ## License
-The main project module used comes from a open source GNU Licensed project. The project modified is and will be free for anyone who may find it but the use is a class assignment and any modifications and broken use of the module on our copy is to be blamed by the Developers who Modified for the class assignment. 
+The main project module used comes from a open source GNU Licensed project. The project modified is and will be free for anyone who may find it but the use is a class assignment and any modifications and broken use of the module on our copy is to be blamed by the Developers who Modified for the class assignment. This game is free for public use.
 
 ## Project status
 Open
@@ -98,12 +54,12 @@ Open
 ## Game Development concepts and ideas
 
 ##      Character Development
-                - At max <>= 10ft
+                - At max <= 10ft
                 - Some features that could exist is apart of further development would be designability for certain clothing colors
 
                 - What is the main character? Person? Minotaur? what?
                 - Enemies Zombies? People? Mini-Minotaurs? Feature one after basic game is made
-                - Character Weapons Feature 1 child
+                - Minimap
 ##      Character Weapons 
                 - One or many weapons? 
                 - What weapon(s) main character have 
@@ -136,7 +92,7 @@ Docker Environment Configuring
 
 Documentation 
 
-9/11 20 mins
+9/11 40 mins
 
 ##      Evan Gartley 
 
