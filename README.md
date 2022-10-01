@@ -94,7 +94,10 @@ Documentation
 
 9/11 40 mins
 
-##      Evan Gartley 
+##      Evan Gartley
+
+Add keyboard input, animation, collision and map examples
+9/30 2 hours
 
 ##      Tan Tran
  
