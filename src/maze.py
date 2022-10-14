@@ -19,6 +19,7 @@ class MazeEnvironment:
 
     MAZE = Maze()
 
+    # whether the map (not player!) can move in the direction
     CAN_MOVE_UP = False
     CAN_MOVE_DOWN = False
     CAN_MOVE_LEFT = False
@@ -38,7 +39,7 @@ class MazeEnvironment:
         self.difficulty = difficulty
         self.size = (rows, columns)
         m = Maze()
-        # have difficulty affect maze gen somehow
+        # difficulty currently has no effect
         m.generator = Prims(self.size[0], self.size[1])
         m.generate()
         m.generate_entrances()
@@ -51,6 +52,7 @@ class MazeEnvironment:
         MazeEnvironment.PIXEL_HEIGHT = len(MazeEnvironment.MAZE.grid) * MazeEnvironment.TILE_SIZE
 
     def generate_boosters(self):
+        # generate boosters in each room with a 50% chance, and equally likely to be each type
         r = random.Random()
         rooms = []
         grid = MazeEnvironment.MAZE.grid
@@ -74,6 +76,7 @@ class MazeEnvironment:
                 self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
 
     def place_boosters(self):
+        # do all the yucky math for determining where to actually render the boosters based on their generation
         r = random.Random()
         for b in self.game_environment.boosters:
             booster = b[0]
@@ -94,7 +97,7 @@ class MazeEnvironment:
                 return
 
     def generate_enemies(self):
-        # BASE ON CHOSEN DIFFICULTY
+        # difficulty currently has no effect here
         r = random.Random()
         rooms = []
         grid = MazeEnvironment.MAZE.grid
@@ -111,6 +114,7 @@ class MazeEnvironment:
             self.game_environment.enemies.append((e, room[0], room[1]))
 
     def place_enemies(self):
+        # do all the yucky math for determing where to actually render the enemies based on their generation
         r = random.Random()
         for e in self.game_environment.enemies:
             enemy = e[0]
@@ -131,6 +135,7 @@ class MazeEnvironment:
                 return
 
     def get_player_pos(self, r, c):
+        # get the player's tile position (ex. 0, 0 is top left)
         return MazeEnvironment.TILE_SIZE * r + (MazeEnvironment.TILE_SIZE / 2 - game.GameEnvironment.PLAYER.width / 2), \
                MazeEnvironment.TILE_SIZE * c + (MazeEnvironment.TILE_SIZE / 2 - game.GameEnvironment.PLAYER.height / 2)
 
@@ -152,6 +157,7 @@ class MazeEnvironment:
                 b[0].y -= MazeEnvironment.SPEED
             for e in self.game_environment.enemies:
                 e[0].y -= MazeEnvironment.SPEED
+            # dirty way to correct any map movement that is out of bounds
             ch = -1 * MazeEnvironment.PIXEL_HEIGHT + pygame.display.get_window_size()[1]
             if MazeEnvironment.MAP_Y < ch:
                 MazeEnvironment.MAP_Y = ch
@@ -170,10 +176,12 @@ class MazeEnvironment:
                 b[0].x -= MazeEnvironment.SPEED
             for e in self.game_environment.enemies:
                 e[0].x -= MazeEnvironment.SPEED
+            # dirty way to correct any map movement that is out of bounds
             cw = -1 * MazeEnvironment.PIXEL_WIDTH + pygame.display.get_window_size()[0]
             if MazeEnvironment.MAP_X < cw:
                 MazeEnvironment.MAP_X = cw
 
+        # tick the boosters and enemies
         for b in self.game_environment.boosters:
             b[0].tick()
 
@@ -203,6 +211,7 @@ class MazeEnvironment:
                 elif grid[i][j] == 1:
                     surface.blit(wall, position)
 
+        # render the boosters and enemies
         for b in self.game_environment.boosters:
             b[0].render(surface)
 

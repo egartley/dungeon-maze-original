@@ -14,12 +14,14 @@ class Character:
         self.shield = 0
         self.x = 0
         self.y = 0
+        # see explaination for relative coords in maincharacter
         self.relative_x = 0
         self.relative_y = 0
         self.width = 0
         self.height = 0
         self.speed = 0
         self.arrow_count = 0
+        # whether or not charater (enemy or player) is moving in said direction
         self.up = False
         self.down = False
         self.left = False
@@ -36,11 +38,13 @@ class Character:
 
 
 class MainCharacter(Character):
+    # constants for differing between directions
     UP = 0
     DOWN = 1
     LEFT = 2
     RIGHT = 3
 
+    # unique event id that can only be used for player attack
     ATTACK_EVENT_ID = pygame.USEREVENT + 74
 
     def __init__(self, name=None, gender=None):
@@ -54,6 +58,7 @@ class MainCharacter(Character):
         self.width = 28
         self.height = 42
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        # this is later defined as a rect that is bigger than above rect by sword range
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
         self.active_booster = None
         self.gender = gender
@@ -63,11 +68,15 @@ class MainCharacter(Character):
         if name is not None:
             self.sprite.convert()
         self.sprite.fill(self.color)
+        # whether the player is in the center of the screen in each axis
         self.at_center_x = False
         self.at_center_y = False
+        # whether the player is blocked from going in a direction
         self.blocked = (False, False, False, False)
+        # the player's tile position within the map
         self.tile_pos = ()
         self.attack_multiplier = 1
+        # enemies that are currently within melee range
         self.enemies_in_range = []
 
     def apply_booster(self, b):
@@ -114,6 +123,7 @@ class MainCharacter(Character):
         elif self.right:
             if not MazeEnvironment.CAN_MOVE_RIGHT:
                 self.move(MainCharacter.RIGHT)
+        # update tile pos and both rects for the updated x/y from moving
         self.tile_pos = int(self.relative_y // MazeEnvironment.TILE_SIZE), int(
             self.relative_x // MazeEnvironment.TILE_SIZE)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
@@ -124,6 +134,7 @@ class MainCharacter(Character):
         surface.blit(self.sprite, (self.x, self.y))
 
     def move(self, direction):
+        # actually change x/y based on direction and not being blocked
         if direction == MainCharacter.UP and not self.blocked[0]:
             self.y -= self.speed
         elif direction == MainCharacter.DOWN and not self.blocked[1]:
@@ -136,8 +147,10 @@ class MainCharacter(Character):
 
     def attack(self):
         if not self.weapon.in_cooldown:
+            # start cooldown timer
             pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
             self.weapon.in_cooldown = True
+            # do the actualy damage to all enemies in range
             for e in self.enemies_in_range:
                 e.health -= self.weapon.damage
                 if not e.chasing:
@@ -145,6 +158,7 @@ class MainCharacter(Character):
 
 
 class Enemy(Character):
+    # constants for the direction the enemy is facing for use in "seeing" the player
     LEFT = 0
     RIGHT = 1
 
@@ -165,6 +179,7 @@ class Enemy(Character):
         self.chasing = False
 
     def chase_player(self):
+        # move in the direction of the player if not already next to them
         px = game.GameEnvironment.PLAYER.x
         py = game.GameEnvironment.PLAYER.y
         player_to_left = px + game.GameEnvironment.PLAYER.width < self.x
@@ -182,6 +197,7 @@ class Enemy(Character):
             self.x -= self.speed
 
     def tick(self):
+        # calculate if player is visible
         px = game.GameEnvironment.PLAYER.x
         py = game.GameEnvironment.PLAYER.y
         lineofsight = self.y < py + game.GameEnvironment.PLAYER.height < self.y + self.height or self.y < py < self.y + self.height
@@ -199,6 +215,7 @@ class Enemy(Character):
         if self.chasing:
             self.chase_player()
 
+        # update rect based on any changes to actual x/y
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def render(self, surface):
@@ -210,6 +227,7 @@ class Enemy(Character):
             surface.blit(s, (self.x, self.y + (self.height / 2 - 4)))
         else:
             surface.blit(s, (self.x + self.width - 8, self.y + (self.height / 2 - 4)))
+        # health bar (keep?)
         w = (self.health / 100) * self.width
         if w < 0:
             w = 0

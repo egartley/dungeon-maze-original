@@ -46,6 +46,7 @@ class Screen:
         background.fill((255, 255, 255))
         surface.blit(background, (pygame.display.get_surface().get_width() - 20 - len(grid[0]) * s, 12))
 
+        # the "base" x/y the use for calculating the indiviudal x/y of each tile
         x = pygame.display.get_surface().get_width() - 16 - (len(grid[0]) * s)
         y = 16
 

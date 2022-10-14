@@ -10,10 +10,12 @@ class Booster:
         self.rect = self.sprite.get_rect()
         self.x = 0
         self.y = 0
+        # see explaination for relative coords in maincharacter
         self.relative_x = 0
         self.relative_y = 0
 
     def booster_collision(self):
+        # called when a booster collides with the player
         game.GameEnvironment.PLAYER.apply_booster(self)
 
     def tick(self):

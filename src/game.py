@@ -6,6 +6,7 @@ from screen import Screen
 
 
 class GameEnvironment:
+    # constants for keeping track of the game state
     START_STATE = 0
     INGAME_STATE = 1
     PAUSE_STATE = 2
@@ -16,16 +17,20 @@ class GameEnvironment:
     BOY = 0
     GIRL = 1
 
+    # constants for differing between difficulties
     DIFFICULTY_EASY = 0
     DIFFICULTY_MEDIUM = 1
     DIFFICULTY_HARD = 2
 
+    # assuming only one booster with a timer is active at a time, unique event id for it
     BOOSTER_EVENT_ID = pygame.USEREVENT + 9
 
     def __init__(self, screen_width, screen_height):
+        # set to easy (currently no effect) for now since there's no selection yet
         self.maze_difficulty = GameEnvironment.DIFFICULTY_EASY
         self.enemy_difficulty = GameEnvironment.DIFFICULTY_EASY
         self.maze_environment = MazeEnvironment(self)
+        # set default player values for testing, since no selection yet
         self.player_gender = GameEnvironment.BOY
         self.player_name = ""
         self.state = GameEnvironment.START_STATE
@@ -59,6 +64,7 @@ class GameEnvironment:
         self.maze_environment.generate_boosters()
         self.maze_environment.generate_enemies()
         # put player at maze start, calculate all coords
+        # relative = absolute - maze
         start = MazeEnvironment.MAZE.start
         pos = self.maze_environment.get_player_pos(start[1], start[0])
         GameEnvironment.PLAYER.relative_x = pos[0]
@@ -85,6 +91,7 @@ class GameEnvironment:
         self.set_enemy_collisions()
 
     def on_enemy_death(self, enemy):
+        # when an enemy is killed, remove them and their collision(s)
         remove = None
         for c in self.active_combat_collisions:
             if c.enemy == enemy:
@@ -105,6 +112,7 @@ class GameEnvironment:
             self.enemies.remove(remove)
 
     def check_wall(self, x, y):
+        # check if there is a wall at the given x/y
         r = int(y // MazeEnvironment.TILE_SIZE)
         c = int(x // MazeEnvironment.TILE_SIZE)
         if r >= len(MazeEnvironment.MAZE.grid) or c >= len(MazeEnvironment.MAZE.grid[0]):
@@ -112,6 +120,7 @@ class GameEnvironment:
         return MazeEnvironment.MAZE.grid[r][c] == MazeEnvironment.WALL
 
     def camera_tick(self):
+        # all the yucky math for controlling the "camera"
         s = pygame.display.get_window_size()
         px = GameEnvironment.PLAYER.x
         py = GameEnvironment.PLAYER.y
@@ -163,6 +172,7 @@ class GameEnvironment:
             self.maze_environment.tick()
             GameEnvironment.PLAYER.tick()
 
+            # after maze and player ticks, check all collisions
             for c in self.booster_collisions:
                 c.tick(c.booster.rect, GameEnvironment.PLAYER.rect)
             to_remove = []
@@ -185,6 +195,7 @@ class GameEnvironment:
                     c.collision_end()
                     self.active_combat_collisions.remove(c)
 
+            # dirty way to check for enemy death
             for e in self.enemies:
                 if e[0].health <= 0:
                     self.on_enemy_death(e)
@@ -194,6 +205,7 @@ class GameEnvironment:
         background.convert()
         background.fill((0, 0, 0))
         surface.blit(background, (0, 0))
+        # based on the game state, call a different method from the screen
         if self.state == GameEnvironment.START_STATE:
             self.screen.startView()
         elif self.state == GameEnvironment.INGAME_STATE:
@@ -210,6 +222,7 @@ class GameEnvironment:
         self.start_ingame()
 
     def event_handler(self, event):
+        # this handles all keyboard and mouse input, as well as timers
         if self.state == GameEnvironment.START_STATE:
             if event.type == pygame.KEYUP and event.key == pygame.K_RETURN:
                 self.switch_to_ingame()
