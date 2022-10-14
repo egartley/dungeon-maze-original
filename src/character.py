@@ -49,6 +49,12 @@ class MainCharacter(Character):
 
     def __init__(self, name=None, gender=None):
         super().__init__()
+        # relative coordinates:
+        # these are the x/y based on relative = absolute - map
+        # ex. relative_x = x - map_x
+        # map x/y are the top left of the map itself, changing when moving the map
+        # "absolute" x/y or just x/y by itself, is where the thing is actually rendered
+        # to in the display window (where all the surface.blit calls are)
         self.name = name
         self.health = 100
         self.shield = 100
