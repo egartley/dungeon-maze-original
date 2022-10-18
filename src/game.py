@@ -3,7 +3,7 @@ import collision
 import pygame.mouse
 from character import *
 from screen import Screen
-
+from character import *
 
 class GameEnvironment:
     # constants for keeping track of the game state
@@ -232,9 +232,6 @@ class GameEnvironment:
             if event.type == MainCharacter.ATTACK_EVENT_ID:
                 GameEnvironment.PLAYER.weapon.in_cooldown = False
                 pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, 0)
-            if event.type == MainCharacter.SWORD_SWING_EVENT_ID:
-                GameEnvironment.PLAYER.swinging_sword = False
-                pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 0)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     GameEnvironment.PLAYER.attack()

@@ -3,7 +3,7 @@ import character
 from booster import *
 from mazelib import Maze
 from mazelib.generate.Prims import Prims
-
+import pygame
 
 class MazeEnvironment:
     TILE_SIZE = 500

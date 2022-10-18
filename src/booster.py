@@ -1,12 +1,11 @@
-import pygame
+from pygame import *
 import game
-
-
+from os import *
 class Booster:
     def __init__(self):
         self.increase = 0
         self.size = 14
-        self.sprite = pygame.Surface((self.size, self.size))
+        self.sprite = Surface((self.size, self.size))
         self.rect = self.sprite.get_rect()
         self.x = 0
         self.y = 0
@@ -19,7 +18,7 @@ class Booster:
         game.GameEnvironment.PLAYER.apply_booster(self)
 
     def tick(self):
-        self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
+        self.rect = Rect(self.x, self.y, self.sprite.get_width(), self.sprite.get_height())
 
     def render(self, surface):
         surface.blit(self.sprite, (self.x, self.y))
@@ -28,19 +27,19 @@ class Booster:
 class ArrowBooster(Booster):
     def __init__(self):
         super().__init__()
-        self.increase = 5
-        self.sprite.convert()
-        self.sprite.fill((189, 154, 122))
+        self.increase = 10
+        self.sprite = image.load(path.join('game/src','arrow.png'))
+        self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
 
 
 class SpeedBooster(Booster):
     def __init__(self):
         super().__init__()
-        self.increase = 1.5
         self.time = 30
-        self.sprite.convert()
-        self.sprite.fill((31, 176, 245))
+        self.increase = 1.5
+        self.sprite = image.load(path.join('game/src','speed.png'))
+        self.sprite = transform.scale(self.sprite, (200,40))
         self.rect = self.sprite.get_rect()
 
 
@@ -48,25 +47,25 @@ class HealthBooster(Booster):
     def __init__(self):
         super().__init__()
         self.increase = 10
-        self.sprite.convert()
-        self.sprite.fill((255, 0, 0))
+        self.sprite = image.load(path.join('game/src','health-booster.png'))
+        self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
-
+       
 
 class ShieldBooster(Booster):
     def __init__(self):
         super().__init__()
         self.increase = 10
-        self.sprite.convert()
-        self.sprite.fill((211, 211, 211))
+        self.sprite = image.load(path.join('game/src','Shields.png'))
+        self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
 
 
 class AttackBooster(Booster):
     def __init__(self):
         super().__init__()
-        self.increase = 1.2
+        self.increase = 10
         self.time = 30
-        self.sprite.convert()
-        self.sprite.fill((255, 165, 0))
+        self.sprite = image.load(path.join('game/src','attack.png'))
+        self.sprite = transform.scale(self.sprite, (80,38))
         self.rect = self.sprite.get_rect()
