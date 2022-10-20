@@ -37,5 +37,6 @@ class EnemyCollision(Collision):
         self.enemy.player_in_combat_range = True
 
     def collision_end(self):
-        game.GameEnvironment.PLAYER.enemies_in_range.remove(self.enemy)
+        if self.enemy in game.GameEnvironment.PLAYER.enemies_in_range:
+            game.GameEnvironment.PLAYER.enemies_in_range.remove(self.enemy)
         self.enemy.player_in_combat_range = False

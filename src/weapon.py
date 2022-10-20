@@ -1,3 +1,6 @@
+import pygame
+
+
 class Weapon:
     def __init__(self):
         self.damage = 0
@@ -13,6 +16,12 @@ class Sword(Weapon):
         self.damage = 10
         self.cooldown = 1
         self.range = 8
+        self.sprite = pygame.Surface((5, 20))
+        self.sprite.convert()
+        self.sprite.fill((255, 255, 255))
+
+    def render(self, surface, x, y):
+        surface.blit(self.sprite, (x, y))
 
 
 class Bow(Weapon):

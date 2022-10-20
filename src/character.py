@@ -44,8 +44,9 @@ class MainCharacter(Character):
     LEFT = 2
     RIGHT = 3
 
-    # unique event id that can only be used for player attack
+    # unique event ids
     ATTACK_EVENT_ID = pygame.USEREVENT + 74
+    SWORD_SWING_EVENT_ID = pygame.USEREVENT + 75
 
     def __init__(self, name=None, gender=None):
         super().__init__()
@@ -58,7 +59,9 @@ class MainCharacter(Character):
         self.name = name
         self.health = 100
         self.shield = 100
-        self.weapon = weapon.Sword()
+        self.weapon = None
+        if name is not None:
+            self.weapon = weapon.Sword()
         self.speed = 4
         self.color = (0, 16, 255)
         self.width = 28
@@ -84,6 +87,7 @@ class MainCharacter(Character):
         self.attack_multiplier = 1
         # enemies that are currently within melee range
         self.enemies_in_range = []
+        self.swinging_sword = False
 
     def apply_booster(self, b):
         need_timer = False
@@ -138,6 +142,8 @@ class MainCharacter(Character):
 
     def render(self, surface):
         surface.blit(self.sprite, (self.x, self.y))
+        if self.swinging_sword:
+            self.weapon.render(surface, self.x + self.width, self.y + 4)
 
     def move(self, direction):
         # actually change x/y based on direction and not being blocked
@@ -156,9 +162,11 @@ class MainCharacter(Character):
             # start cooldown timer
             pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
             self.weapon.in_cooldown = True
-            # do the actualy damage to all enemies in range
+            pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 430)
+            self.swinging_sword = True
+            # do the actual damage to all enemies in range
             for e in self.enemies_in_range:
-                e.health -= self.weapon.damage
+                e.health -= self.weapon.damage * self.attack_multiplier
                 if not e.chasing:
                     e.chasing = True
 
