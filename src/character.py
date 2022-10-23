@@ -162,6 +162,7 @@ class MainCharacter(Character):
             # start cooldown timer
             pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
             self.weapon.in_cooldown = True
+            self.weapon.is_animating = True
             pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 430)
             self.swinging_sword = True
             # do the actual damage to all enemies in range
@@ -169,6 +170,7 @@ class MainCharacter(Character):
                 e.health -= self.weapon.damage * self.attack_multiplier
                 if not e.chasing:
                     e.chasing = True
+            
 
 
 class Enemy(Character):
