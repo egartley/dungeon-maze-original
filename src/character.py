@@ -137,13 +137,36 @@ class MainCharacter(Character):
         self.tile_pos = int(self.relative_y // MazeEnvironment.TILE_SIZE), int(
             self.relative_x // MazeEnvironment.TILE_SIZE)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.combat_rect = pygame.Rect(self.x - self.weapon.range, self.y - self.weapon.range,
-                                       self.width + (self.weapon.range * 2), self.height + (self.weapon.range * 2))
+        #self.combat_rect = pygame.Rect(self.x - self.weapon.range, self.y - self.weapon.range,
+                                       #self.width + (self.weapon.range * 2), self.height + (self.weapon.range * 2))
 
     def render(self, surface):
         surface.blit(self.sprite, (self.x, self.y))
-        if self.swinging_sword:
-            self.weapon.render(surface, self.x + self.width, self.y + 4)
+        weapon_group = pygame.sprite.Group()
+        if pygame.mouse.get_pos()[0] >= (self.x + (self.width/2)):
+            self.weapon.directionSprite(self.x, self.y - 10, "right")
+            weapon_group.add(self.weapon)
+            self.combat_rect = pygame.Rect(self.x + 40 - self.weapon.range, self.y + 10 - self.weapon.range,
+                                    self.width + (self.weapon.range * 2), self.height - 10 + (self.weapon.range * 2))
+            if self.weapon.is_animating == False:
+                weapon_group.draw(surface)
+            if self.swinging_sword:
+                #pygame.draw.rect(surface, (255, 0, 0), self.combat_rect)
+                self.weapon.render(surface, self.x, self.y - 10, "right")
+                weapon_group.draw(surface)
+
+        elif pygame.mouse.get_pos()[0] < (self.x + (self.width/2)):
+            self.weapon.directionSprite(self.x - 75, self.y - 10, "left")
+            weapon_group.add(self.weapon)
+            self.combat_rect = pygame.Rect(self.x - 40 - self.weapon.range, self.y + 10 - self.weapon.range,
+                                    self.width + (self.weapon.range * 2), self.height - 10+ (self.weapon.range * 2))
+            if self.weapon.is_animating == False:
+                weapon_group.draw(surface)
+            if self.swinging_sword:
+                #pygame.draw.rect(surface, (255, 255, 255), self.combat_rect)
+                self.weapon.render(surface, self.x - 75, self.y - 10, "left")
+                weapon_group.draw(surface)
+
 
     def move(self, direction):
         # actually change x/y based on direction and not being blocked
