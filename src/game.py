@@ -238,9 +238,6 @@ class GameEnvironment:
                 pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 0)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
-                    print(GameEnvironment.PLAYER.x)
-                    print(GameEnvironment.PLAYER.y)
-                    print(pygame.mouse.get_pos())
                     GameEnvironment.PLAYER.attack()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:

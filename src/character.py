@@ -1,3 +1,4 @@
+from multiprocessing.dummy import Array
 import pygame
 import booster
 import game
@@ -137,8 +138,6 @@ class MainCharacter(Character):
         self.tile_pos = int(self.relative_y // MazeEnvironment.TILE_SIZE), int(
             self.relative_x // MazeEnvironment.TILE_SIZE)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        #self.combat_rect = pygame.Rect(self.x - self.weapon.range, self.y - self.weapon.range,
-                                       #self.width + (self.weapon.range * 2), self.height + (self.weapon.range * 2))
 
     def render(self, surface):
         surface.blit(self.sprite, (self.x, self.y))
@@ -151,7 +150,6 @@ class MainCharacter(Character):
             if self.weapon.is_animating == False:
                 weapon_group.draw(surface)
             if self.swinging_sword:
-                #pygame.draw.rect(surface, (255, 0, 0), self.combat_rect)
                 self.weapon.render(surface, self.x, self.y - 10, "right")
                 weapon_group.draw(surface)
 
@@ -163,7 +161,6 @@ class MainCharacter(Character):
             if self.weapon.is_animating == False:
                 weapon_group.draw(surface)
             if self.swinging_sword:
-                #pygame.draw.rect(surface, (255, 255, 255), self.combat_rect)
                 self.weapon.render(surface, self.x - 75, self.y - 10, "left")
                 weapon_group.draw(surface)
 
@@ -194,8 +191,6 @@ class MainCharacter(Character):
                 if not e.chasing:
                     e.chasing = True
             
-
-
 class Enemy(Character):
     # constants for the direction the enemy is facing for use in "seeing" the player
     LEFT = 0

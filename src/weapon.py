@@ -79,7 +79,6 @@ class Sword(Weapon):
                 self.rect = self.image.get_rect()
                 self.rect.topleft = [x, y]
                 self.current_sprite += 0.5
-            print('Speed ' + str(self.current_sprite))
 
 
 class Bow(Weapon):
