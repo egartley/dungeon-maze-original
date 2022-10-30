@@ -1,3 +1,4 @@
+from multiprocessing.dummy import Array
 import pygame
 import booster
 import game
@@ -137,13 +138,32 @@ class MainCharacter(Character):
         self.tile_pos = int(self.relative_y // MazeEnvironment.TILE_SIZE), int(
             self.relative_x // MazeEnvironment.TILE_SIZE)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.combat_rect = pygame.Rect(self.x - self.weapon.range, self.y - self.weapon.range,
-                                       self.width + (self.weapon.range * 2), self.height + (self.weapon.range * 2))
 
     def render(self, surface):
         surface.blit(self.sprite, (self.x, self.y))
-        if self.swinging_sword:
-            self.weapon.render(surface, self.x + self.width, self.y + 4)
+        weapon_group = pygame.sprite.Group()
+        if pygame.mouse.get_pos()[0] >= (self.x + (self.width/2)):
+            self.weapon.directionSprite(self.x, self.y - 10, "right")
+            weapon_group.add(self.weapon)
+            self.combat_rect = pygame.Rect(self.x + 40 - self.weapon.range, self.y + 10 - self.weapon.range,
+                                    self.width + (self.weapon.range * 2), self.height - 10 + (self.weapon.range * 2))
+            if self.weapon.is_animating == False:
+                weapon_group.draw(surface)
+            if self.swinging_sword:
+                self.weapon.render(surface, self.x, self.y - 10, "right")
+                weapon_group.draw(surface)
+
+        elif pygame.mouse.get_pos()[0] < (self.x + (self.width/2)):
+            self.weapon.directionSprite(self.x - 75, self.y - 10, "left")
+            weapon_group.add(self.weapon)
+            self.combat_rect = pygame.Rect(self.x - 40 - self.weapon.range, self.y + 10 - self.weapon.range,
+                                    self.width + (self.weapon.range * 2), self.height - 10+ (self.weapon.range * 2))
+            if self.weapon.is_animating == False:
+                weapon_group.draw(surface)
+            if self.swinging_sword:
+                self.weapon.render(surface, self.x - 75, self.y - 10, "left")
+                weapon_group.draw(surface)
+
 
     def move(self, direction):
         # actually change x/y based on direction and not being blocked
@@ -162,6 +182,7 @@ class MainCharacter(Character):
             # start cooldown timer
             pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
             self.weapon.in_cooldown = True
+            self.weapon.is_animating = True
             pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 430)
             self.swinging_sword = True
             # do the actual damage to all enemies in range
@@ -169,8 +190,7 @@ class MainCharacter(Character):
                 e.health -= self.weapon.damage * self.attack_multiplier
                 if not e.chasing:
                     e.chasing = True
-
-
+            
 class Enemy(Character):
     # constants for the direction the enemy is facing for use in "seeing" the player
     LEFT = 0

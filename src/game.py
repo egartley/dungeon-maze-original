@@ -5,6 +5,7 @@ from character import *
 from screen import Screen
 from character import *
 
+
 class GameEnvironment:
     # constants for keeping track of the game state
     START_STATE = 0
