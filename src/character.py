@@ -150,7 +150,7 @@ class MainCharacter(Character):
             if self.weapon.is_animating == False:
                 weapon_group.draw(surface)
             if self.swinging_sword:
-                self.weapon.render(surface, self.x, self.y - 10, "right")
+                self.weapon.render(self.x, self.y - 10, "right")
                 weapon_group.draw(surface)
 
         elif pygame.mouse.get_pos()[0] < (self.x + (self.width/2)):
@@ -161,7 +161,7 @@ class MainCharacter(Character):
             if self.weapon.is_animating == False:
                 weapon_group.draw(surface)
             if self.swinging_sword:
-                self.weapon.render(surface, self.x - 75, self.y - 10, "left")
+                self.weapon.render(self.x - 75, self.y - 10, "left")
                 weapon_group.draw(surface)
 
 
