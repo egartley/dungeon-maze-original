@@ -34,7 +34,7 @@ class ArrowBooster(Booster):
     def __init__(self):
         super().__init__()
         self.increase = 10
-        self.sprite = image.load("arrow.png")
+        self.sprite = image.load('arrow.png')
         self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
         

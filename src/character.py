@@ -82,8 +82,8 @@ class MainCharacter(Character):
         self.attackInstances = [False] * self.attackStackLen
         self.attackStack = [False] * self.attackStackLen
 
-        self.width = 130
-        self.height = 105
+        self.width = 192 / 4
+        self.height = 285 / 4
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
         self.active_booster = [False] * 2 # 0 for attack 1 for speed
         self.gender = gender
@@ -170,7 +170,6 @@ class MainCharacter(Character):
             self.attackInstances[self.attackStackLast % self.attackStackLen] = None
             pygame.time.set_timer( boosterID , 0)
             self.attackStackLast += 1
-            print(self.attackStackLast)
             if self.isAttackEmpty():
                 self.active_booster[0] = False
         elif self.active_booster[1] == True:
@@ -211,25 +210,25 @@ class MainCharacter(Character):
         surface.blit(self.sprite, (self.x, self.y))
         weapon_group = pygame.sprite.Group()
         if pygame.mouse.get_pos()[0] >= (self.x + (self.width/2)):
-            self.weapon.directionSprite(self.x, self.y - 10, "right")
+            self.weapon.directionSprite(self.x + 30, self.y + 15, "right")
             weapon_group.add(self.weapon)
             self.combat_rect = pygame.Rect(self.x + 40 - self.weapon.range, self.y + 10 - self.weapon.range,
                                     self.width + (self.weapon.range * 2), self.height - 10 + (self.weapon.range * 2))
             if self.weapon.is_animating == False:
                 weapon_group.draw(surface)
             if self.swinging_sword:
-                self.weapon.render(surface, self.x, self.y - 10, "right")
+                self.weapon.render(surface, self.x + 30, self.y + 15, "right")
                 weapon_group.draw(surface)
 
         elif pygame.mouse.get_pos()[0] < (self.x + (self.width/2)):
-            self.weapon.directionSprite(self.x - 75, self.y - 10, "left")
+            self.weapon.directionSprite(self.x - 82, self.y + 15, "left")
             weapon_group.add(self.weapon)
             self.combat_rect = pygame.Rect(self.x - 40 - self.weapon.range, self.y + 10 - self.weapon.range,
                                     self.width + (self.weapon.range * 2), self.height - 10+ (self.weapon.range * 2))
             if self.weapon.is_animating == False:
                 weapon_group.draw(surface)
             if self.swinging_sword:
-                self.weapon.render(surface, self.x - 75, self.y - 10, "left")
+                self.weapon.render(surface, self.x - 82, self.y + 15, "left")
                 weapon_group.draw(surface)
 
 
