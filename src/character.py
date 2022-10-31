@@ -3,11 +3,13 @@ import pygame
 import booster
 import game
 import weapon
+import math
 from maze import MazeEnvironment
 
 
-class Character:
+class Character(pygame.sprite.Sprite):
     def __init__(self):
+        super().__init__()
         self.weapon = weapon.Weapon()
         self.sprite = pygame.Surface((0, 0))
         self.rect = pygame.Rect(0, 0, 0, 0)
@@ -63,22 +65,33 @@ class MainCharacter(Character):
         self.weapon = None
         if name is not None:
             self.weapon = weapon.Sword()
+
         self.speed = 4
-        self.color = (0, 16, 255)
-        self.width = 28
-        self.height = 42
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        # this is later defined as a rect that is bigger than above rect by sword range
+        self.speedStackLen = 3
+        self.speedStackCount = 0
+        self.speedStackTop = -1
+        self.speedStackLast = -1
+        self.speedInstances = [None] * self.speedStackLen
+        self.speedStack = [False] * self.speedStackLen
+
+        self.attack = 1
+        self.attackStackLen = 3
+        self.attackStackCount = 0
+        self.attackStackTop = 0
+        self.attackStackLast = 0
+        self.attackInstances = [False] * self.attackStackLen
+        self.attackStack = [False] * self.attackStackLen
+
+        self.width = 130
+        self.height = 105
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
-        self.active_booster = None
+        self.active_booster = [False] * 2 # 0 for attack 1 for speed
         self.gender = gender
-        if self.gender == 1:
-            self.color = (245, 40, 145)
-        self.sprite = pygame.Surface((self.width, self.height))
-        if name is not None:
-            self.sprite.convert()
-        self.sprite.fill(self.color)
-        # whether the player is in the center of the screen in each axis
+        self.direction = None
+        self.image = pygame.image.load("Wraith_01_Idle_000.png")
+        self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        self.sprite = self.image
+        self.rect = self.image.get_rect()
         self.at_center_x = False
         self.at_center_y = False
         # whether the player is blocked from going in a direction
@@ -91,35 +104,88 @@ class MainCharacter(Character):
         self.swinging_sword = False
 
     def apply_booster(self, b):
-        need_timer = False
         if isinstance(b, booster.HealthBooster):
-            self.health += b.increase
-        elif isinstance(b, booster.SpeedBooster):
-            self.speed = int(self.speed * b.increase)
-            MazeEnvironment.SPEED = int(MazeEnvironment.SPEED * b.increase)
-            need_timer = True
-        elif isinstance(b, booster.AttackBooster):
-            self.attack_multiplier = b.increase
-            need_timer = True
+            self.health += booster.HealthBooster.increase
+            
+        elif isinstance(b, booster.SpeedBooster) and not self.isSpeedFull():
+            self.speed = int (math.ceil(self.speed * booster.SpeedBooster.increase))
+            MazeEnvironment.SPEED = int(math.ceil(MazeEnvironment.SPEED * booster.SpeedBooster.increase))
+            self.active_booster[1] = True
+            self.speedStackTop += 1
+            self.speedStack[self.speedStackTop % self.speedStackLen] = True
+            self.speedInstances[self.speedStackTop % self.speedStackLen] = b
+            pygame.time.set_timer( (booster.SpeedBooster.BOOSTERID + (self.speedStackTop % self.speedStackLen)), b.time * 1000)
+            
+        elif isinstance(b, booster.AttackBooster) and not self.isAttackFull():
+            self.attack_multiplier += booster.AttackBooster.increase
+            self.active_booster[0] = True
+            self.attackStackTop += 1
+            self.attackStack[self.attackStackTop % self.attackStackLen] = True
+            self.attackInstances[self.attackStackTop % self.attackStackLen] = b
+            pygame.time.set_timer( ( booster.AttackBooster.BOOSTERID + (self.attackStackTop % self.attackStackLen)), b.time * 1000)
+            
         elif isinstance(b, booster.ShieldBooster):
             self.shield += b.increase
+            
         elif isinstance(b, booster.ArrowBooster):
             self.arrow_count += b.increase
 
-        if need_timer:
-            self.active_booster = b
-            pygame.time.set_timer(game.GameEnvironment.BOOSTER_EVENT_ID, b.time * 1000)
+    def isSpeedFull(self):
+        i = 0
+        for i in range(len(self.speedStack)):
+            if self.speedStack[i] != True:
+                return False
+            i+=1
+        return True
+    
+    def isSpeedEmpty(self):
+        i = 0
+        for i in range(len(self.speedStack)):
+            if self.speedStack[i] != False:
+                return False
+            i+=1
+        return True
+    
+    
+    def isAttackFull(self):
+        i = 0
+        for i in range(len(self.attackStack)):
+            if self.attackStack[i] != True:
+                return False
+            i+=1
+        return True
+    
+    def isAttackEmpty(self):
+        i = 0
+        for i in range(len(self.attackStack)):
+            if self.speedStack[i] != False:
+                return False
+            i+=1
+        return True
 
-    def cancel_active_booster(self):
-        b = self.active_booster
-        if isinstance(b, booster.AttackBooster):
-            self.attack_multiplier = 1
-            pass
-        elif isinstance(b, booster.SpeedBooster):
-            self.speed /= b.increase
-            MazeEnvironment.SPEED /= b.increase
-        self.active_booster = None
-        pygame.time.set_timer(game.GameEnvironment.BOOSTER_EVENT_ID, 0)
+    def cancel_active_booster(self,boosterID): 
+        if self.active_booster[0] == True:
+            self.attack_multiplier -= booster.AttackBooster.increase
+            self.attackStack[self.attackStackLast % self.attackStackLen] = False
+            self.attackInstances[self.attackStackLast % self.attackStackLen] = None
+            pygame.time.set_timer( boosterID , 0)
+            self.attackStackLast += 1
+            print(self.attackStackLast)
+            if self.isAttackEmpty():
+                self.active_booster[0] = False
+        elif self.active_booster[1] == True:
+            self.speed = int(math.ceil(self.speed/booster.SpeedBooster.increase))
+            MazeEnvironment.SPEED = int(math.ceil(MazeEnvironment.SPEED/booster.SpeedBooster.increase))
+            pygame.time.set_timer(boosterID, 0)
+            self.speedStack[self.speedStackLast % self.speedStackLen] = False
+            self.speedInstances[self.speedStackLast % self.speedStackLen] = None
+            self.speedStackLast += 1
+            if self.isSpeedEmpty():
+                self.active_booster[1] = False
+                self.speed = 4
+                MazeEnvironment.speed = 4
+        else:
+            pygame.time.set_timer(game.GameEnvironment.BOOSTER_EVENT_ID, 0)
 
     def tick(self):
         if self.up:
@@ -129,9 +195,11 @@ class MainCharacter(Character):
             if not MazeEnvironment.CAN_MOVE_DOWN:
                 self.move(MainCharacter.DOWN)
         if self.left:
+            self.sprite = pygame.transform.flip(self.image, True, False)
             if not MazeEnvironment.CAN_MOVE_LEFT:
                 self.move(MainCharacter.LEFT)
         elif self.right:
+            self.sprite = self.image
             if not MazeEnvironment.CAN_MOVE_RIGHT:
                 self.move(MainCharacter.RIGHT)
         # update tile pos and both rects for the updated x/y from moving
@@ -177,7 +245,7 @@ class MainCharacter(Character):
         elif direction == MainCharacter.RIGHT and not self.blocked[3]:
             self.x += self.speed
 
-    def attack(self):
+    def attack_motion(self):
         if not self.weapon.in_cooldown:
             # start cooldown timer
             pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
@@ -190,7 +258,18 @@ class MainCharacter(Character):
                 e.health -= self.weapon.damage * self.attack_multiplier
                 if not e.chasing:
                     e.chasing = True
-            
+
+    def take_damage(self, damage):
+        if self.shield >= damage:
+            self.shield -= damage
+        elif self.shield > 0:
+            damage_remaining = self.shield - damage
+            self.shield = 0
+            self.health -= damage_remaining
+        else:
+            self.health -=damage
+
+
 class Enemy(Character):
     # constants for the direction the enemy is facing for use in "seeing" the player
     LEFT = 0
@@ -201,13 +280,12 @@ class Enemy(Character):
         self.weapon_type = None
         self.is_player_in_view = False
         self.player_in_combat_range = False
-        self.width = 48
-        self.height = 48
-        self.color = (160, 32, 240)
-        self.sprite = pygame.Surface((self.width, self.height))
-        self.sprite.convert()
-        self.sprite.fill(self.color)
-        self.rect = self.sprite.get_rect()
+        self.width = 180
+        self.height = 123
+        self.image = pygame.image.load("Minotaur_01_Idle_000.png")
+        self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        self.sprite = self.image
+        self.rect = self.image.get_rect()
         self.direction = Enemy.LEFT
         self.speed = 3
         self.chasing = False
@@ -227,8 +305,13 @@ class Enemy(Character):
 
         if player_to_right:
             self.x += self.speed
+            self.sprite = self.image
         elif player_to_left:
             self.x -= self.speed
+            self.sprite = pygame.transform.flip(self.image, True, False)
+
+
+
 
     def tick(self):
         # calculate if player is visible
@@ -237,8 +320,8 @@ class Enemy(Character):
         lineofsight = self.y < py + game.GameEnvironment.PLAYER.height < self.y + self.height or self.y < py < self.y + self.height
         player_to_left = px < self.x
         player_to_right = px > self.x + self.width
-        in_range_x = (max(self.x, px) - min(self.x, px) - self.width) < MazeEnvironment.TILE_SIZE
-        in_range_y = (max(self.y, py) - min(self.y, py) - self.height) < MazeEnvironment.TILE_SIZE
+        in_range_x = (max(self.x, px) - min(self.x, px) - self.width  * 2) < MazeEnvironment.TILE_SIZE
+        in_range_y = (max(self.y, py) - min(self.y, py) - self.height * 2) < MazeEnvironment.TILE_SIZE
         if self.direction == Enemy.LEFT:
             self.is_player_in_view = lineofsight and player_to_left and in_range_x and in_range_y
         else:
@@ -251,24 +334,22 @@ class Enemy(Character):
 
         # update rect based on any changes to actual x/y
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.combat_rect = pygame.Rect(self.x - self.weapon.range, self.y - self.weapon.range,
+                                       self.width + (self.weapon.range * 2), self.height + (self.weapon.range * 2))
+        
+        if self.player_in_combat_range:
+            self.attack()
 
     def render(self, surface):
-        surface.blit(self.sprite, (self.x, self.y))
-        s = pygame.Surface((8, 8))
-        s.convert()
-        s.fill((255, 255, 255))
-        if self.direction == Enemy.LEFT:
-            surface.blit(s, (self.x, self.y + (self.height / 2 - 4)))
+        if (self.direction):
+            surface.blit(self.sprite, (self.x, self.y))
         else:
-            surface.blit(s, (self.x + self.width - 8, self.y + (self.height / 2 - 4)))
+            surface.blit(self.sprite, (self.x, self.y))
+
         # health bar (keep?)
         w = (self.health / 100) * self.width
         if w < 0:
             w = 0
-        h = pygame.Surface((w, 6))
-        h.convert()
-        h.fill((255, 0, 0))
-        surface.blit(h, (self.x, self.y))
 
     def attack(self):
-        pass  # overrides character.attack
+        game.GameEnvironment.PLAYER.take_damage(10)

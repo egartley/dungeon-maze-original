@@ -2,11 +2,28 @@ import pygame
 import game
 from maze import MazeEnvironment
 
+frame_size_x = 1000
+frame_size_y = 700
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+
+score = 0
+
+
+# Initialise game window
+black = pygame.Color(0, 0, 0)
+white = pygame.Color(255, 255, 255)
+red = pygame.Color(255, 0, 0)
+green = pygame.Color(0, 255, 0)
+blue = pygame.Color(0, 0, 255)
+
 
 class Screen:
     TEXT_COLOR = (255, 255, 255)
 
     def __init__(self, maze_env, width, height):
+        self.cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_NO)
         self.maze_environment = maze_env
         self.title = "Dungeon Maze"
         pygame.display.set_caption(self.title)
@@ -23,21 +40,22 @@ class Screen:
         pygame.display.get_surface().blit(self.font.render("Start screen", True, Screen.TEXT_COLOR), (12, 8))
         pygame.display.get_surface().blit(self.font.render("Press ENTER to begin playing", True, Screen.TEXT_COLOR),
                                           (12, 30))
+        pygame.mouse.set_cursor(self.cursor)
 
     def draw_minimap(self, surface):
         s = 4
         wall = pygame.Surface((s, s))
         wall.convert()
-        wall.fill((160, 160, 160))
+        wall.fill((160, 160, 160)) 
         start = pygame.Surface((s, s))
         start.convert()
-        start.fill((0, 255, 0))
+        start.fill((0, 255, 0)) # green
         end = pygame.Surface((s, s))
         end.convert()
-        end.fill((255, 0, 0))
+        end.fill((160, 160, 160))
         player = pygame.Surface((s, s))
         player.convert()
-        player.fill((138, 43, 226))
+        player.fill((138, 43, 226)) #purple
 
         grid = MazeEnvironment.MAZE.grid
 
@@ -78,6 +96,10 @@ class Screen:
                                       Screen.TEXT_COLOR), (12, 74))
         surface.blit(self.font.render("Active booster: " + str(game.GameEnvironment.PLAYER.active_booster), True,
                                       Screen.TEXT_COLOR), (12, 96))
+        surface.blit(self.font.render("Speed booster: " + str(game.GameEnvironment.PLAYER.speedStack), True,
+                                      Screen.TEXT_COLOR), (12, 118))
+        surface.blit(self.font.render("Speed is: " + str(game.GameEnvironment.PLAYER.speed), True,
+                                      Screen.TEXT_COLOR), (12, 140))
 
         surface.blit(
             self.font.render("Arrows: " + str(int(game.GameEnvironment.PLAYER.arrow_count)), True, Screen.TEXT_COLOR),
@@ -94,10 +116,22 @@ class Screen:
             self.font.render("Top 10 scores: 9999, 0, 0, 0, 0, 0, 0, 0, 0, 0", True, Screen.TEXT_COLOR), (12, 74))
 
     def death(self):
-        pygame.display.get_surface().blit(self.font.render("Death screen", True, Screen.TEXT_COLOR), (12, 8))
-        pygame.display.get_surface().blit(
-            self.font.render("Press ENTER to play again, or BACKSPACE to quit", True, Screen.TEXT_COLOR), (12, 30))
-        pygame.display.get_surface().blit(self.font.render("Get good", True, Screen.TEXT_COLOR), (12, 52))
+        my_font = pygame.font.SysFont('Times New Roman', 90)
+        game_over_surface = my_font.render('YOU DIED', True, red)
+        game_over_rect = game_over_surface.get_rect()
+        game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
+        pygame.display.get_surface().blit(game_over_surface, game_over_rect)
+        show_score(0, red, 'Times New Roman', 20)
+        
+def show_score(choice, color, font, size):
+    score_font = pygame.font.SysFont(font, size)
+    score_surface = score_font.render('Score : ' + str(score), True, color)
+    score_rect = score_surface.get_rect()
+    if choice == 1:
+        score_rect.midtop = (frame_size_x/10, 15)
+    else:
+        score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
+    pygame.display.get_surface().blit(score_surface, score_rect)
 
     def quit(self):
         pass

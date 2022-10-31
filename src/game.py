@@ -201,6 +201,9 @@ class GameEnvironment:
                 if e[0].health <= 0:
                     self.on_enemy_death(e)
 
+            if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and GameEnvironment.PLAYER.tile_pos[1] == MazeEnvironment.MAZE.end[1]:
+                self.state = GameEnvironment.VICTORY_STATE
+
     def render(self, surface):
         background = pygame.Surface((self.screen.width, self.screen.height))
         background.convert()
@@ -228,8 +231,10 @@ class GameEnvironment:
             if event.type == pygame.KEYUP and event.key == pygame.K_RETURN:
                 self.switch_to_ingame()
         elif self.state == GameEnvironment.INGAME_STATE:
-            if event.type == GameEnvironment.BOOSTER_EVENT_ID:
-                GameEnvironment.PLAYER.cancel_active_booster()
+            if event.type == booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen):
+                GameEnvironment.PLAYER.cancel_active_booster( booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen))
+            if event.type == booster.SpeedBooster.BOOSTERID + (GameEnvironment.PLAYER.speedStackLast % GameEnvironment.PLAYER.speedStackLen):
+                GameEnvironment.PLAYER.cancel_active_booster( booster.SpeedBooster.BOOSTERID + (GameEnvironment.PLAYER.speedStackLast % GameEnvironment.PLAYER.speedStackLen)) 
             if event.type == MainCharacter.ATTACK_EVENT_ID:
                 GameEnvironment.PLAYER.weapon.in_cooldown = False
                 pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, 0)
@@ -238,7 +243,7 @@ class GameEnvironment:
                 pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 0)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
-                    GameEnvironment.PLAYER.attack()
+                    GameEnvironment.PLAYER.attack_motion()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
                     self.maze_environment.up = True
