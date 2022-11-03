@@ -1,4 +1,9 @@
+##Authors: Cameron Gower, Evan Gartley
+##Completion Date 10/30/22
+##Purpose , create all the boosters for the dungeon maze game
+
 from pygame import *
+import pygame
 import game
 from os import *
 class Booster:
@@ -14,8 +19,7 @@ class Booster:
         self.relative_y = 0
 
     def booster_collision(self):
-        # called when a booster collides with the player
-        game.GameEnvironment.PLAYER.apply_booster(self)
+        pass
 
     def tick(self):
         self.rect = Rect(self.x, self.y, self.sprite.get_width(), self.sprite.get_height())
@@ -25,47 +29,70 @@ class Booster:
 
 
 class ArrowBooster(Booster):
+    increase = 10
+    
     def __init__(self):
         super().__init__()
         self.increase = 10
-        self.sprite = image.load(path.join('game/src','arrow.png'))
+        self.sprite = image.load(path.join('src','arrow.png'))
         self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
+        
+    def booster_collision(self):
+        game.GameEnvironment.PLAYER.apply_booster(self)
 
 
 class SpeedBooster(Booster):
+    increase = 1.5
+    BOOSTERID = pygame.USEREVENT + 69
     def __init__(self):
         super().__init__()
-        self.time = 30
-        self.increase = 1.5
-        self.sprite = image.load(path.join('game/src','speed.png'))
+        self.time = 5
+        self.sprite = image.load(path.join('src','speed.png'))
         self.sprite = transform.scale(self.sprite, (200,40))
         self.rect = self.sprite.get_rect()
-
+        
+        
+    def booster_collision(self):
+        game.GameEnvironment.PLAYER.apply_booster(self) 
+        
 
 class HealthBooster(Booster):
+    BOOSTERID = 1000
+    increase = 10
     def __init__(self):
         super().__init__()
-        self.increase = 10
-        self.sprite = image.load(path.join('game/src','health-booster.png'))
+        
+        self.sprite = image.load(path.join('src','health-booster.png'))
         self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
+        
+    def booster_collision(self):
+        game.GameEnvironment.PLAYER.apply_booster(self)
        
 
 class ShieldBooster(Booster):
+    increase = 10
     def __init__(self):
         super().__init__()
-        self.increase = 10
-        self.sprite = image.load(path.join('game/src','Shields.png'))
+        
+        self.sprite = image.load(path.join('src','Shields.png'))
         self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
+        
+    def booster_collision(self):
+        game.GameEnvironment.PLAYER.apply_booster(self) 
 
 
 class AttackBooster(Booster):
+    increase = 10
+    BOOSTERID = pygame.USEREVENT + 710
     def __init__(self):
         super().__init__()
-        self.increase = 10
         self.time = 30
-        self.sprite = image.load(path.join('game/src','attack.png'))
+        self.sprite = image.load(path.join('src','attack.png'))
         self.sprite = transform.scale(self.sprite, (80,38))
         self.rect = self.sprite.get_rect()
+        
+    def booster_collision(self):
+        game.GameEnvironment.PLAYER.apply_booster(self) 
