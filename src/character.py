@@ -89,6 +89,7 @@ class MainCharacter(Character):
         # enemies that are currently within melee range
         self.enemies_in_range = []
         self.swinging_sword = False
+        self.weapon_group = pygame.sprite.Group()
 
     def apply_booster(self, b):
         need_timer = False
@@ -141,28 +142,27 @@ class MainCharacter(Character):
 
     def render(self, surface):
         surface.blit(self.sprite, (self.x, self.y))
-        weapon_group = pygame.sprite.Group()
         if pygame.mouse.get_pos()[0] >= (self.x + (self.width/2)):
             self.weapon.directionSprite(self.x, self.y - 10, "right")
-            weapon_group.add(self.weapon)
+            self.weapon_group.add(self.weapon)
             self.combat_rect = pygame.Rect(self.x + 40 - self.weapon.range, self.y + 10 - self.weapon.range,
                                     self.width + (self.weapon.range * 2), self.height - 10 + (self.weapon.range * 2))
             if self.weapon.is_animating == False:
-                weapon_group.draw(surface)
+                self.weapon_group.draw(surface)
             if self.swinging_sword:
                 self.weapon.render(self.x, self.y - 10, "right")
-                weapon_group.draw(surface)
+                self.weapon_group.draw(surface)
 
         elif pygame.mouse.get_pos()[0] < (self.x + (self.width/2)):
             self.weapon.directionSprite(self.x - 75, self.y - 10, "left")
-            weapon_group.add(self.weapon)
+            self.weapon_group.add(self.weapon)
             self.combat_rect = pygame.Rect(self.x - 40 - self.weapon.range, self.y + 10 - self.weapon.range,
                                     self.width + (self.weapon.range * 2), self.height - 10+ (self.weapon.range * 2))
             if self.weapon.is_animating == False:
-                weapon_group.draw(surface)
+                self.weapon_group.draw(surface)
             if self.swinging_sword:
                 self.weapon.render(self.x - 75, self.y - 10, "left")
-                weapon_group.draw(surface)
+                self.weapon_group.draw(surface)
 
 
     def move(self, direction):
