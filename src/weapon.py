@@ -64,7 +64,7 @@ class Sword(Weapon):
         self.sprites_left_swing[3] = pygame.transform.scale(self.sprites_left_swing[3], (100,100))
         self.sprites_left_swing[4] = pygame.transform.scale(self.sprites_left_swing[4], (100,100))
 
-    def render(self, surface, x, y, direction):
+    def render(self, x, y, direction):
         if self.in_cooldown == True and self.is_animating == True:
             if self.current_sprite >= len(self.sprites_right_swing):
                 self.current_sprite = 0
