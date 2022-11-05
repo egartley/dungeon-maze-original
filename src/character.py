@@ -289,6 +289,7 @@ class Enemy(Character):
         self.direction = Enemy.LEFT
         self.speed = 3
         self.chasing = False
+        self.damage = 10
 
     def chase_player(self):
         # move in the direction of the player if not already next to them
@@ -346,10 +347,5 @@ class Enemy(Character):
         else:
             surface.blit(self.sprite, (self.x, self.y))
 
-        # health bar (keep?)
-        w = (self.health / 100) * self.width
-        if w < 0:
-            w = 0
-
     def attack(self):
-        game.GameEnvironment.PLAYER.take_damage(10)
+        game.GameEnvironment.PLAYER.take_damage(self.damage)
