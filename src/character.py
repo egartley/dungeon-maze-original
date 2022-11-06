@@ -46,7 +46,7 @@ class MainCharacter(Character):
     DOWN = 1
     LEFT = 2
     RIGHT = 3
-
+    DEATH_ID = pygame.USEREVENT + 10000
     # unique event ids
     ATTACK_EVENT_ID = pygame.USEREVENT + 74
     SWORD_SWING_EVENT_ID = pygame.USEREVENT + 75
@@ -270,8 +270,7 @@ class MainCharacter(Character):
         else:
             self.health -=damage # if health 0 die
             if self.health <= 0:
-                game.GameEnvironment.event_handler(game,pygame.K_k) 
-
+                print("what next")
 
 class Enemy(Character):
     # constants for the direction the enemy is facing for use in "seeing" the player
