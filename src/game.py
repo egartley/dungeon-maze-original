@@ -26,7 +26,7 @@ class GameEnvironment:
     # assuming only one booster with a timer is active at a time, unique event id for it
     BOOSTER_EVENT_ID = pygame.USEREVENT + 9
 
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, ):
         # set to easy (currently no effect) for now since there's no selection yet
         self.maze_difficulty = GameEnvironment.DIFFICULTY_EASY
         self.enemy_difficulty = GameEnvironment.DIFFICULTY_EASY

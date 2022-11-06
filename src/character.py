@@ -66,7 +66,7 @@ class MainCharacter(Character):
         if name is not None:
             self.weapon = weapon.Sword()
 
-        self.speed = 4
+        self.speed = 6
         self.speedStackLen = 3
         self.speedStackCount = -1
         self.speedStackTop = -1
@@ -82,7 +82,7 @@ class MainCharacter(Character):
         self.attackInstances = [None] * self.attackStackLen
         self.attackStack = [False] * self.attackStackLen
 
-
+        self.isDead = False
         self.width = 192 / 4
         self.height = 285 / 4
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
@@ -262,12 +262,15 @@ class MainCharacter(Character):
     def take_damage(self, damage):
         if self.shield >= damage:
             self.shield -= damage
-        elif self.shield > 0:
-            damage_remaining = self.shield - damage
+            
+        elif self.shield >= 1:
+            remaining = self.shield - damage
             self.shield = 0
-            self.health -= damage_remaining
+            self.health -= remaining
         else:
-            self.health -=damage
+            self.health -=damage # if health 0 die
+            if self.health <= 0:
+                game.GameEnvironment.event_handler(game,pygame.K_k) 
 
 
 class Enemy(Character):
@@ -290,6 +293,7 @@ class Enemy(Character):
         self.speed = 3
         self.chasing = False
         self.damage = 10
+        self.coolDown = 10
 
     def chase_player(self):
         # move in the direction of the player if not already next to them
@@ -347,5 +351,19 @@ class Enemy(Character):
         else:
             surface.blit(self.sprite, (self.x, self.y))
 
-    def attack(self):
+    def attack(self): # cool down timer check goes here 
         game.GameEnvironment.PLAYER.take_damage(self.damage)
+        
+    def attack_motion(self):
+        if not self.weapon.in_cooldown:
+            # start cooldown timer
+            pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
+            self.weapon.in_cooldown = True
+            self.weapon.is_animating = True
+            pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 430)
+            self.swinging_sword = True
+            # do the actual damage to all enemies in range
+            for e in self.enemies_in_range:
+                e.health -= self.weapon.damage * self.attack_multiplier
+                if not e.chasing:
+                    e.chasing = True

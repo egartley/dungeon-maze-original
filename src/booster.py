@@ -47,7 +47,7 @@ class SpeedBooster(Booster):
     BOOSTERID = pygame.USEREVENT + 69
     def __init__(self):
         super().__init__()
-        self.time = 5
+        self.time = 15
         self.sprite = image.load(path.join('src','speed.png'))
         self.sprite = transform.scale(self.sprite, (200,40))
         self.rect = self.sprite.get_rect()
