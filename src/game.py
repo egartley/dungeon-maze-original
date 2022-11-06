@@ -252,6 +252,9 @@ class GameEnvironment:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     GameEnvironment.PLAYER.attack_motion()
+                if event.button == 3:
+                    GameEnvironment.PLAYER.shoot(pygame.mouse.get_pos())
+                    GameEnvironment.PLAYER.is_using_bow = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
                     self.maze_environment.up = True

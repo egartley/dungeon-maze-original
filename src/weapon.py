@@ -1,5 +1,7 @@
+from turtle import Screen
 import py
 import pygame
+import math
 from os import *
 
 
@@ -85,3 +87,26 @@ class Bow(Weapon):
     def __init__(self):
         super().__init__()
         self.damage = 15
+        self.image = pygame.image.load(path.join('src','bow.png'))
+        self.image = pygame.transform.scale(self.image, (50,50))
+        self.image = pygame.transform.rotate(self.image, 225)
+        self.rect = self.image.get_rect()
+        self.x = 0
+        self.y = 0
+        self.angle = 0
+
+    def character_position(self, x, y):
+        self.x = x
+        self.y = y
+        self.rect.topleft = [self.x, self.y]
+
+    def target_position(self, target_pos):
+        self.angle = math.atan2(target_pos[1] - 350, target_pos[0] - 500)
+
+    def move(self, surface):
+        self.picture = pygame.transform.rotate(self.image, 360-self.angle*57.29)
+        character_position = (self.x - self.picture.get_rect().width/2, \
+                            self.y - self.picture.get_rect().height/2)
+        surface.blit(self.picture, character_position)
+        self.rect.topright = [self.x, self.y]
+
