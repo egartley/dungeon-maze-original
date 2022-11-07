@@ -270,7 +270,7 @@ class MainCharacter(Character):
         else:
             self.health -=damage # if health 0 die
             if self.health <= 0:
-                print("what next")
+                game.GameEnvironment.state = game.GameEnvironment.DEATH_STATE
 
 class Enemy(Character):
     # constants for the direction the enemy is facing for use in "seeing" the player
@@ -349,6 +349,7 @@ class Enemy(Character):
             surface.blit(self.sprite, (self.x, self.y))
         else:
             surface.blit(self.sprite, (self.x, self.y))
+        
 
     def attack(self): # cool down timer check goes here 
         game.GameEnvironment.PLAYER.take_damage(self.damage)
