@@ -268,9 +268,10 @@ class MainCharacter(Character):
             self.shield = 0
             self.health -= remaining
         else:
-            self.health -=damage # if health 0 die
+            self.health -=damage 
             if self.health <= 0:
                 game.GameEnvironment.state = game.GameEnvironment.DEATH_STATE
+                print(game.GameEnvironment.state)
 
 class Enemy(Character):
     # constants for the direction the enemy is facing for use in "seeing" the player
