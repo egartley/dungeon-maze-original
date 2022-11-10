@@ -46,7 +46,7 @@ class MainCharacter(Character):
     DOWN = 1
     LEFT = 2
     RIGHT = 3
-    DEATH_ID = pygame.USEREVENT + 10000
+    DEATH_ID = pygame.USEREVENT + 1000
     # unique event ids
     ATTACK_EVENT_ID = pygame.USEREVENT + 74
     SWORD_SWING_EVENT_ID = pygame.USEREVENT + 75
@@ -106,7 +106,10 @@ class MainCharacter(Character):
 
     def apply_booster(self, b):
         if isinstance(b, booster.HealthBooster):
-            self.health += booster.HealthBooster.increase
+            if self.health + b.increase >= 100:
+                self.health = 100
+            else:    
+                self.health += booster.HealthBooster.increase
             
         elif isinstance(b, booster.SpeedBooster) and not self.isSpeedFull():
             self.speed = int (math.ceil(self.speed * booster.SpeedBooster.increase))
@@ -126,7 +129,10 @@ class MainCharacter(Character):
             pygame.time.set_timer( ( b.BOOSTERID + (self.attackStackTop % self.attackStackLen)), b.time * 1000)
             
         elif isinstance(b, booster.ShieldBooster):
-            self.shield += b.increase
+            if self.shield + b.increase >= 100:
+                self.shield = 100
+            else:
+                self.shield += booster.ShieldBooster.increase
             
         elif isinstance(b, booster.ArrowBooster):
             self.arrow_count += b.increase
@@ -260,18 +266,19 @@ class MainCharacter(Character):
                     e.chasing = True
 
     def take_damage(self, damage):
-        if self.shield >= damage:
-            self.shield -= damage
-            
-        elif self.shield >= 1:
-            remaining = self.shield - damage
-            self.shield = 0
-            self.health -= remaining
+        if self.shield > 0:
+            if self.shield < 0:
+                remaining = self.shield - damage
+                self.shield = 0
+                self.health -= remaining
+            elif self.shield + self.health - damage <= 0:
+                game.GameEnvironment.state = game.GameEnvironment.DEATH_STATE
+            else:
+                self.shield -= damage
         else:
             self.health -=damage 
             if self.health <= 0:
                 game.GameEnvironment.state = game.GameEnvironment.DEATH_STATE
-                print(game.GameEnvironment.state)
 
 class Enemy(Character):
     # constants for the direction the enemy is facing for use in "seeing" the player
@@ -292,7 +299,7 @@ class Enemy(Character):
         self.direction = Enemy.LEFT
         self.speed = 3
         self.chasing = False
-        self.damage = 10
+        self.damage = 1
         self.coolDown = 10
 
     def chase_player(self):
@@ -307,7 +314,6 @@ class Enemy(Character):
             self.y -= self.speed
         elif player_below:
             self.y += self.speed
-
         if player_to_right:
             self.x += self.speed
             self.sprite = self.image

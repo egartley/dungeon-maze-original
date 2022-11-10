@@ -59,7 +59,7 @@ class SpeedBooster(Booster):
 
 class HealthBooster(Booster):
     BOOSTERID = 1000
-    increase = 10
+    increase = 20
     def __init__(self):
         super().__init__()
         
@@ -72,7 +72,7 @@ class HealthBooster(Booster):
        
 
 class ShieldBooster(Booster):
-    increase = 10
+    increase = 20
     def __init__(self):
         super().__init__()
         

@@ -93,10 +93,10 @@ class Screen:
         
         ## back fill of health bar plus health bar
         healthBarBackFill = (100 / 100) * 10
-        BLACK = (255,255,255)
+        WHITE = (255,255,255)
         backFillSprite = pygame.Surface((90,healthBarBackFill))
         backFillSprite.convert()
-        backFillSprite.fill(BLACK)
+        backFillSprite.fill(WHITE)
         surface.blit(backFillSprite,(12,74))
         
         healthBarWidth = (game.GameEnvironment.PLAYER.health / 100)  * 10
@@ -111,7 +111,7 @@ class Screen:
         shieldBarBackFill = (100 / 100) * 10
         shieldFill = pygame.Surface((90, shieldBarBackFill))
         shieldFill.convert()
-        shieldFill.fill(BLACK)
+        shieldFill.fill(WHITE)
         surface.blit(shieldFill, (12,52))
         
         shieldBarWidth = (game.GameEnvironment.PLAYER.shield / 100 ) * 10
