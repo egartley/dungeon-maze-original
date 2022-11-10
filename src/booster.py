@@ -34,7 +34,7 @@ class ArrowBooster(Booster):
     def __init__(self):
         super().__init__()
         self.increase = 10
-        self.sprite = image.load('arrow.png')
+        self.sprite = image.load(path.join('arrow.png'))
         self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
         
@@ -47,8 +47,8 @@ class SpeedBooster(Booster):
     BOOSTERID = pygame.USEREVENT + 69
     def __init__(self):
         super().__init__()
-        self.time = 5
-        self.sprite = image.load('speed.png')
+        self.time = 15
+        self.sprite = image.load(path.join('speed.png'))
         self.sprite = transform.scale(self.sprite, (200,40))
         self.rect = self.sprite.get_rect()
         
@@ -59,11 +59,11 @@ class SpeedBooster(Booster):
 
 class HealthBooster(Booster):
     BOOSTERID = 1000
-    increase = 10
+    increase = 20
     def __init__(self):
         super().__init__()
         
-        self.sprite = image.load('health-booster.png')
+        self.sprite = image.load(path.join('health-booster.png'))
         self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
         
@@ -72,11 +72,11 @@ class HealthBooster(Booster):
        
 
 class ShieldBooster(Booster):
-    increase = 10
+    increase = 20
     def __init__(self):
         super().__init__()
         
-        self.sprite = image.load('Shields.png')
+        self.sprite = image.load(path.join('Shields.png'))
         self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
         
@@ -90,7 +90,7 @@ class AttackBooster(Booster):
     def __init__(self):
         super().__init__()
         self.time = 30
-        self.sprite = image.load('attack.png')
+        self.sprite = image.load(path.join('attack.png'))
         self.sprite = transform.scale(self.sprite, (80,38))
         self.rect = self.sprite.get_rect()
         
