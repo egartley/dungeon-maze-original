@@ -1,4 +1,5 @@
 import pygame
+from character import Character
 import game
 from maze import MazeEnvironment
 
@@ -41,7 +42,6 @@ class Screen:
         pygame.display.get_surface().blit(self.font.render("Press ENTER to begin playing", True, Screen.TEXT_COLOR),
                                           (12, 30))
         pygame.mouse.set_cursor(self.cursor)
-
     def draw_minimap(self, surface):
         s = 4
         wall = pygame.Surface((s, s))
@@ -81,7 +81,7 @@ class Screen:
                     surface.blit(wall, position)
 
     def activeGameView(self):
-        surface = pygame.display.get_surface()
+        surface = pygame.display.get_surface() 
         self.maze_environment.render(surface)
         game.GameEnvironment.PLAYER.render(surface)
 
@@ -89,15 +89,45 @@ class Screen:
 
         surface.blit(self.font.render("In-game view", True, Screen.TEXT_COLOR), (12, 8))
         surface.blit(self.font.render("Move with WASD", True, Screen.TEXT_COLOR), (12, 30))
-        surface.blit(self.font.render("Health: " + str(game.GameEnvironment.PLAYER.health) + ", Shield: " + str(
-            int(game.GameEnvironment.PLAYER.shield)), True, Screen.TEXT_COLOR), (12, 52))
-        surface.blit(self.font.render("Relative XY: (" + str(game.GameEnvironment.PLAYER.relative_x) + ", " + str(
-            game.GameEnvironment.PLAYER.relative_y) + ") tile=" + str(game.GameEnvironment.PLAYER.tile_pos), True,
-                                      Screen.TEXT_COLOR), (12, 74))
-        surface.blit(self.font.render("Active booster: " + str(game.GameEnvironment.PLAYER.active_booster), True,
-                                      Screen.TEXT_COLOR), (12, 96))
-        surface.blit(self.font.render("Speed booster: " + str(game.GameEnvironment.PLAYER.speedStack), True,
-                                      Screen.TEXT_COLOR), (12, 118))
+        
+        
+        ## back fill of health bar plus health bar
+        healthBarBackFill = (100 / 100) * 10
+        WHITE = (255,255,255)
+        backFillSprite = pygame.Surface((90,10))
+        backFillSprite.convert()
+        backFillSprite.fill(WHITE)
+        surface.blit(backFillSprite,(12,74))
+        
+        healthBarWidth = (game.GameEnvironment.PLAYER.health / 100)  * 90
+        RED = (255,0,0)
+        sprite = pygame.Surface((healthBarWidth,10))
+        sprite.convert()
+        sprite.fill(RED)
+        surface.blit(sprite, (12,74))
+        
+        
+        ## Shield and Shield Backfill 
+        shieldBarBackFill = (100 / 100) * 10
+        shieldFill = pygame.Surface((90, shieldBarBackFill))
+        shieldFill.convert()
+        shieldFill.fill(WHITE)
+        surface.blit(shieldFill, (12,52))
+        
+        shieldBarWidth = (game.GameEnvironment.PLAYER.shield / 100 ) * 90
+        BLUE = (0,0,255)
+        shieldSprite = pygame.Surface((shieldBarWidth,10))
+        shieldSprite.convert()
+        shieldSprite.fill(BLUE)
+        surface.blit(shieldSprite, (12,52))
+       
+        # surface.blit(self.font.render("Relative XY: (" + str(game.GameEnvironment.PLAYER.relative_x) + ", " + str(
+        #     game.GameEnvironment.PLAYER.relative_y) + ") tile=" + str(game.GameEnvironment.PLAYER.tile_pos), True,
+        #                               Screen.TEXT_COLOR), (12, 74))
+        # surface.blit(self.font.render("Active booster: " + str(game.GameEnvironment.PLAYER.active_booster), True,
+        #                               Screen.TEXT_COLOR), (12, 96))
+        # surface.blit(self.font.render("Speed booster: " + str(game.GameEnvironment.PLAYER.speedStack), True,
+        #                               Screen.TEXT_COLOR), (12, 118))
         surface.blit(self.font.render("Speed is: " + str(game.GameEnvironment.PLAYER.speed), True,
                                       Screen.TEXT_COLOR), (12, 140))
 

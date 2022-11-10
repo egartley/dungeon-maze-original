@@ -26,7 +26,7 @@ class GameEnvironment:
     # assuming only one booster with a timer is active at a time, unique event id for it
     BOOSTER_EVENT_ID = pygame.USEREVENT + 9
 
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, ):
         # set to easy (currently no effect) for now since there's no selection yet
         self.maze_difficulty = GameEnvironment.DIFFICULTY_EASY
         self.enemy_difficulty = GameEnvironment.DIFFICULTY_EASY
@@ -34,7 +34,7 @@ class GameEnvironment:
         # set default player values for testing, since no selection yet
         self.player_gender = GameEnvironment.BOY
         self.player_name = ""
-        self.state = GameEnvironment.START_STATE
+        GameEnvironment.state = GameEnvironment.START_STATE
         self.screen = Screen(self.maze_environment, screen_width, screen_height)
         self.display_surface = pygame.display.set_mode((self.screen.width, self.screen.height))
         self.boosters = []
@@ -176,7 +176,7 @@ class GameEnvironment:
         GameEnvironment.PLAYER.blocked = (blocked_up, blocked_down, blocked_left, blocked_right)
 
     def tick(self):
-        if self.state == GameEnvironment.INGAME_STATE:
+        if GameEnvironment.state == GameEnvironment.INGAME_STATE:
             self.camera_tick()
             self.maze_environment.tick()
             GameEnvironment.PLAYER.tick()
@@ -210,7 +210,7 @@ class GameEnvironment:
                     self.on_enemy_death(e)
 
             if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and GameEnvironment.PLAYER.tile_pos[1] == MazeEnvironment.MAZE.end[1]:
-                self.state = GameEnvironment.VICTORY_STATE
+                GameEnvironment.state = GameEnvironment.VICTORY_STATE
 
     def render(self, surface):
         background = pygame.Surface((self.screen.width, self.screen.height))
@@ -218,27 +218,27 @@ class GameEnvironment:
         background.fill((0, 0, 0))
         surface.blit(background, (0, 0))
         # based on the game state, call a different method from the screen
-        if self.state == GameEnvironment.START_STATE:
+        if GameEnvironment.state == GameEnvironment.START_STATE:
             self.screen.startView()
-        elif self.state == GameEnvironment.INGAME_STATE:
+        elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
             self.screen.activeGameView()
-        elif self.state == GameEnvironment.PAUSE_STATE:
+        elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             self.screen.pauseView()
-        elif self.state == GameEnvironment.VICTORY_STATE:
+        elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
             self.screen.victory()
-        elif self.state == GameEnvironment.DEATH_STATE:
+        elif GameEnvironment.state == GameEnvironment.DEATH_STATE:
             self.screen.death()
 
     def switch_to_ingame(self):
-        self.state = GameEnvironment.INGAME_STATE
+        GameEnvironment.state = GameEnvironment.INGAME_STATE
         self.start_ingame()
 
     def event_handler(self, event):
         # this handles all keyboard and mouse input, as well as timers
-        if self.state == GameEnvironment.START_STATE:
+        if GameEnvironment.state == GameEnvironment.START_STATE:
             if event.type == pygame.KEYUP and event.key == pygame.K_RETURN:
                 self.switch_to_ingame()
-        elif self.state == GameEnvironment.INGAME_STATE:
+        elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
             if event.type == booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen):
                 GameEnvironment.PLAYER.cancel_active_booster( booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen))
             if event.type == booster.SpeedBooster.BOOSTERID + (GameEnvironment.PLAYER.speedStackLast % GameEnvironment.PLAYER.speedStackLen):
@@ -279,15 +279,15 @@ class GameEnvironment:
                     self.maze_environment.right = False
                     GameEnvironment.PLAYER.right = False
                 elif event.key == pygame.K_ESCAPE:
-                    self.state = GameEnvironment.PAUSE_STATE
+                    GameEnvironment.state = GameEnvironment.PAUSE_STATE
                 elif event.key == pygame.K_v:
-                    self.state = GameEnvironment.VICTORY_STATE
+                    GameEnvironment.state = GameEnvironment.VICTORY_STATE
                 elif event.key == pygame.K_k:
-                    self.state = GameEnvironment.DEATH_STATE
-        elif self.state == GameEnvironment.PAUSE_STATE:
+                    GameEnvironment.state = GameEnvironment.DEATH_STATE
+        elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             if event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE:
-                self.state = GameEnvironment.INGAME_STATE
-        elif self.state == GameEnvironment.VICTORY_STATE or self.state == GameEnvironment.DEATH_STATE:
+                GameEnvironment.state = GameEnvironment.INGAME_STATE
+        elif GameEnvironment.state == GameEnvironment.VICTORY_STATE or GameEnvironment.state == GameEnvironment.DEATH_STATE:
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_BACKSPACE:
                     pygame.quit()
