@@ -3,6 +3,7 @@ import pygame
 import booster
 import game
 import weapon
+import arrow
 import math
 from maze import MazeEnvironment
 
@@ -103,6 +104,13 @@ class MainCharacter(Character):
         # enemies that are currently within melee range
         self.enemies_in_range = []
         self.swinging_sword = False
+        # set group sprite for weapon and arrows
+        self.weapon_group = pygame.sprite.Group()
+        self.arrow_group = pygame.sprite.Group()
+        self.bow = weapon.Bow()
+        self.bow_group = pygame.sprite.Group()
+        self.is_using_bow = False
+        self.animation_bow_timer = 60
 
     def apply_booster(self, b):
         if isinstance(b, booster.HealthBooster):
@@ -215,29 +223,47 @@ class MainCharacter(Character):
 
     def render(self, surface):
         surface.blit(self.sprite, (self.x, self.y))
-        weapon_group = pygame.sprite.Group()
+        self.sprite_bow(surface, self.is_using_bow)
+        self.arrow_group.update()
+        self.arrow_group.draw(surface)
         if pygame.mouse.get_pos()[0] >= (self.x + (self.width/2)):
             self.weapon.directionSprite(self.x + 30, self.y + 15, "right")
-            weapon_group.add(self.weapon)
+            self.weapon_group.add(self.weapon)
             self.combat_rect = pygame.Rect(self.x + 40 - self.weapon.range, self.y + 10 - self.weapon.range,
                                     self.width + (self.weapon.range * 2), self.height - 10 + (self.weapon.range * 2))
             if self.weapon.is_animating == False:
-                weapon_group.draw(surface)
+                self.weapon_group.draw(surface)
             if self.swinging_sword:
-                self.weapon.render(surface, self.x + 30, self.y + 15, "right")
-                weapon_group.draw(surface)
+                self.weapon.render(self.x + 30, self.y + 15, "right")
+                self.weapon_group.draw(surface)
 
         elif pygame.mouse.get_pos()[0] < (self.x + (self.width/2)):
             self.weapon.directionSprite(self.x - 82, self.y + 15, "left")
-            weapon_group.add(self.weapon)
+            self.weapon_group.add(self.weapon)
             self.combat_rect = pygame.Rect(self.x - 40 - self.weapon.range, self.y + 10 - self.weapon.range,
                                     self.width + (self.weapon.range * 2), self.height - 10+ (self.weapon.range * 2))
             if self.weapon.is_animating == False:
-                weapon_group.draw(surface)
+                self.weapon_group.draw(surface)
             if self.swinging_sword:
-                self.weapon.render(surface, self.x - 82, self.y + 15, "left")
-                weapon_group.draw(surface)
+                self.weapon.render(self.x - 82, self.y + 15, "left")
+                self.weapon_group.draw(surface)
 
+    def sprite_bow(self, surface, is_using_bow):
+        if self.animation_bow_timer == 0:
+            self.animation_bow_timer = 60
+            self.is_using_bow = False
+
+        if is_using_bow and self.animation_bow_timer > 0:
+            self.bow.character_position(self.x + 25, self.y + 35)
+            self.bow.target_position(pygame.mouse.get_pos())
+            self.bow.move(surface)
+            self.animation_bow_timer -= 1
+
+    def create_arrow(self, target_pos):
+        return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1])
+
+    def shoot(self, target_pos):
+        self.arrow_group.add(self.create_arrow(target_pos))
 
     def move(self, direction):
         # actually change x/y based on direction and not being blocked
