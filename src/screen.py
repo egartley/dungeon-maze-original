@@ -1,5 +1,4 @@
 import pygame
-from character import Character
 import game
 from maze import MazeEnvironment
 
