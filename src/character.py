@@ -3,8 +3,9 @@ import pygame
 import booster
 import game
 import weapon
-import arrow
 import math
+import arrow
+from os import *
 from maze import MazeEnvironment
 
 
@@ -67,7 +68,7 @@ class MainCharacter(Character):
         if name is not None:
             self.weapon = weapon.Sword()
 
-        self.speed = 6
+        self.speed = 4
         self.speedStackLen = 3
         self.speedStackCount = -1
         self.speedStackTop = -1
@@ -83,7 +84,7 @@ class MainCharacter(Character):
         self.attackInstances = [None] * self.attackStackLen
         self.attackStack = [False] * self.attackStackLen
 
-        self.isDead = False
+
         self.width = 192 / 4
         self.height = 285 / 4
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
@@ -111,6 +112,7 @@ class MainCharacter(Character):
         self.bow_group = pygame.sprite.Group()
         self.is_using_bow = False
         self.animation_bow_timer = 60
+
 
     def apply_booster(self, b):
         if isinstance(b, booster.HealthBooster):
@@ -145,6 +147,7 @@ class MainCharacter(Character):
         elif isinstance(b, booster.ArrowBooster):
             self.arrow_count += b.increase
 
+
     def isSpeedFull(self):
         i = 0
         for i in range(len(self.speedStack)):
@@ -178,6 +181,7 @@ class MainCharacter(Character):
             i+=1
         return True
 
+
     def cancel_active_booster(self,boosterID): 
         if self.active_booster[0] == True and boosterID == booster.AttackBooster.BOOSTERID + (game.GameEnvironment.PLAYER.attackStackLast % game.GameEnvironment.PLAYER.attackStackLen):
             self.attack_multiplier -= booster.AttackBooster.increase
@@ -200,6 +204,7 @@ class MainCharacter(Character):
                 MazeEnvironment.speed = 4
         else:
             pygame.time.set_timer(game.GameEnvironment.BOOSTER_EVENT_ID, 0)
+
 
     def tick(self):
         if self.up:
@@ -248,6 +253,8 @@ class MainCharacter(Character):
                 self.weapon.render(self.x - 82, self.y + 15, "left")
                 self.weapon_group.draw(surface)
 
+
+
     def sprite_bow(self, surface, is_using_bow):
         if self.animation_bow_timer == 0:
             self.animation_bow_timer = 60
@@ -259,11 +266,13 @@ class MainCharacter(Character):
             self.bow.move(surface)
             self.animation_bow_timer -= 1
 
+
     def create_arrow(self, target_pos):
         return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1])
 
     def shoot(self, target_pos):
         self.arrow_group.add(self.create_arrow(target_pos))
+
 
     def move(self, direction):
         # actually change x/y based on direction and not being blocked
@@ -306,27 +315,44 @@ class MainCharacter(Character):
             if self.health <= 0:
                 game.GameEnvironment.state = game.GameEnvironment.DEATH_STATE
 
+
 class Enemy(Character):
     # constants for the direction the enemy is facing for use in "seeing" the player
     LEFT = 0
     RIGHT = 1
+
+    ATTACK_EVENT_ID = pygame.USEREVENT + 76
 
     def __init__(self):
         super().__init__()
         self.weapon_type = None
         self.is_player_in_view = False
         self.player_in_combat_range = False
+        self.weapon = weapon.Sword()
         self.width = 180
         self.height = 123
         self.image = pygame.image.load("Minotaur_01_Idle_000.png")
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
-        self.sprite = self.image
+        self.sprite = [self.image]
+        self.sprite_counter = 0
+        self.sprites_right_walk = []
+        self.sprites_left_walk = []
+        self.sprites_right_attack = []
+        self.sprites_left_attack = []
+        self.sprite_modes = [self.sprite, self.sprites_right_walk, self.sprites_right_attack]
+        self.sprite_mode = 0
+
+        self.right_walk_animation()
+        self.left_walk_animation()
+        self.right_attack_animation()
+        self.left_attack_animation()
         self.rect = self.image.get_rect()
         self.direction = Enemy.LEFT
         self.speed = 3
         self.chasing = False
         self.damage = 1
         self.coolDown = 10
+
 
     def chase_player(self):
         # move in the direction of the player if not already next to them
@@ -340,14 +366,13 @@ class Enemy(Character):
             self.y -= self.speed
         elif player_below:
             self.y += self.speed
+
         if player_to_right:
             self.x += self.speed
-            self.sprite = self.image
+            self.direction = True
         elif player_to_left:
             self.x -= self.speed
-            self.sprite = pygame.transform.flip(self.image, True, False)
-
-
+            self.direction = False
 
 
     def tick(self):
@@ -377,26 +402,88 @@ class Enemy(Character):
         if self.player_in_combat_range:
             self.attack()
 
-    def render(self, surface):
-        if (self.direction):
-            surface.blit(self.sprite, (self.x, self.y))
+    def change_sprite(self):
+        if(self.sprite_counter >= len(self.sprite_modes[int(self.sprite_mode)]) - 2):
+            self.sprite_counter = 0
         else:
-            surface.blit(self.sprite, (self.x, self.y))
-        
+            self.sprite_counter += 0.5       
 
-    def attack(self): # cool down timer check goes here 
-        game.GameEnvironment.PLAYER.take_damage(self.damage)
+    def render(self, surface):
+
+        if(self.chasing):
+            if (self.player_in_combat_range):
+                self.sprite_mode = 2
+                self.change_sprite()
+                if(self.direction):
+                    surface.blit(self.sprites_right_attack[int(self.sprite_counter)], (self.x, self.y))
+                else:
+                    surface.blit(self.sprites_left_attack[int(self.sprite_counter)], (self.x, self.y))
+
+            else:
+                self.sprite_mode = 1
+                self.change_sprite()
+                if (self.direction):
+                    surface.blit(self.sprites_right_walk[int(self.sprite_counter)], (self.x, self.y))
+                else:
+                    surface.blit(self.sprites_left_walk[int(self.sprite_counter)], (self.x, self.y))
         
-    def attack_motion(self):
+        else:
+            surface.blit(self.image, (self.x, self.y))
+
+    def right_walk_animation(self):
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_000.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_001.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_002.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_003.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_004.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_005.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_006.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_007.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_008.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_009.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_010.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_011.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_012.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_013.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_014.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_015.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_016.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_017.png')))
+        for i in range(len(self.sprites_right_walk)):
+            self.sprites_right_walk[i] = pygame.transform.scale(self.sprites_right_walk[i], (self.width, self.height))
+
+
+    def left_walk_animation(self):
+        for i in range(len(self.sprites_right_walk)):
+            self.sprites_left_walk.append(pygame.transform.flip(self.sprites_right_walk[i], True, False))
+
+    def right_attack_animation(self):
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_000.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_001.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_002.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_003.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_004.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_005.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_006.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_007.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_008.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_009.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_010.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_011.png')))
+        for i in range(len(self.sprites_right_attack)):
+            self.sprites_right_attack[i] = pygame.transform.scale(self.sprites_right_attack[i], (self.width, self.height))
+
+    def left_attack_animation(self):
+        for i in range(len(self.sprites_right_attack)):
+            self.sprites_left_attack.append(pygame.transform.flip(self.sprites_right_attack[i], True, False))
+
+    def attack(self):
         if not self.weapon.in_cooldown:
             # start cooldown timer
-            pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
+            pygame.time.set_timer(Enemy.ATTACK_EVENT_ID, self.weapon.cooldown * 2000)
             self.weapon.in_cooldown = True
-            self.weapon.is_animating = True
-            pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 430)
-            self.swinging_sword = True
+            ##self.weapon.is_animating = True
+            ##pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 430)
+            ##self.swinging_sword = True
             # do the actual damage to all enemies in range
-            for e in self.enemies_in_range:
-                e.health -= self.weapon.damage * self.attack_multiplier
-                if not e.chasing:
-                    e.chasing = True
+            game.GameEnvironment.PLAYER.take_damage(10)
