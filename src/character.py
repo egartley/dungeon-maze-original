@@ -350,7 +350,7 @@ class Enemy(Character):
         self.direction = Enemy.LEFT
         self.speed = 3
         self.chasing = False
-        self.damage = 1
+        self.damage = 0
         self.coolDown = 10
 
 
@@ -478,12 +478,4 @@ class Enemy(Character):
             self.sprites_left_attack.append(pygame.transform.flip(self.sprites_right_attack[i], True, False))
 
     def attack(self):
-        if not self.weapon.in_cooldown:
-            # start cooldown timer
-            pygame.time.set_timer(Enemy.ATTACK_EVENT_ID, self.weapon.cooldown * 2000)
-            self.weapon.in_cooldown = True
-            ##self.weapon.is_animating = True
-            ##pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 430)
-            ##self.swinging_sword = True
-            # do the actual damage to all enemies in range
-            game.GameEnvironment.PLAYER.take_damage(10)
+        game.GameEnvironment.PLAYER.take_damage(self.damage)
