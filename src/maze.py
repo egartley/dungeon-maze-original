@@ -35,7 +35,7 @@ class MazeEnvironment:
         self.left = False
         self.right = False
         self.floor_surface = pygame.image.load("src/sprites/maze/floor.png")
-        walls = ["0001", "0010", "0011", "0100", "0110", "0111", "1000", "1001", "1011", "1100", "1101", "1110"]
+        walls = ["0001", "0010", "0011", "0100", "0110", "0111", "1000", "1001", "1011", "1100", "1101", "1110", "1010", "0101"]
         self.wall_surfaces = []
         for i in range(0, len(walls)):
             self.wall_surfaces.append((walls[i], pygame.image.load("src/sprites/maze/" + walls[i] + ".png")))
@@ -65,26 +65,34 @@ class MazeEnvironment:
         grid = MazeEnvironment.MAZE.grid
         numstring = ""
         for i in range(len(grid)):
+            s = ""
             for j in range(len(grid[0])):
-                if i - 1 >= 0 and grid[i - 1][j] == MazeEnvironment.WALL:
+                s += str(grid[i][j])
+            print(s)
+        for i in range(len(grid)):
+            for j in range(len(grid[i])):
+                if not grid[i][j] == MazeEnvironment.WALL:
+                    continue
+                if j - 1 >= 0 and grid[i][j - 1] == MazeEnvironment.ROOM:
                     numstring += "1"
                 else:
                     numstring += "0"
-                if j - 1 >= 0 and grid[i][j - 1] == MazeEnvironment.WALL:
+                if i - 1 >= 0 and grid[i - 1][j] == MazeEnvironment.ROOM:
                     numstring += "1"
                 else:
                     numstring += "0"
-                if i + 1 < len(grid) and grid[i + 1][j] == MazeEnvironment.WALL:
+                if j + 1 < len(grid[i]) and grid[i][j + 1] == MazeEnvironment.ROOM:
                     numstring += "1"
                 else:
                     numstring += "0"
-                if j + 1 < len(grid[0]) and grid[i][j + 1] == MazeEnvironment.WALL:
+                if i + 1 < len(grid) and grid[i + 1][j] == MazeEnvironment.ROOM:
                     numstring += "1"
                 else:
                     numstring += "0"
                 for w in range(0, len(self.wall_surfaces)):
                     if numstring == self.wall_surfaces[w][0]:
                         self.calculated_walls.append(([i, j], self.wall_surfaces[w][1]))
+                        print(str(i) + ", " + str(j) + ": " + numstring)
                 numstring = ""
 
     def generate_boosters(self):
@@ -228,7 +236,7 @@ class MazeEnvironment:
         s = MazeEnvironment.TILE_SIZE
         wall = pygame.Surface((s, s))
         wall.convert()
-        wall.fill((160, 160, 160))
+        wall.fill((0, 0, 0))
         start = pygame.Surface((s, s))
         start.convert()
         start.fill((0, 255, 0))
