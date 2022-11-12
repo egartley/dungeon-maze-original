@@ -1,5 +1,7 @@
 import pygame
+
 import game
+import main
 from maze import MazeEnvironment
 
 frame_size_x = 1000
@@ -41,6 +43,8 @@ class Screen:
         pygame.display.get_surface().blit(self.font.render("Press ENTER to begin playing", True, Screen.TEXT_COLOR),
                                           (12, 30))
         pygame.mouse.set_cursor(self.cursor)
+        #customButton = main.Button(30, 30, 400, 100, 'Button One (onePress)')
+        
     def draw_minimap(self, surface):
         s = 4
         wall = pygame.Surface((s, s))

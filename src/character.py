@@ -91,7 +91,7 @@ class MainCharacter(Character):
         self.active_booster = [False] * 2 # 0 for attack 1 for speed
         self.gender = gender
         self.direction = None
-        self.image = pygame.image.load("Wraith_01_Idle_000.png")
+        self.image = pygame.image.load(path.join('src','sprites','Character','Wraith_01_Idle_000.png'))
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
         self.sprite = self.image
         self.rect = self.image.get_rect()
@@ -331,7 +331,7 @@ class Enemy(Character):
         self.weapon = weapon.Sword()
         self.width = 180
         self.height = 123
-        self.image = pygame.image.load("Minotaur_01_Idle_000.png")
+        self.image = pygame.image.load('src/sprites/Enemies/Minotaur_01_Idle_000.png')
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
         self.sprite = [self.image]
         self.sprite_counter = 0
@@ -431,24 +431,24 @@ class Enemy(Character):
             surface.blit(self.image, (self.x, self.y))
 
     def right_walk_animation(self):
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_000.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_001.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_002.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_003.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_004.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_005.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_006.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_007.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_008.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_009.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_010.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_011.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_012.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_013.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_014.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_015.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_016.png')))
-        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Walking','Minotaur_01_Walking_017.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_000.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_001.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_002.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_003.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_004.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_005.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_006.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_007.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_008.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_009.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_010.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_011.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_012.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_013.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_014.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_015.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_016.png')))
+        self.sprites_right_walk.append(pygame.image.load(path.join('src/sprites/Enemies/Walking','Minotaur_01_Walking_017.png')))
         for i in range(len(self.sprites_right_walk)):
             self.sprites_right_walk[i] = pygame.transform.scale(self.sprites_right_walk[i], (self.width, self.height))
 
@@ -458,18 +458,18 @@ class Enemy(Character):
             self.sprites_left_walk.append(pygame.transform.flip(self.sprites_right_walk[i], True, False))
 
     def right_attack_animation(self):
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_000.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_001.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_002.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_003.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_004.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_005.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_006.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_007.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_008.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_009.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_010.png')))
-        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Attacking','Minotaur_01_Attacking_011.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_000.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_001.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_002.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_003.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_004.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_005.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_006.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_007.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_008.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_009.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_010.png')))
+        self.sprites_right_attack.append(pygame.image.load(path.join('src/sprites/Enemies/Attacking','Minotaur_01_Attacking_011.png')))
         for i in range(len(self.sprites_right_attack)):
             self.sprites_right_attack[i] = pygame.transform.scale(self.sprites_right_attack[i], (self.width, self.height))
 
