@@ -34,7 +34,7 @@ class ArrowBooster(Booster):
     def __init__(self):
         super().__init__()
         self.increase = 10
-        self.sprite = image.load(path.join('src','sprites','Boosters','arrow.png'))
+        self.sprite = image.load('src/sprites/Booster/arrow.png')
         self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
         
@@ -48,7 +48,7 @@ class SpeedBooster(Booster):
     def __init__(self):
         super().__init__()
         self.time = 15
-        self.sprite = image.load(path.join('src','sprites','Boosters','speed.png'))
+        self.sprite = image.load('src/sprites/Booster/speed.png')
         self.sprite = transform.scale(self.sprite, (200,40))
         self.rect = self.sprite.get_rect()
         
@@ -63,7 +63,7 @@ class HealthBooster(Booster):
     def __init__(self):
         super().__init__()
         
-        self.sprite = image.load(path.join('src','sprites','Boosters','health-booster.png'))
+        self.sprite = image.load('src/sprites/Booster/health-booster.png')
         self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
         
@@ -76,7 +76,7 @@ class ShieldBooster(Booster):
     def __init__(self):
         super().__init__()
         
-        self.sprite = image.load(path.join('src','sprites','Boosters','Shields.png'))
+        self.sprite = image.load('src/sprites/Booster/Shields.png')
         self.sprite = transform.scale(self.sprite, (20,20))
         self.rect = self.sprite.get_rect()
         
@@ -90,7 +90,7 @@ class AttackBooster(Booster):
     def __init__(self):
         super().__init__()
         self.time = 30
-        self.sprite = image.load(path.join('src','sprites','Boosters','attack.png'))
+        self.sprite = image.load('src/sprites/Booster/attack.png')
         self.sprite = transform.scale(self.sprite, (80,38))
         self.rect = self.sprite.get_rect()
         
