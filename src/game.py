@@ -237,8 +237,20 @@ class GameEnvironment:
     def event_handler(self, event):
         # this handles all keyboard and mouse input, as well as timers
         if GameEnvironment.state == GameEnvironment.START_STATE:
-            if event.type == pygame.KEYUP and event.key == pygame.K_RETURN:
-                self.switch_to_ingame()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                easyButton = pygame.Rect(100, 350, 200, 60)
+                mediumButton = pygame.Rect(375, 350, 200, 60)
+                hardButton = pygame.Rect(675,350,200,60)
+                quitButton = pygame.Rect(100, 550, 200, 60)
+                if easyButton.collidepoint(event.pos):
+                    self.switch_to_ingame()
+                elif mediumButton.collidepoint(event.pos):
+                    self.switch_to_ingame()
+                elif hardButton.collidepoint(event.pos):
+                    self.switch_to_ingame()
+                elif quitButton.collidepoint(event.pos):
+                    pygame.quit()
+                    sys.exit()
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
             if event.type == booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen):
                 GameEnvironment.PLAYER.cancel_active_booster( booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen))
@@ -289,12 +301,30 @@ class GameEnvironment:
                 elif event.key == pygame.K_k:
                     GameEnvironment.state = GameEnvironment.DEATH_STATE
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
-            if event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE:
-                GameEnvironment.state = GameEnvironment.INGAME_STATE
-        elif GameEnvironment.state == GameEnvironment.VICTORY_STATE or GameEnvironment.state == GameEnvironment.DEATH_STATE:
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_BACKSPACE:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                startButton = pygame.Rect(250,350,200,60)
+                quitButton = pygame.Rect(600,350,200,60)
+                # goes in if clicked = buttonrect.collidepoint(event.pos)
+                if startButton.collidepoint(event.pos):
+                    self.switch_to_ingame()
+                elif quitButton.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
-                elif event.key == pygame.K_RETURN:
+        elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                startButton = pygame.Rect(200,350,200,60)
+                quitButton = pygame.Rect(575,350,200,60)
+                if quitButton.collidepoint(event.pos): # check if button clicked quit
+                    pygame.quit()
+                    sys.exit()
+                elif startButton.collidepoint(event.pos): # checck if click was restart
+                    self.switch_to_ingame()
+        elif  GameEnvironment.state == GameEnvironment.DEATH_STATE:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                startButton = pygame.Rect(250,350,200,60)
+                quitButton = pygame.Rect(575,350,200,60)
+                if quitButton.collidepoint(event.pos): # check if button clicked quit
+                    pygame.quit()
+                    sys.exit()
+                elif startButton.collidepoint(event.pos): # checck if click was restart
                     self.switch_to_ingame()

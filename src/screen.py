@@ -4,20 +4,17 @@ from maze import MazeEnvironment
 
 frame_size_x = 1000
 frame_size_y = 700
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
 
 score = 0
 
-
-# Initialise game window
+# Initialise colors for resuse
 black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
 red = pygame.Color(255, 0, 0)
 green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
-
+yellow = pygame.Color(255,255,0)
+orange = pygame.Color(255,127,0)
 
 class Screen:
     TEXT_COLOR = (255, 255, 255)
@@ -32,16 +29,52 @@ class Screen:
         self.font = pygame.font.SysFont("Arial", 18)
 
     def pauseView(self):
-        pygame.display.get_surface().blit(self.font.render("Pause screen", True, Screen.TEXT_COLOR), (12, 8))
-        pygame.display.get_surface().blit(
+        surface = pygame.display.get_surface() 
+        surface.blit(self.font.render("Pause screen", True, Screen.TEXT_COLOR), (12, 8))
+        surface.blit(
             self.font.render("Press ESC again to resume playing", True, Screen.TEXT_COLOR), (12, 30))
-
+        pygame.mouse.set_cursor(self.cursor)
+        #start button
+        surface = pygame.display.get_surface() 
+        startSurface = pygame.Surface((200,60))
+        startSurface.convert()
+        startSurface.fill(green)
+        surface.blit(startSurface,(250,350)) # hard coded button values if they get change , change in game.py event handler
+        surface.blit(self.font.render("CONTINUE",True, black), (315,370))
+        #quit button
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(600,350))
+        surface.blit(self.font.render("QUIT",True, black), (680,370))
+        
     def startView(self):
         pygame.display.get_surface().blit(self.font.render("Start screen", True, Screen.TEXT_COLOR), (12, 8))
         pygame.display.get_surface().blit(self.font.render("Press ENTER to begin playing", True, Screen.TEXT_COLOR),
                                           (12, 30))
         pygame.mouse.set_cursor(self.cursor)
-        #customButton = main.Button(30, 30, 400, 100, 'Button One (onePress)')
+        #easy button
+        surface = pygame.display.get_surface()  ## since hard coded position values, if this change it changes in game.py event handler
+        startSurface = pygame.Surface((200,60))
+        startSurface.convert()  # 100, 350, 200, 60
+        startSurface.fill(green)
+        surface.blit(startSurface,(100,350))
+        surface.blit(self.font.render("EASY", True, black), (180, 370))
+        #medium button
+        startSurface.convert()
+        startSurface.fill(yellow)
+        surface.blit(startSurface,(375,350))  ## since hard coded if this change it changes in game.py event handler
+        surface.blit(self.font.render("MEDIUM",True, black), (440,370))
+        #hard button
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(675,350))
+        surface.blit(self.font.render("HARD",True, black), (750,370))
+        ## check if when mouse clicks on button it changes game state 
+        startSurface.convert()
+        startSurface.fill(orange)
+        surface.blit(startSurface,(100,550))
+        surface.blit(self.font.render("QUIT",True, black), (180,570))
+        
         
     def draw_minimap(self, surface):
         s = 4
@@ -93,18 +126,14 @@ class Screen:
         
         
         ## back fill of health bar plus health bar
-        healthBarBackFill = (100 / 100) * 10
-        WHITE = (255,255,255)
         backFillSprite = pygame.Surface((90,10))
         backFillSprite.convert()
-        backFillSprite.fill(WHITE)
+        backFillSprite.fill(white)
         surface.blit(backFillSprite,(12,74))
-        
         healthBarWidth = (game.GameEnvironment.PLAYER.health / 100)  * 90
-        RED = (255,0,0)
         sprite = pygame.Surface((healthBarWidth,10))
         sprite.convert()
-        sprite.fill(RED)
+        sprite.fill(red)
         surface.blit(sprite, (12,74))
         
         
@@ -112,20 +141,15 @@ class Screen:
         shieldBarBackFill = (100 / 100) * 10
         shieldFill = pygame.Surface((90, shieldBarBackFill))
         shieldFill.convert()
-        shieldFill.fill(WHITE)
+        shieldFill.fill(white)
         surface.blit(shieldFill, (12,52))
-        
         shieldBarWidth = (game.GameEnvironment.PLAYER.shield / 100 ) * 90
-        BLUE = (0,0,255)
         shieldSprite = pygame.Surface((shieldBarWidth,10))
         shieldSprite.convert()
-        shieldSprite.fill(BLUE)
+        shieldSprite.fill(blue)
         surface.blit(shieldSprite, (12,52))
-       
-        
         surface.blit(self.font.render("Speed is: " + str(game.GameEnvironment.PLAYER.speed), True,
                                       Screen.TEXT_COLOR), (12, 140))
-
         surface.blit(
             self.font.render("Arrows: " + str(int(game.GameEnvironment.PLAYER.arrow_count)), True, Screen.TEXT_COLOR),
             (12, surface.get_height() - 29))
@@ -139,14 +163,43 @@ class Screen:
         pygame.display.get_surface().blit(self.font.render("Score: 9999", True, Screen.TEXT_COLOR), (12, 52))
         pygame.display.get_surface().blit(
             self.font.render("Top 10 scores: 9999, 0, 0, 0, 0, 0, 0, 0, 0, 0", True, Screen.TEXT_COLOR), (12, 74))
+        pygame.mouse.set_cursor(self.cursor)
+        #RESTART BUTTON
+        surface = pygame.display.get_surface() 
+        startSurface = pygame.Surface((200,60))
+        startSurface.convert()
+        startSurface.fill(green)
+        surface.blit(startSurface,(200,350))
+        surface.blit(self.font.render("RESTART", True, black), (265, 370))
+        #QUIT button
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(575,350))
+        surface.blit(self.font.render("QUIT",True, black), (660,370))
+        show_score(0, red, 'Times New Roman', 20)
+        # add checck for position
 
     def death(self):
+        pygame.mouse.set_cursor(self.cursor)
         my_font = pygame.font.SysFont('Times New Roman', 90)
         game_over_surface = my_font.render('YOU DIED', True, red)
         game_over_rect = game_over_surface.get_rect()
         game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
         pygame.display.get_surface().blit(game_over_surface, game_over_rect)
+        #RESTART BUTTON
+        surface = pygame.display.get_surface() 
+        startSurface = pygame.Surface((200,60))
+        startSurface.convert()
+        startSurface.fill(green)
+        surface.blit(startSurface,(200,350))
+        surface.blit(self.font.render("RESTART", True, black), (265, 370))
+        #QUIT BUTTON
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(575,350))
+        surface.blit(self.font.render("QUIT",True, black), (660,370))
         show_score(0, red, 'Times New Roman', 20)
+        #check for position 
         
 def show_score(choice, color, font, size):
     score_font = pygame.font.SysFont(font, size)
