@@ -335,7 +335,9 @@ class MazeEnvironment:
 
         # render the boosters and enemies
         for b in self.game_environment.boosters:
-            b[0].render(surface)
+            if -1200 < b[0].x < 1200:
+                b[0].render(surface)
 
         for e in self.game_environment.enemies:
-            e[0].render(surface)
+            if -1200 < e[0].x < 1200:
+                e[0].render(surface)
