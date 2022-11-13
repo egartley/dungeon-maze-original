@@ -114,7 +114,6 @@ class MainCharacter(Character):
         self.bow_timer = 60
         self.set_animation_bow_timer = self.bow_timer
 
-
     def apply_booster(self, b):
         if isinstance(b, booster.HealthBooster):
             if self.health + b.increase >= 100:
@@ -267,7 +266,6 @@ class MainCharacter(Character):
             self.bow.move(surface)
             self.set_animation_bow_timer -= 1
 
-
     def create_arrow(self, target_pos):
         return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1])
 
@@ -275,7 +273,6 @@ class MainCharacter(Character):
         if self.arrow_count > 0:
             self.arrow_group.add(self.create_arrow(target_pos))
             self.arrow_count -= 1
-
 
     def move(self, direction):
         # actually change x/y based on direction and not being blocked
