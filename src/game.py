@@ -76,6 +76,8 @@ class GameEnvironment:
         self.maze_environment.down = False
         self.maze_environment.left = False
         self.maze_environment.right = False
+        self.maze_environment.calculated_walls = []
+        self.maze_environment.corners = []
         # default values for testing
         self.maze_difficulty = GameEnvironment.DIFFICULTY_MEDIUM
         self.enemy_difficulty = GameEnvironment.DIFFICULTY_MEDIUM
