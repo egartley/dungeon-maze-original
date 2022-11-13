@@ -35,11 +35,13 @@ class MazeEnvironment:
         self.left = False
         self.right = False
         self.floor_surface = pygame.image.load("src/sprites/maze/floor.png")
+        self.corner_surface = pygame.image.load("src/sprites/maze/corner.png")
         walls = ["0001", "0010", "0011", "0100", "0110", "0111", "1000", "1001", "1011", "1100", "1101", "1110", "1010", "0101"]
         self.wall_surfaces = []
         for i in range(0, len(walls)):
             self.wall_surfaces.append((walls[i], pygame.image.load("src/sprites/maze/" + walls[i] + ".png")))
         self.calculated_walls = []
+        self.corners = []
 
     def generate_maze(self, rows, columns, difficulty):
         self.difficulty = difficulty
@@ -57,37 +59,54 @@ class MazeEnvironment:
         MazeEnvironment.PIXEL_WIDTH = len(MazeEnvironment.MAZE.grid[0]) * MazeEnvironment.TILE_SIZE
         MazeEnvironment.PIXEL_HEIGHT = len(MazeEnvironment.MAZE.grid) * MazeEnvironment.TILE_SIZE
         self.floor_surface.convert()
-        self.calculate_walls()
-
-    def calculate_walls(self):
+        self.corner_surface.convert()
         for i in range(0, len(self.wall_surfaces)):
             self.wall_surfaces[i][1].convert()
+        self.calculate_walls()
+        self.calculate_corners()
+
+    def calculate_walls(self):
         grid = MazeEnvironment.MAZE.grid
         numstring = ""
+        for i in range(len(grid)):
+            s = ""
+            for j in range(len(grid[0])):
+                s += str(grid[i][j])
+            print(s)
         for i in range(len(grid)):
             for j in range(len(grid[i])):
                 if not grid[i][j] == MazeEnvironment.WALL:
                     continue
-                if j - 1 >= 0 and (grid[i][j - 1] == MazeEnvironment.ROOM or grid[i][j - 1] == MazeEnvironment.START or grid[i][j - 1] == MazeEnvironment.END):
-                    numstring += "1"
-                else:
-                    numstring += "0"
-                if i - 1 >= 0 and (grid[i - 1][j] == MazeEnvironment.ROOM or grid[i - 1][j] == MazeEnvironment.START or grid[i - 1][j] == MazeEnvironment.END):
-                    numstring += "1"
-                else:
-                    numstring += "0"
-                if j + 1 < len(grid[i]) and (grid[i][j + 1] == MazeEnvironment.ROOM or grid[i][j + 1] == MazeEnvironment.START or grid[i][j + 1] == MazeEnvironment.END):
-                    numstring += "1"
-                else:
-                    numstring += "0"
-                if i + 1 < len(grid) and (grid[i + 1][j] == MazeEnvironment.ROOM or grid[i + 1][j] == MazeEnvironment.START or grid[i + 1][j] == MazeEnvironment.END):
-                    numstring += "1"
-                else:
-                    numstring += "0"
+                numstring += "1" if j - 1 >= 0 and not grid[i][j - 1] == MazeEnvironment.WALL else "0"
+                numstring += "1" if i - 1 >= 0 and not grid[i - 1][j] == MazeEnvironment.WALL else "0"
+                numstring += "1" if j + 1 < len(grid[i]) and not grid[i][j + 1] == MazeEnvironment.WALL else "0"
+                numstring += "1" if i + 1 < len(grid) and not grid[i + 1][j] == MazeEnvironment.WALL else "0"
                 for w in range(0, len(self.wall_surfaces)):
                     if numstring == self.wall_surfaces[w][0]:
                         self.calculated_walls.append(([i, j], self.wall_surfaces[w][1]))
+                        print(str(i) + ", " + str(j) + ": " + numstring)
                 numstring = ""
+
+    def calculate_corners(self):
+        grid = MazeEnvironment.MAZE.grid
+        num = 0
+        for i in range(len(grid)):
+            for j in range(len(grid[i])):
+                if not grid[i][j] == MazeEnvironment.WALL:
+                    continue
+                if j - 1 >= 0 and grid[i][j - 1] == MazeEnvironment.WALL and i - 1 >= 0 and grid[i - 1][j] == MazeEnvironment.WALL:
+                    num = 1
+                elif j + 1 < len(grid[i]) and grid[i][j + 1] == MazeEnvironment.WALL and i - 1 >= 0 and grid[i - 1][j] == MazeEnvironment.WALL:
+                    num = 2
+                elif j + 1 < len(grid[i]) and grid[i][j + 1] == MazeEnvironment.WALL and i + 1 < len(grid) and grid[i + 1][j] == MazeEnvironment.WALL:
+                    num = 3
+                elif j - 1 >= 0 and grid[i][j - 1] == MazeEnvironment.WALL and i + 1 < len(grid) and grid[i + 1][j] == MazeEnvironment.WALL:
+                    num = 4
+                if not num == 0:
+                    #print([i, j])
+                    #print(num)
+                    self.corners.append(([i, j], num))
+                num = 0
 
     def generate_boosters(self):
         # generate boosters in each room with a 50% chance, and equally likely to be each type
@@ -246,7 +265,7 @@ class MazeEnvironment:
                     surface.blit(start, position)
                 elif MazeEnvironment.END == grid[i][j]:
                     surface.blit(end, position)
-                elif grid[i][j] == MazeEnvironment.WALL:
+                elif MazeEnvironment.WALL == grid[i][j]:
                     edgewall = False
                     for w in range(0, len(self.calculated_walls)):
                         ij = self.calculated_walls[w][0]
