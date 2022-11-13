@@ -14,7 +14,7 @@ red = pygame.Color(255, 0, 0)
 green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
 yellow = pygame.Color(255,255,0)
-
+orange = pygame.Color(255,127,0)
 
 class Screen:
     TEXT_COLOR = (255, 255, 255)
@@ -40,11 +40,12 @@ class Screen:
         startSurface.convert()
         startSurface.fill(green)
         surface.blit(startSurface,(250,350)) # hard coded button values if they get change , change in game.py event handler
-      
+        surface.blit(self.font.render("CONTINUE",True, black), (315,370))
         #quit button
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface,(600,350))
+        surface.blit(self.font.render("QUIT",True, black), (680,370))
         
     def startView(self):
         pygame.display.get_surface().blit(self.font.render("Start screen", True, Screen.TEXT_COLOR), (12, 8))
@@ -69,7 +70,10 @@ class Screen:
         surface.blit(startSurface,(675,350))
         surface.blit(self.font.render("HARD",True, black), (750,370))
         ## check if when mouse clicks on button it changes game state 
-        
+        startSurface.convert()
+        startSurface.fill(orange)
+        surface.blit(startSurface,(100,550))
+        surface.blit(self.font.render("QUIT",True, black), (180,570))
         
         
     def draw_minimap(self, surface):

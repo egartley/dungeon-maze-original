@@ -238,9 +238,15 @@ class GameEnvironment:
         # this handles all keyboard and mouse input, as well as timers
         if GameEnvironment.state == GameEnvironment.START_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(100, 350, 200, 60)
-                quitButton = pygame.Rect(375, 350, 200, 60)
-                if startButton.collidepoint(event.pos):
+                easyButton = pygame.Rect(100, 350, 200, 60)
+                mediumButton = pygame.Rect(375, 350, 200, 60)
+                hardButton = pygame.Rect(675,350,200,60)
+                quitButton = pygame.Rect(100, 550, 200, 60)
+                if easyButton.collidepoint(event.pos):
+                    self.switch_to_ingame()
+                elif mediumButton.collidepoint(event.pos):
+                    self.switch_to_ingame()
+                elif hardButton.collidepoint(event.pos):
                     self.switch_to_ingame()
                 elif quitButton.collidepoint(event.pos):
                     pygame.quit()
