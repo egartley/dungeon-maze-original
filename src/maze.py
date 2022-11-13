@@ -262,18 +262,18 @@ class MazeEnvironment:
                             edgewall = True
                     if not edgewall:
                         surface.blit(wall, position)
-                        for w in range(0, len(self.corners)):
-                            ij = self.corners[w][0]
-                            if i == ij[0] and j == ij[1]:
-                                num = self.corners[w][1]
-                                if num == 1:
-                                    surface.blit(self.corner_surface, position)
-                                elif num == 2:
-                                    surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(), position[1]))
-                                elif num == 3:
-                                    surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(), position[1] + s - self.corner_surface.get_height()))
-                                elif num == 4:
-                                    surface.blit(self.corner_surface, (position[0], position[1] + s - self.corner_surface.get_height()))
+                    for w in range(0, len(self.corners)):
+                        ij = self.corners[w][0]
+                        if i == ij[0] and j == ij[1]:
+                            num = self.corners[w][1]
+                            if num == 1:
+                                surface.blit(self.corner_surface, position)
+                            elif num == 2:
+                                surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(), position[1]))
+                            elif num == 3:
+                                surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(), position[1] + s - self.corner_surface.get_height()))
+                            elif num == 4:
+                                surface.blit(self.corner_surface, (position[0], position[1] + s - self.corner_surface.get_height()))
                 else:
                     surface.blit(self.floor_surface, position)
 
