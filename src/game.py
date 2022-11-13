@@ -63,7 +63,10 @@ class GameEnvironment:
         self.enemy_collisions = []
         self.active_combat_collisions = []
         MazeEnvironment.SPEED = 4
-        GameEnvironment.PLAYER = MainCharacter(GameEnvironment.PLAYER.name, GameEnvironment.PLAYER.gender)
+        self.maze_environment.up = False
+        self.maze_environment.down = False
+        self.maze_environment.left = False
+        self.maze_environment.right = False
         # default values for testing
         self.maze_difficulty = GameEnvironment.DIFFICULTY_MEDIUM
         self.enemy_difficulty = GameEnvironment.DIFFICULTY_MEDIUM
@@ -81,16 +84,16 @@ class GameEnvironment:
         GameEnvironment.PLAYER.relative_y = pos[1]
         if start[0] == 0:
             MazeEnvironment.MAP_Y = 0
-            MazeEnvironment.MAP_X = -1 * (MazeEnvironment.TILE_SIZE * start[1]) + (MazeEnvironment.TILE_SIZE / 2)
+            MazeEnvironment.MAP_X = -1 * (MazeEnvironment.TILE_SIZE * start[1]) + ((pygame.display.get_window_size()[0] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         elif start[1] == 0:
             MazeEnvironment.MAP_X = 0
-            MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.TILE_SIZE * start[0]) + (MazeEnvironment.TILE_SIZE / 4)
+            MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.TILE_SIZE * start[0]) + ((pygame.display.get_window_size()[1] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         elif start[0] == len(MazeEnvironment.MAZE.grid) - 1:
             MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.PIXEL_HEIGHT - self.screen.height)
-            MazeEnvironment.MAP_X = -1 * (MazeEnvironment.TILE_SIZE * start[1]) + (MazeEnvironment.TILE_SIZE / 2)
+            MazeEnvironment.MAP_X = -1 * (MazeEnvironment.TILE_SIZE * start[1]) + ((pygame.display.get_window_size()[0] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         else:
             MazeEnvironment.MAP_X = -1 * (MazeEnvironment.PIXEL_WIDTH - self.screen.width)
-            MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.TILE_SIZE * start[0]) + (MazeEnvironment.TILE_SIZE / 4)
+            MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.TILE_SIZE * start[0]) + ((pygame.display.get_window_size()[1] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         GameEnvironment.PLAYER.x = GameEnvironment.PLAYER.relative_x + MazeEnvironment.MAP_X
         GameEnvironment.PLAYER.y = GameEnvironment.PLAYER.relative_y + MazeEnvironment.MAP_Y
         # set boosters
