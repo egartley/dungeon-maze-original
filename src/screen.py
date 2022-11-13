@@ -34,16 +34,12 @@ class Screen:
         surface.blit(
             self.font.render("Press ESC again to resume playing", True, Screen.TEXT_COLOR), (12, 30))
         pygame.mouse.set_cursor(self.cursor)
-        green = (0,255,0)
-        yellow = (255,255,0)
-        red = (255,0,0)
-        black = (0,0,0)
         #start button
         surface = pygame.display.get_surface() 
         startSurface = pygame.Surface((200,60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface,(250,350))
+        surface.blit(startSurface,(250,350)) # hard coded button values if they get change , change in game.py event handler
       
         #quit button
         startSurface.convert()
@@ -56,16 +52,16 @@ class Screen:
                                           (12, 30))
         pygame.mouse.set_cursor(self.cursor)
         #easy button
-        surface = pygame.display.get_surface() 
+        surface = pygame.display.get_surface()  ## since hard coded position values, if this change it changes in game.py event handler
         startSurface = pygame.Surface((200,60))
-        startSurface.convert()
+        startSurface.convert()  # 100, 350, 200, 60
         startSurface.fill(green)
         surface.blit(startSurface,(100,350))
         surface.blit(self.font.render("EASY", True, black), (180, 370))
         #medium button
         startSurface.convert()
         startSurface.fill(yellow)
-        surface.blit(startSurface,(375,350))
+        surface.blit(startSurface,(375,350))  ## since hard coded if this change it changes in game.py event handler
         surface.blit(self.font.render("MEDIUM",True, black), (440,370))
         #hard button
         startSurface.convert()
@@ -163,6 +159,7 @@ class Screen:
         pygame.display.get_surface().blit(self.font.render("Score: 9999", True, Screen.TEXT_COLOR), (12, 52))
         pygame.display.get_surface().blit(
             self.font.render("Top 10 scores: 9999, 0, 0, 0, 0, 0, 0, 0, 0, 0", True, Screen.TEXT_COLOR), (12, 74))
+        pygame.mouse.set_cursor(self.cursor)
         #RESTART BUTTON
         surface = pygame.display.get_surface() 
         startSurface = pygame.Surface((200,60))
@@ -172,13 +169,14 @@ class Screen:
         surface.blit(self.font.render("RESTART", True, black), (265, 370))
         #QUIT button
         startSurface.convert()
-        startSurface.fill(yellow)
+        startSurface.fill(red)
         surface.blit(startSurface,(575,350))
         surface.blit(self.font.render("QUIT",True, black), (660,370))
         show_score(0, red, 'Times New Roman', 20)
         # add checck for position
 
     def death(self):
+        pygame.mouse.set_cursor(self.cursor)
         my_font = pygame.font.SysFont('Times New Roman', 90)
         game_over_surface = my_font.render('YOU DIED', True, red)
         game_over_rect = game_over_surface.get_rect()
@@ -193,7 +191,7 @@ class Screen:
         surface.blit(self.font.render("RESTART", True, black), (265, 370))
         #QUIT BUTTON
         startSurface.convert()
-        startSurface.fill(yellow)
+        startSurface.fill(red)
         surface.blit(startSurface,(575,350))
         surface.blit(self.font.render("QUIT",True, black), (660,370))
         show_score(0, red, 'Times New Roman', 20)
