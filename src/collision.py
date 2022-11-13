@@ -40,3 +40,24 @@ class EnemyCollision(Collision):
         if self.enemy in game.GameEnvironment.PLAYER.enemies_in_range:
             game.GameEnvironment.PLAYER.enemies_in_range.remove(self.enemy)
         self.enemy.player_in_combat_range = False
+
+class ArrowCollision(Collision):
+    def __init__(self, arrow, enemy):
+        super().__init__(arrow, enemy)
+
+
+# class EndCollision(Collision):
+#     def __init__(self, rect1, rect2):
+#         self.rect1 = rect1
+#         self.rect2 = rect2
+#         self.is_collided = False
+
+#     def tick(self, rect1, rect2):
+#         self.rect1 = rect1
+#         self.rect2 = rect2
+
+#     def collision_occurrence(self):
+#         pass
+
+#     def check(self):
+#         self.is_collided = self.rect1.colliderect(self.rect2)
