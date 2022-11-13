@@ -1,9 +1,10 @@
 import sys
-import collision
+
 import pygame.mouse
+
+import collision
 from character import *
 from screen import Screen
-from character import *
 
 
 class GameEnvironment:

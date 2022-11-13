@@ -43,11 +43,11 @@ class Sword(Weapon):
             self.rect.topleft = [x, y]
 
     def right_animation(self):
-        self.sprites_right_swing.append(pygame.image.load(path.join('src','sprite_swing_sword_right0.png')))
-        self.sprites_right_swing.append(pygame.image.load(path.join('src','sprite_swing_sword_right1.png')))
-        self.sprites_right_swing.append(pygame.image.load(path.join('src','sprite_swing_sword_right2.png')))
-        self.sprites_right_swing.append(pygame.image.load(path.join('src','sprite_swing_sword_right3.png')))
-        self.sprites_right_swing.append(pygame.image.load(path.join('src','sprite_swing_sword_right4.png')))
+        self.sprites_right_swing.append(pygame.image.load(path.join('src/sprites/Weapons/Sword','sprite_swing_sword_right0.png')))
+        self.sprites_right_swing.append(pygame.image.load(path.join('src/sprites/Weapons/Sword','sprite_swing_sword_right1.png')))
+        self.sprites_right_swing.append(pygame.image.load(path.join('src/sprites/Weapons/Sword','sprite_swing_sword_right2.png')))
+        self.sprites_right_swing.append(pygame.image.load(path.join('src/sprites/Weapons/Sword','sprite_swing_sword_right3.png')))
+        self.sprites_right_swing.append(pygame.image.load(path.join('src/sprites/Weapons/Sword','sprite_swing_sword_right4.png')))
         self.sprites_right_swing[0] = pygame.transform.scale(self.sprites_right_swing[0], (100,100))
         self.sprites_right_swing[1] = pygame.transform.scale(self.sprites_right_swing[1], (100,100))
         self.sprites_right_swing[2] = pygame.transform.scale(self.sprites_right_swing[2], (100,100))
@@ -55,11 +55,11 @@ class Sword(Weapon):
         self.sprites_right_swing[4] = pygame.transform.scale(self.sprites_right_swing[4], (100,100))
 
     def left_animation(self):
-        self.sprites_left_swing.append(pygame.image.load(path.join('src','sprite_swing_sword_left0.png')))
-        self.sprites_left_swing.append(pygame.image.load(path.join('src','sprite_swing_sword_left1.png')))
-        self.sprites_left_swing.append(pygame.image.load(path.join('src','sprite_swing_sword_left2.png')))
-        self.sprites_left_swing.append(pygame.image.load(path.join('src','sprite_swing_sword_left3.png')))
-        self.sprites_left_swing.append(pygame.image.load(path.join('src','sprite_swing_sword_left4.png')))
+        self.sprites_left_swing.append(pygame.image.load(path.join('src/sprites/Weapons/Sword','sprite_swing_sword_left0.png')))
+        self.sprites_left_swing.append(pygame.image.load(path.join('src/sprites/Weapons/Sword','sprite_swing_sword_left1.png')))
+        self.sprites_left_swing.append(pygame.image.load(path.join('src/sprites/Weapons/Sword','sprite_swing_sword_left2.png')))
+        self.sprites_left_swing.append(pygame.image.load(path.join('src/sprites/Weapons/Sword','sprite_swing_sword_left3.png')))
+        self.sprites_left_swing.append(pygame.image.load(path.join('src/sprites/Weapons/Sword','sprite_swing_sword_left4.png')))
         self.sprites_left_swing[0] = pygame.transform.scale(self.sprites_left_swing[0], (100,100))
         self.sprites_left_swing[1] = pygame.transform.scale(self.sprites_left_swing[1], (100,100))
         self.sprites_left_swing[2] = pygame.transform.scale(self.sprites_left_swing[2], (100,100))
@@ -87,7 +87,7 @@ class Bow(Weapon):
     def __init__(self):
         super().__init__()
         self.damage = 15
-        self.image = pygame.image.load(path.join('src','bow.png'))
+        self.image = pygame.image.load(path.join('src/sprites/Weapons/Bow','bow.png'))
         self.image = pygame.transform.scale(self.image, (50,50))
         self.image = pygame.transform.rotate(self.image, 225)
         self.rect = self.image.get_rect()

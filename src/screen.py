@@ -41,6 +41,8 @@ class Screen:
         pygame.display.get_surface().blit(self.font.render("Press ENTER to begin playing", True, Screen.TEXT_COLOR),
                                           (12, 30))
         pygame.mouse.set_cursor(self.cursor)
+        #customButton = main.Button(30, 30, 400, 100, 'Button One (onePress)')
+        
     def draw_minimap(self, surface):
         s = 4
         wall = pygame.Surface((s, s))
@@ -120,13 +122,7 @@ class Screen:
         shieldSprite.fill(BLUE)
         surface.blit(shieldSprite, (12,52))
        
-        # surface.blit(self.font.render("Relative XY: (" + str(game.GameEnvironment.PLAYER.relative_x) + ", " + str(
-        #     game.GameEnvironment.PLAYER.relative_y) + ") tile=" + str(game.GameEnvironment.PLAYER.tile_pos), True,
-        #                               Screen.TEXT_COLOR), (12, 74))
-        # surface.blit(self.font.render("Active booster: " + str(game.GameEnvironment.PLAYER.active_booster), True,
-        #                               Screen.TEXT_COLOR), (12, 96))
-        # surface.blit(self.font.render("Speed booster: " + str(game.GameEnvironment.PLAYER.speedStack), True,
-        #                               Screen.TEXT_COLOR), (12, 118))
+        
         surface.blit(self.font.render("Speed is: " + str(game.GameEnvironment.PLAYER.speed), True,
                                       Screen.TEXT_COLOR), (12, 140))
 
