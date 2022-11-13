@@ -65,34 +65,28 @@ class MazeEnvironment:
         grid = MazeEnvironment.MAZE.grid
         numstring = ""
         for i in range(len(grid)):
-            s = ""
-            for j in range(len(grid[0])):
-                s += str(grid[i][j])
-            print(s)
-        for i in range(len(grid)):
             for j in range(len(grid[i])):
                 if not grid[i][j] == MazeEnvironment.WALL:
                     continue
-                if j - 1 >= 0 and grid[i][j - 1] == MazeEnvironment.ROOM:
+                if j - 1 >= 0 and (grid[i][j - 1] == MazeEnvironment.ROOM or grid[i][j - 1] == MazeEnvironment.START or grid[i][j - 1] == MazeEnvironment.END):
                     numstring += "1"
                 else:
                     numstring += "0"
-                if i - 1 >= 0 and grid[i - 1][j] == MazeEnvironment.ROOM:
+                if i - 1 >= 0 and (grid[i - 1][j] == MazeEnvironment.ROOM or grid[i - 1][j] == MazeEnvironment.START or grid[i - 1][j] == MazeEnvironment.END):
                     numstring += "1"
                 else:
                     numstring += "0"
-                if j + 1 < len(grid[i]) and grid[i][j + 1] == MazeEnvironment.ROOM:
+                if j + 1 < len(grid[i]) and (grid[i][j + 1] == MazeEnvironment.ROOM or grid[i][j + 1] == MazeEnvironment.START or grid[i][j + 1] == MazeEnvironment.END):
                     numstring += "1"
                 else:
                     numstring += "0"
-                if i + 1 < len(grid) and grid[i + 1][j] == MazeEnvironment.ROOM:
+                if i + 1 < len(grid) and (grid[i + 1][j] == MazeEnvironment.ROOM or grid[i + 1][j] == MazeEnvironment.START or grid[i + 1][j] == MazeEnvironment.END):
                     numstring += "1"
                 else:
                     numstring += "0"
                 for w in range(0, len(self.wall_surfaces)):
                     if numstring == self.wall_surfaces[w][0]:
                         self.calculated_walls.append(([i, j], self.wall_surfaces[w][1]))
-                        print(str(i) + ", " + str(j) + ": " + numstring)
                 numstring = ""
 
     def generate_boosters(self):

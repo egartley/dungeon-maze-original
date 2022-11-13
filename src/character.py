@@ -350,7 +350,7 @@ class Enemy(Character):
         self.direction = Enemy.LEFT
         self.speed = 3
         self.chasing = False
-        self.damage = 0
+        self.damage = 1
         self.coolDown = 10
 
 
