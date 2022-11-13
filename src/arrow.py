@@ -2,6 +2,7 @@ import py
 import screen
 import pygame
 import math
+import maze
 from os import *
 
 
@@ -17,6 +18,8 @@ class Arrow(pygame.sprite.Sprite):
         self.vely = math.sin(self.angle) * 20
         self.x = pos_x
         self.y = pos_y
+        self.relative_x = 0
+        self.relative_y = 0
 
     def update(self):
         self.image = pygame.transform.rotate(self.picture, 360-self.angle*57.29)
@@ -27,3 +30,21 @@ class Arrow(pygame.sprite.Sprite):
         if self.rect.x >= screen.frame_size_x + 100 or self.rect.x <= -100 or \
             self.rect.y >= screen.frame_size_y + 100 or self.rect.y <= -100:
             self.kill()
+
+        self.relative_x = self.x - maze.MazeEnvironment.MAP_X
+        self.relative_y = self.y - maze.MazeEnvironment.MAP_Y
+
+        if self.check_wall(self.relative_x - 20, self.relative_y - 20):
+            self.self_destruct()
+
+
+    def check_wall(self, x, y):
+        # check if there is a wall at the given x/y
+        r = int(y // maze.MazeEnvironment.TILE_SIZE)
+        c = int(x // maze.MazeEnvironment.TILE_SIZE)
+        if r >= len(maze.MazeEnvironment.MAZE.grid) or c >= len(maze.MazeEnvironment.MAZE.grid[0]):
+            return True
+        return maze.MazeEnvironment.MAZE.grid[r][c] == maze.MazeEnvironment.WALL
+
+    def self_destruct(self):
+        self.kill()
