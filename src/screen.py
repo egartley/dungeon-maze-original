@@ -1,7 +1,5 @@
 import pygame
-
 import game
-import main
 from maze import MazeEnvironment
 
 frame_size_x = 1000
@@ -124,13 +122,7 @@ class Screen:
         shieldSprite.fill(BLUE)
         surface.blit(shieldSprite, (12,52))
        
-        # surface.blit(self.font.render("Relative XY: (" + str(game.GameEnvironment.PLAYER.relative_x) + ", " + str(
-        #     game.GameEnvironment.PLAYER.relative_y) + ") tile=" + str(game.GameEnvironment.PLAYER.tile_pos), True,
-        #                               Screen.TEXT_COLOR), (12, 74))
-        # surface.blit(self.font.render("Active booster: " + str(game.GameEnvironment.PLAYER.active_booster), True,
-        #                               Screen.TEXT_COLOR), (12, 96))
-        # surface.blit(self.font.render("Speed booster: " + str(game.GameEnvironment.PLAYER.speedStack), True,
-        #                               Screen.TEXT_COLOR), (12, 118))
+        
         surface.blit(self.font.render("Speed is: " + str(game.GameEnvironment.PLAYER.speed), True,
                                       Screen.TEXT_COLOR), (12, 140))
 
