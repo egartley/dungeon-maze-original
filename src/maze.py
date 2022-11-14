@@ -151,6 +151,12 @@ class MazeEnvironment:
 
     def generate_enemies(self):
         # difficulty currently has no effect here
+        if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
+            damage = 15
+        elif  game.GameEnvironment.DIFFICULTY_TRACKER == 1:
+            damage = 10
+        else: 
+            damage = 5
         r = random.Random()
         rooms = []
         grid = MazeEnvironment.MAZE.grid
@@ -161,7 +167,7 @@ class MazeEnvironment:
                     if x <= 50:
                         rooms.append((i, j))
         for room in rooms:
-            e = character.Enemy()
+            e = character.Enemy(damage)
             if r.randint(1, 100) <= 50:
                 e.direction = character.Enemy.RIGHT
             self.game_environment.enemies.append((e, room[0], room[1]))

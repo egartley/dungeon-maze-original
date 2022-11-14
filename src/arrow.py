@@ -8,7 +8,7 @@ from os import *
 class Arrow(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, target_x, target_y):
         super().__init__()
-        self.picture = pygame.image.load('src/sprites/Booster/arrow.png')
+        self.picture = pygame.image.load('src/sprites/Boosters/arrow.png')
         self.picture = pygame.transform.scale(self.picture, (50,50))
         self.picture = pygame.transform.rotate(self.picture, 225)
         self.rect = self.picture.get_rect(topleft = (pos_x, pos_y))
