@@ -115,7 +115,6 @@ class MazeEnvironment:
                     self.corners.append(([i, j], 4))
 
     def build_tiles(self, to_add):
-        self.tiles = []
         s = MazeEnvironment.TILE_SIZE
         wall = pygame.Surface((s, s))
         wall.convert()
@@ -243,10 +242,10 @@ class MazeEnvironment:
                     else:
                         self.game_environment.boosters.append((AttackBooster(), s[0], s[1]))
                     to_remove.append(s)
-                self.place_boosters()
-                self.game_environment.set_booster_collisions()
             for r in to_remove:
                 self.booster_spawns.remove(r)
+            self.place_boosters()
+            self.game_environment.set_booster_collisions()
 
     def place_boosters(self):
         # do all the yucky math for determining where to actually render the boosters based on their generation
@@ -296,10 +295,10 @@ class MazeEnvironment:
                         e.direction = character.Enemy.RIGHT
                     self.game_environment.enemies.append((e, s[0], s[1]))
                     to_remove.append(s)
-                self.place_enemies()
-                self.game_environment.set_enemy_collisions()
             for r in to_remove:
                 self.enemy_spawns.remove(r)
+            self.place_enemies()
+            self.game_environment.set_enemy_collisions()
 
     def place_enemies(self):
         # do all the yucky math for determing where to actually render the enemies based on their generation
