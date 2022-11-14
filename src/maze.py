@@ -113,7 +113,6 @@ class MazeEnvironment:
                     self.corners.append(([i, j], 4))
 
     def build_tiles(self, to_add):
-        self.tiles = []
         s = MazeEnvironment.TILE_SIZE
         wall = pygame.Surface((s, s))
         wall.convert()
