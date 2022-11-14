@@ -45,6 +45,7 @@ class MazeEnvironment:
         self.tiles = []
         self.chunks = []
         self.enemy_spawns = []
+        self.booster_spawns = []
 
     def reset(self):
         self.up = False
@@ -57,6 +58,7 @@ class MazeEnvironment:
         self.tiles = []
         self.chunks = []
         self.enemy_spawns = []
+        self.booster_spawns = []
 
     def generate_maze(self, rows, columns, difficulty):
         self.difficulty = difficulty
@@ -197,37 +199,54 @@ class MazeEnvironment:
             tile = self.tiles[i]
             if (tile.r, tile.c) in to_add:
                 self.chunks.append(tile)
+        self.generate_boosters()
         self.generate_enemies()
 
     def generate_boosters(self):
         # generate boosters in each room with a 50% chance, and equally likely to be each type
         r = random.Random()
-        rooms = []
-        grid = MazeEnvironment.MAZE.grid
-        for i in range(len(grid)):
-            for j in range(len(grid[0])):
-                if grid[i][j] == MazeEnvironment.ROOM:
-                    x = r.randint(1, 100)
-                    if x <= 50:
-                        rooms.append((i, j))
-        for room in rooms:
-            x = r.randint(1, 5)
-            if x == 1:
-                self.game_environment.boosters.append((ArrowBooster(), room[0], room[1]))
-            elif x == 2:
-                self.game_environment.boosters.append((SpeedBooster(), room[0], room[1]))
-            elif x == 3:
-                self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
-            elif x == 4:
-                self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
-            else:
-                self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
+        if len(self.booster_spawns) == 0:
+            grid = MazeEnvironment.MAZE.grid
+            for i in range(len(grid)):
+                for j in range(len(grid[0])):
+                    if grid[i][j] == MazeEnvironment.ROOM:
+                        x = r.randint(1, 100)
+                        if x <= 50:
+                            self.booster_spawns.append((i, j))
+        else:
+            to_remove = []
+            for s in self.booster_spawns:
+                spawn = False
+                for chunk in self.chunks:
+                    if s[0] == chunk.r and s[1] == chunk.c:
+                        spawn = True
+                        break
+                if spawn:
+                    x = r.randint(1, 5)
+                    if x == 1:
+                        self.game_environment.boosters.append((ArrowBooster(), s[0], s[1]))
+                    elif x == 2:
+                        self.game_environment.boosters.append((SpeedBooster(), s[0], s[1]))
+                    elif x == 3:
+                        self.game_environment.boosters.append((HealthBooster(), s[0], s[1]))
+                    elif x == 4:
+                        self.game_environment.boosters.append((ShieldBooster(), s[0], s[1]))
+                    else:
+                        self.game_environment.boosters.append((AttackBooster(), s[0], s[1]))
+                    to_remove.append(s)
+                self.place_boosters()
+                self.game_environment.set_booster_collisions()
+            for r in to_remove:
+                self.booster_spawns.remove(r)
 
     def place_boosters(self):
         # do all the yucky math for determining where to actually render the boosters based on their generation
         r = random.Random()
         for b in self.game_environment.boosters:
             booster = b[0]
+            if booster.placed:
+                continue
+            booster.placed = True
             row = b[1]
             col = b[2]
             x_offset = r.randint(12, MazeEnvironment.TILE_SIZE - booster.sprite.get_width() - 12)
@@ -269,6 +288,7 @@ class MazeEnvironment:
                     self.game_environment.enemies.append((e, s[0], s[1]))
                     to_remove.append(s)
                 self.place_enemies()
+                self.game_environment.set_enemy_collisions()
             for r in to_remove:
                 self.enemy_spawns.remove(r)
 
