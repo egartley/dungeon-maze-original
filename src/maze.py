@@ -79,7 +79,6 @@ class MazeEnvironment:
             self.wall_surfaces[i][1].convert()
         self.calculate_walls()
         self.calculate_corners()
-        self.build_tiles()
         self.set_chunks()
 
     def calculate_walls(self):
@@ -113,7 +112,8 @@ class MazeEnvironment:
                 if j - 1 >= 0 and grid[i][j - 1] == MazeEnvironment.WALL and i + 1 < len(grid) and grid[i + 1][j] == MazeEnvironment.WALL:
                     self.corners.append(([i, j], 4))
 
-    def build_tiles(self):
+    def build_tiles(self, to_add):
+        self.tiles = []
         s = MazeEnvironment.TILE_SIZE
         wall = pygame.Surface((s, s))
         wall.convert()
@@ -126,38 +126,46 @@ class MazeEnvironment:
         end.fill((255, 0, 0))
         grid = MazeEnvironment.MAZE.grid
         surface = pygame.Surface((s, s))
-        for i in range(len(grid)):
-            for j in range(len(grid[i])):
-                position = (0, 0)
-                if MazeEnvironment.START == grid[i][j]:
-                    surface.blit(start, position)
-                elif MazeEnvironment.END == grid[i][j]:
-                    surface.blit(end, position)
-                elif MazeEnvironment.WALL == grid[i][j]:
-                    edgewall = False
-                    for w in range(0, len(self.calculated_walls)):
-                        ij = self.calculated_walls[w][0]
-                        if i == ij[0] and j == ij[1]:
-                            surface.blit(self.calculated_walls[w][1], position)
-                            edgewall = True
-                    if not edgewall:
-                        surface.blit(wall, position)
-                    for w in range(0, len(self.corners)):
-                        ij = self.corners[w][0]
-                        if i == ij[0] and j == ij[1]:
-                            num = self.corners[w][1]
-                            if num == 1:
-                                surface.blit(self.corner_surface, position)
-                            elif num == 2:
-                                surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(), position[1]))
-                            elif num == 3:
-                                surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(), position[1] + s - self.corner_surface.get_height()))
-                            elif num == 4:
-                                surface.blit(self.corner_surface, (position[0], position[1] + s - self.corner_surface.get_height()))
-                else:
-                    surface.blit(self.floor_surface, position)
-                self.tiles.append(Tile(surface, i, j))
-                surface = pygame.Surface((s, s))
+        for t in to_add:
+            i = t[0]
+            j = t[1]
+            skip = False
+            for tile in self.tiles:
+                if tile.r == i and tile.c == j:
+                    skip = True
+                    break
+            if skip:
+                continue
+            position = (0, 0)
+            if MazeEnvironment.START == grid[i][j]:
+                surface.blit(start, position)
+            elif MazeEnvironment.END == grid[i][j]:
+                surface.blit(end, position)
+            elif MazeEnvironment.WALL == grid[i][j]:
+                edgewall = False
+                for w in range(0, len(self.calculated_walls)):
+                    ij = self.calculated_walls[w][0]
+                    if i == ij[0] and j == ij[1]:
+                        surface.blit(self.calculated_walls[w][1], position)
+                        edgewall = True
+                if not edgewall:
+                    surface.blit(wall, position)
+                for w in range(0, len(self.corners)):
+                    ij = self.corners[w][0]
+                    if i == ij[0] and j == ij[1]:
+                        num = self.corners[w][1]
+                        if num == 1:
+                            surface.blit(self.corner_surface, position)
+                        elif num == 2:
+                            surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(), position[1]))
+                        elif num == 3:
+                            surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(), position[1] + s - self.corner_surface.get_height()))
+                        elif num == 4:
+                            surface.blit(self.corner_surface, (position[0], position[1] + s - self.corner_surface.get_height()))
+            else:
+                surface.blit(self.floor_surface, position)
+            self.tiles.append(Tile(surface, i, j))
+            surface = pygame.Surface((s, s))
 
     def set_chunks(self):
         self.chunks = []
@@ -193,6 +201,7 @@ class MazeEnvironment:
                 to_add.append((r + 1, c + 1))
             if c + 2 < len(MazeEnvironment.MAZE.grid[0]):
                 to_add.append((r + 1, c + 2))
+        self.build_tiles(to_add)
         for i in range(0, len(self.tiles)):
             tile = self.tiles[i]
             if (tile.r, tile.c) in to_add:
