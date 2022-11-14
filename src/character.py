@@ -111,8 +111,8 @@ class MainCharacter(Character):
         self.bow = weapon.Bow()
         self.bow_group = pygame.sprite.Group()
         self.is_using_bow = False
-        self.animation_bow_timer = 60
-
+        self.bow_timer = 60
+        self.set_animation_bow_timer = self.bow_timer
 
     def apply_booster(self, b):
         if isinstance(b, booster.HealthBooster):
@@ -256,23 +256,23 @@ class MainCharacter(Character):
 
 
     def sprite_bow(self, surface, is_using_bow):
-        if self.animation_bow_timer == 0:
-            self.animation_bow_timer = 60
+        if self.set_animation_bow_timer == 0:
+            self.set_animation_bow_timer = self.bow_timer
             self.is_using_bow = False
 
-        if is_using_bow and self.animation_bow_timer > 0:
+        if is_using_bow and self.set_animation_bow_timer > 0:
             self.bow.character_position(self.x + 25, self.y + 35)
             self.bow.target_position(pygame.mouse.get_pos())
             self.bow.move(surface)
-            self.animation_bow_timer -= 1
-
+            self.set_animation_bow_timer -= 1
 
     def create_arrow(self, target_pos):
         return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1])
 
     def shoot(self, target_pos):
-        self.arrow_group.add(self.create_arrow(target_pos))
-
+        if self.arrow_count > 0:
+            self.arrow_group.add(self.create_arrow(target_pos))
+            self.arrow_count -= 1
 
     def move(self, direction):
         # actually change x/y based on direction and not being blocked

@@ -42,6 +42,15 @@ class GameEnvironment:
         self.enemy_collisions = []
         self.active_combat_collisions = []
 
+    def set_arrow_collisions(self):
+        for a in self.PLAYER.arrow_group:
+            for e in range(len(self.enemies)):
+                arrow_collision = collision.ArrowCollision(a.rect, self.enemies[e][0].rect)
+                arrow_collision.check()
+                if arrow_collision.is_collided:
+                    self.enemies[e][0].health -= GameEnvironment.PLAYER.bow.damage
+                    a.self_destruct()
+
     def set_booster_collisions(self):
         for b in self.boosters:
             booster = b[0]
@@ -65,6 +74,11 @@ class GameEnvironment:
         self.maze_environment.down = False
         self.maze_environment.left = False
         self.maze_environment.right = False
+        self.maze_environment.calculated_walls = []
+        self.maze_environment.corners = []
+        self.maze_environment.last_player_pos = (0, 0)
+        self.maze_environment.tiles = []
+        self.maze_environment.chunks = []
         # default values for testing
         self.player_name = "Player"
         self.player_gender = GameEnvironment.BOY
@@ -208,6 +222,8 @@ class GameEnvironment:
             for e in self.enemies:
                 if e[0].health <= 0:
                     self.on_enemy_death(e)
+
+            self.set_arrow_collisions()
 
             if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and GameEnvironment.PLAYER.tile_pos[1] == MazeEnvironment.MAZE.end[1]:
                 GameEnvironment.state = GameEnvironment.VICTORY_STATE
