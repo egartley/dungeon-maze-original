@@ -329,7 +329,7 @@ class Enemy(Character):
     enemy_attack_frames_left = []
     loaded_frames = False
 
-    def __init__(self, damage,unique):
+    def __init__(self, damage):
         super().__init__()
         self.weapon_type = None
         self.is_player_in_view = False
