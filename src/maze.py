@@ -195,6 +195,7 @@ class MazeEnvironment:
             tile = self.tiles[i]
             if (tile.r, tile.c) in to_add:
                 self.chunks.append(tile)
+        self.generate_enemies()
 
     def generate_boosters(self):
         # generate boosters in each room with a 50% chance, and equally likely to be each type
@@ -354,6 +355,9 @@ class MazeEnvironment:
         r = random.Random()
         for e in self.game_environment.enemies:
             enemy = e[0]
+            if enemy.placed:
+                continue
+            enemy.placed = True
             row = e[1]
             col = e[2]
             x_offset = r.randint(12, MazeEnvironment.TILE_SIZE - enemy.width - 12)

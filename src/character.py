@@ -362,6 +362,7 @@ class Enemy(Character):
         self.chasing = False
         self.damage = 1
         self.coolDown = 10
+        self.placed = False
 
 
     def chase_player(self):

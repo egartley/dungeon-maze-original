@@ -70,22 +70,14 @@ class GameEnvironment:
         self.enemy_collisions = []
         self.active_combat_collisions = []
         MazeEnvironment.SPEED = 4
-        self.maze_environment.up = False
-        self.maze_environment.down = False
-        self.maze_environment.left = False
-        self.maze_environment.right = False
-        self.maze_environment.calculated_walls = []
-        self.maze_environment.corners = []
-        self.maze_environment.last_player_pos = (0, 0)
-        self.maze_environment.tiles = []
-        self.maze_environment.chunks = []
+        self.maze_environment.reset()
         # default values for testing
         self.player_name = "Player"
         self.player_gender = GameEnvironment.BOY
         GameEnvironment.PLAYER = MainCharacter(self.player_name, self.player_gender)
         self.maze_environment.generate_maze_difficulty()
         self.maze_environment.generate_boosters()
-        self.maze_environment.generate_enemies()
+        #self.maze_environment.generate_enemies()
         # put player at maze start, calculate all coords
         # relative = absolute - maze
         start = MazeEnvironment.MAZE.start
@@ -110,7 +102,7 @@ class GameEnvironment:
         self.maze_environment.place_boosters()
         self.set_booster_collisions()
         # set enemies
-        self.maze_environment.place_enemies()
+        #self.maze_environment.place_enemies()
         self.set_enemy_collisions()
 
     def on_enemy_death(self, enemy):
