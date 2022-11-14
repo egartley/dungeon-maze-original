@@ -73,7 +73,7 @@ class GameEnvironment:
         self.player_name = "Player"
         self.player_gender = GameEnvironment.BOY
         GameEnvironment.PLAYER = MainCharacter(self.player_name, self.player_gender)
-        self.maze_environment.generate_maze(4, 8, self.maze_difficulty)
+        self.maze_environment.generate_maze_difficulty()
         self.maze_environment.generate_boosters()
         self.maze_environment.generate_enemies()
         # put player at maze start, calculate all coords

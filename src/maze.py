@@ -41,8 +41,23 @@ class MazeEnvironment:
             self.wall_surfaces.append((walls[i], pygame.image.load("src/sprites/maze/" + walls[i] + ".png")))
         self.calculated_walls = []
 
-    def generate_maze(self, rows, columns, difficulty):
-        self.difficulty = difficulty
+    def generate_maze_difficulty(self):
+        if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
+            randH = random.randint(20,30)
+            randW = random.randint(0,5) + randH
+            self.generate_maze(randH, randW)
+        elif game.GameEnvironment.DIFFICULTY_TRACKER == 1:
+            randH = random.randint(15,20)
+            randW = random.randint(0,5) + randH
+            self.generate_maze(randH, randW)
+        else:
+            randH = random.randint(5,10)
+            randW = random.randint(0,5) + randH
+            self.generate_maze(randH, randW)
+            
+            
+
+    def generate_maze(self, rows, columns):
         self.size = (rows, columns)
         m = Maze()
         # difficulty currently has no effect

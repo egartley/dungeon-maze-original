@@ -329,7 +329,7 @@ class Enemy(Character):
     enemy_attack_frames_left = []
     loaded_frames = False
 
-    def __init__(self):
+    def __init__(self, damage):
         super().__init__()
         self.weapon_type = None
         self.is_player_in_view = False
@@ -347,6 +347,7 @@ class Enemy(Character):
         self.sprites_left_attack = []
         self.sprite_modes = [self.sprite, self.sprites_right_walk, self.sprites_right_attack]
         self.sprite_mode = 0
+        self.damage = damage
 
         if not Enemy.loaded_frames:
             self.right_walk_animation()
