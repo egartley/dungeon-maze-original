@@ -451,7 +451,7 @@ class Enemy(Character):
 
     def right_walk_animation(self):
         Enemy.enemy_walk_frames.append(pygame.image.load('src/sprites/Enemies/Walking/Minotaur_01_Walking_000.png'))
-        Enemy.enemy_walk_frames.append(pygame.image.load('src/sprites/Enemies/Walking','Minotaur_01_Walking_001.png'))
+        Enemy.enemy_walk_frames.append(pygame.image.load('src/sprites/Enemies/Walking/Minotaur_01_Walking_001.png'))
         Enemy.enemy_walk_frames.append(pygame.image.load('src/sprites/Enemies/Walking/Minotaur_01_Walking_002.png'))
         Enemy.enemy_walk_frames.append(pygame.image.load('src/sprites/Enemies/Walking/Minotaur_01_Walking_003.png'))
         Enemy.enemy_walk_frames.append(pygame.image.load('src/sprites/Enemies/Walking/Minotaur_01_Walking_004.png'))
