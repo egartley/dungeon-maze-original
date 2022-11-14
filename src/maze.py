@@ -143,7 +143,7 @@ class MazeEnvironment:
                                 surface.blit(self.corner_surface, (position[0], position[1] + s - self.corner_surface.get_height()))
                 else:
                     surface.blit(self.floor_surface, position)
-                self.tiles.append(([i, j], surface))
+                self.tiles.append(Tile(surface, i, j))
                 surface = pygame.Surface((s, s))
 
     def set_chunks(self):
@@ -182,7 +182,7 @@ class MazeEnvironment:
                 to_add.append((r + 1, c + 2))
         for i in range(0, len(self.tiles)):
             tile = self.tiles[i]
-            if (tile[0][0], tile[0][1]) in to_add:
+            if (tile.r, tile.c) in to_add:
                 self.chunks.append(tile)
 
     def generate_boosters(self):
@@ -331,13 +331,23 @@ class MazeEnvironment:
         s = MazeEnvironment.TILE_SIZE
         for i in range(0, len(self.chunks)):
             tile = self.chunks[i]
-            surface.blit(tile[1], (MazeEnvironment.MAP_X + (tile[0][1] * s), MazeEnvironment.MAP_Y + (tile[0][0] * s)))
+            tile.render(surface, MazeEnvironment.MAP_X + (tile.c * s), MazeEnvironment.MAP_Y + (tile.r * s))
 
-        # render the boosters and enemies
         for b in self.game_environment.boosters:
-            if -1200 < b[0].x < 1200:
+            if -300 < b[0].x < surface.get_width():
                 b[0].render(surface)
-
         for e in self.game_environment.enemies:
-            if -1200 < e[0].x < 1200:
+            if -300 < e[0].x < surface.get_width():
                 e[0].render(surface)
+
+
+class Tile:
+
+    def __init__(self, surface, r, c):
+        self.image = surface
+        self.r = r
+        self.c = c
+        self.enemies_spawned = False
+
+    def render(self, surface, x, y):
+        surface.blit(self.image, (x, y))
