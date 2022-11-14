@@ -23,14 +23,12 @@ class GameEnvironment:
     DIFFICULTY_EASY = 0
     DIFFICULTY_MEDIUM = 1
     DIFFICULTY_HARD = 2
+    DIFFICULTY_TRACKER = -1
 
     # assuming only one booster with a timer is active at a time, unique event id for it
     BOOSTER_EVENT_ID = pygame.USEREVENT + 9
 
     def __init__(self, screen_width, screen_height, ):
-        # set to easy (currently no effect) for now since there's no selection yet
-        self.maze_difficulty = GameEnvironment.DIFFICULTY_EASY
-        self.enemy_difficulty = GameEnvironment.DIFFICULTY_EASY
         self.maze_environment = MazeEnvironment(self)
         # set default player values for testing, since no selection yet
         self.player_gender = GameEnvironment.BOY
@@ -82,12 +80,10 @@ class GameEnvironment:
         self.maze_environment.tiles = []
         self.maze_environment.chunks = []
         # default values for testing
-        self.maze_difficulty = GameEnvironment.DIFFICULTY_MEDIUM
-        self.enemy_difficulty = GameEnvironment.DIFFICULTY_MEDIUM
         self.player_name = "Player"
         self.player_gender = GameEnvironment.BOY
         GameEnvironment.PLAYER = MainCharacter(self.player_name, self.player_gender)
-        self.maze_environment.generate_maze(4, 8, self.maze_difficulty)
+        self.maze_environment.generate_maze_difficulty()
         self.maze_environment.generate_boosters()
         self.maze_environment.generate_enemies()
         # put player at maze start, calculate all coords
@@ -262,10 +258,13 @@ class GameEnvironment:
                 hardButton = pygame.Rect(675,350,200,60)
                 quitButton = pygame.Rect(100, 550, 200, 60)
                 if easyButton.collidepoint(event.pos):
+                    GameEnvironment.DIFFUCLTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
                     self.switch_to_ingame()
                 elif mediumButton.collidepoint(event.pos):
+                    GameEnvironment.DIFFUCLTY_TRACKER = GameEnvironment.DIFFICULTY_MEDIUM
                     self.switch_to_ingame()
                 elif hardButton.collidepoint(event.pos):
+                    GameEnvironment.DIFFUCLTY_TRACKER = GameEnvironment.DIFFICULTY_HARD
                     self.switch_to_ingame()
                 elif quitButton.collidepoint(event.pos):
                     pygame.quit()
