@@ -44,6 +44,19 @@ class MazeEnvironment:
         self.last_player_pos = (0, 0)
         self.tiles = []
         self.chunks = []
+        self.enemy_spawns = []
+
+    def reset(self):
+        self.up = False
+        self.down = False
+        self.left = False
+        self.right = False
+        self.calculated_walls = []
+        self.corners = []
+        self.last_player_pos = (0, 0)
+        self.tiles = []
+        self.chunks = []
+        self.enemy_spawns = []
 
     def generate_maze(self, rows, columns, difficulty):
         self.difficulty = difficulty
@@ -184,6 +197,7 @@ class MazeEnvironment:
             tile = self.tiles[i]
             if (tile.r, tile.c) in to_add:
                 self.chunks.append(tile)
+        self.generate_enemies()
 
     def generate_boosters(self):
         # generate boosters in each room with a 50% chance, and equally likely to be each type
@@ -231,27 +245,41 @@ class MazeEnvironment:
                 return
 
     def generate_enemies(self):
-        # difficulty currently has no effect here
         r = random.Random()
-        rooms = []
-        grid = MazeEnvironment.MAZE.grid
-        for i in range(len(grid)):
-            for j in range(len(grid[0])):
-                if grid[i][j] == MazeEnvironment.ROOM:
-                    x = r.randint(1, 100)
-                    if x <= 50:
-                        rooms.append((i, j))
-        for room in rooms:
-            e = character.Enemy()
-            if r.randint(1, 100) <= 50:
-                e.direction = character.Enemy.RIGHT
-            self.game_environment.enemies.append((e, room[0], room[1]))
+        if len(self.enemy_spawns) == 0:
+            grid = MazeEnvironment.MAZE.grid
+            for i in range(len(grid)):
+                for j in range(len(grid[0])):
+                    if grid[i][j] == MazeEnvironment.ROOM:
+                        x = r.randint(1, 100)
+                        if x <= 50:
+                            self.enemy_spawns.append((i, j))
+        else:
+            to_remove = []
+            for s in self.enemy_spawns:
+                spawn = False
+                for chunk in self.chunks:
+                    if s[0] == chunk.r and s[1] == chunk.c:
+                        spawn = True
+                        break
+                if spawn:
+                    e = character.Enemy()
+                    if r.randint(1, 100) <= 50:
+                        e.direction = character.Enemy.RIGHT
+                    self.game_environment.enemies.append((e, s[0], s[1]))
+                    to_remove.append(s)
+                self.place_enemies()
+            for r in to_remove:
+                self.enemy_spawns.remove(r)
 
     def place_enemies(self):
         # do all the yucky math for determing where to actually render the enemies based on their generation
         r = random.Random()
         for e in self.game_environment.enemies:
             enemy = e[0]
+            if enemy.placed:
+                continue
+            enemy.placed = True
             row = e[1]
             col = e[2]
             x_offset = r.randint(12, MazeEnvironment.TILE_SIZE - enemy.width - 12)
