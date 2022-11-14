@@ -329,7 +329,7 @@ class Enemy(Character):
     enemy_attack_frames_left = []
     loaded_frames = False
 
-    def __init__(self, damage):
+    def __init__(self, damage,unique):
         super().__init__()
         self.weapon_type = None
         self.is_player_in_view = False
@@ -348,6 +348,7 @@ class Enemy(Character):
         self.sprite_modes = [self.sprite, self.sprites_right_walk, self.sprites_right_attack]
         self.sprite_mode = 0
         self.damage = damage
+        
 
         if not Enemy.loaded_frames:
             self.right_walk_animation()
@@ -468,6 +469,7 @@ class Enemy(Character):
         Enemy.enemy_walk_frames.append(pygame.image.load('src/sprites/Enemies/Walking/Minotaur_01_Walking_015.png'))
         Enemy.enemy_walk_frames.append(pygame.image.load('src/sprites/Enemies/Walking/Minotaur_01_Walking_016.png'))
         Enemy.enemy_walk_frames.append(pygame.image.load('src/sprites/Enemies/Walking/Minotaur_01_Walking_017.png'))
+       
         for i in range(len(Enemy.enemy_walk_frames)):
             Enemy.enemy_walk_frames_left.append(pygame.transform.flip(Enemy.enemy_walk_frames[i], True, False))
 

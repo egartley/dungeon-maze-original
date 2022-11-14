@@ -41,11 +41,11 @@ class MazeEnvironment:
 
     def generate_maze_difficulty(self):
         if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
-            randH = random.randint(21,30)
+            randH = random.randint(30,40)
             randW = random.randint(0,5) + randH
             self.generate_maze(randH, randW)
         elif game.GameEnvironment.DIFFICULTY_TRACKER == 1:
-            randH = random.randint(11,20)
+            randH = random.randint(11,30)
             randW = random.randint(0,5) + randH
             self.generate_maze(randH, randW)
         else:
@@ -180,25 +180,27 @@ class MazeEnvironment:
                 else:
                     pass     
             elif x == 2:
-                s = r.randint(1,2)
+                s = r.randint(1,3)
                 if s == 1:
                     self.game_environment.boosters.append((SpeedBooster(), room[0], room[1]))
                 else:
                     pass
             elif x == 3:
-                s = r.randint(1,2)
+                s = r.randint(1,3)
                 if s == 1:
+                    self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
                     self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
                 else:
                     pass
             elif x == 4:
-                s = r.randint(1,2)
+                s = r.randint(1,3)
                 if s == 1:
+                    self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
                     self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
                 else:
                     pass
             else:
-                s = r.randint(1,2)
+                s = r.randint(1,3)
                 if s == 1:
                     self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
                 else:
