@@ -54,11 +54,18 @@ class GameEnvironment:
     def set_booster_collisions(self):
         for b in self.boosters:
             booster = b[0]
+            if booster.collision_set:
+                continue
+            booster.collision_set = True
             c = collision.BoosterCollision(booster, GameEnvironment.PLAYER.rect)
             self.booster_collisions.append(c)
 
     def set_enemy_collisions(self):
         for e in self.enemies:
+            enemy = e[0]
+            if enemy.collision_set:
+                continue
+            enemy.collision_set = True
             c = collision.EnemyCollision(e[0], GameEnvironment.PLAYER.combat_rect)
             self.enemy_collisions.append(c)
 
@@ -99,7 +106,7 @@ class GameEnvironment:
         GameEnvironment.PLAYER.x = GameEnvironment.PLAYER.relative_x + MazeEnvironment.MAP_X
         GameEnvironment.PLAYER.y = GameEnvironment.PLAYER.relative_y + MazeEnvironment.MAP_Y
         # set boosters
-        self.maze_environment.place_boosters()
+        #self.maze_environment.place_boosters()
         self.set_booster_collisions()
         # set enemies
         #self.maze_environment.place_enemies()

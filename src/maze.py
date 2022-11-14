@@ -42,6 +42,8 @@ class MazeEnvironment:
         self.last_player_pos = (0, 0)
         self.tiles = []
         self.chunks = []
+        self.enemy_spawns = []
+        self.booster_spawns = []
 
     def generate_maze_difficulty(self):
         if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
@@ -195,6 +197,7 @@ class MazeEnvironment:
             tile = self.tiles[i]
             if (tile.r, tile.c) in to_add:
                 self.chunks.append(tile)
+        self.generate_boosters()
         self.generate_enemies()
 
     def generate_boosters(self):
@@ -308,6 +311,9 @@ class MazeEnvironment:
         r = random.Random()
         for b in self.game_environment.boosters:
             booster = b[0]
+            if booster.placed:
+                continue
+            booster.placed = True
             row = b[1]
             col = b[2]
             x_offset = r.randint(12, MazeEnvironment.TILE_SIZE - booster.sprite.get_width() - 12)
