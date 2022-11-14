@@ -87,8 +87,6 @@ class GameEnvironment:
         self.player_gender = GameEnvironment.BOY
         GameEnvironment.PLAYER = MainCharacter(self.player_name, self.player_gender)
         self.maze_environment.generate_maze(4, 8, self.maze_difficulty)
-        self.maze_environment.generate_boosters()
-        #self.maze_environment.generate_enemies()
         # put player at maze start, calculate all coords
         # relative = absolute - maze
         start = MazeEnvironment.MAZE.start
@@ -109,12 +107,6 @@ class GameEnvironment:
             MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.TILE_SIZE * start[0]) + ((pygame.display.get_window_size()[1] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         GameEnvironment.PLAYER.x = GameEnvironment.PLAYER.relative_x + MazeEnvironment.MAP_X
         GameEnvironment.PLAYER.y = GameEnvironment.PLAYER.relative_y + MazeEnvironment.MAP_Y
-        # set boosters
-        #self.maze_environment.place_boosters()
-        self.set_booster_collisions()
-        # set enemies
-        #self.maze_environment.place_enemies()
-        self.set_enemy_collisions()
 
     def on_enemy_death(self, enemy):
         # when an enemy is killed, remove them and their collision(s)
