@@ -16,9 +16,7 @@ class MazeEnvironment:
     WALL = 1
     START = 2
     END = 3
-
     MAZE = Maze()
-
     # whether the map (not player!) can move in the direction
     CAN_MOVE_UP = False
     CAN_MOVE_DOWN = False
@@ -43,11 +41,11 @@ class MazeEnvironment:
 
     def generate_maze_difficulty(self):
         if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
-            randH = random.randint(20,30)
+            randH = random.randint(21,30)
             randW = random.randint(0,5) + randH
             self.generate_maze(randH, randW)
         elif game.GameEnvironment.DIFFICULTY_TRACKER == 1:
-            randH = random.randint(15,20)
+            randH = random.randint(11,20)
             randW = random.randint(0,5) + randH
             self.generate_maze(randH, randW)
         else:
@@ -55,8 +53,6 @@ class MazeEnvironment:
             randW = random.randint(0,5) + randH
             self.generate_maze(randH, randW)
             
-            
-
     def generate_maze(self, rows, columns):
         self.size = (rows, columns)
         m = Maze()
@@ -115,6 +111,15 @@ class MazeEnvironment:
                     x = r.randint(1, 100)
                     if x <= 50:
                         rooms.append((i, j))
+        if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_EASY:
+            self.room_loop_easy(rooms)
+        elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_MEDIUM:
+            self.room_loop_medium(rooms)
+        elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_HARD:
+            self.room_loop_hard(rooms)
+                        
+    def room_loop_easy(self,rooms):
+        r = random.Random()
         for room in rooms:
             x = r.randint(1, 5)
             if x == 1:
@@ -127,6 +132,77 @@ class MazeEnvironment:
                 self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
             else:
                 self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
+    def room_loop_medium(self,rooms):
+        r = random.Random()
+        for room in rooms:
+            x = r.randint(1, 5)
+            if x == 1:
+                s = r.randint(1,3)
+                if s == 1 or s == 2:
+                    self.game_environment.boosters.append((ArrowBooster(), room[0], room[1]))
+                else:
+                    pass     
+            elif x == 2:
+                s = r.randint(1,3)
+                if s == 1 or s == 2:
+                    self.game_environment.boosters.append((SpeedBooster(), room[0], room[1]))
+                else:
+                    pass
+            elif x == 3:
+                s = r.randint(1,3)
+                if s == 1 or s == 2:
+                    self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
+                else:
+                    pass
+            elif x == 4:
+                s = r.randint(1,3)
+                if s == 1 or s == 2:
+                    self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
+                else:
+                    pass
+            else:
+                s = r.randint(1,3)
+                if s == 1 or s == 2:
+                    self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
+                else:
+                    pass
+
+    
+    def room_loop_hard(self,rooms):
+        r = random.Random()
+        for room in rooms:
+            x = r.randint(1, 5)
+            if x == 1:
+                s = r.randint(1,3)
+                if s == 1:
+                    self.game_environment.boosters.append((ArrowBooster(), room[0], room[1]))
+                    self.game_environment.boosters.append((ArrowBooster(), room[0], room[1]))
+                else:
+                    pass     
+            elif x == 2:
+                s = r.randint(1,2)
+                if s == 1:
+                    self.game_environment.boosters.append((SpeedBooster(), room[0], room[1]))
+                else:
+                    pass
+            elif x == 3:
+                s = r.randint(1,2)
+                if s == 1:
+                    self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
+                else:
+                    pass
+            elif x == 4:
+                s = r.randint(1,2)
+                if s == 1:
+                    self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
+                else:
+                    pass
+            else:
+                s = r.randint(1,2)
+                if s == 1:
+                    self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
+                else:
+                    pass
 
     def place_boosters(self):
         # do all the yucky math for determining where to actually render the boosters based on their generation
@@ -168,8 +244,11 @@ class MazeEnvironment:
                         rooms.append((i, j))
         for room in rooms:
             e = character.Enemy(damage)
-            if r.randint(1, 100) <= 50:
+            if r.randint(1, 2) == 1:
                 e.direction = character.Enemy.RIGHT
+            else:
+                e.direction = character.Enemy.LEFT
+            
             self.game_environment.enemies.append((e, room[0], room[1]))
 
     def place_enemies(self):
