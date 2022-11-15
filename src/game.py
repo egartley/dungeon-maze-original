@@ -83,8 +83,6 @@ class GameEnvironment:
         self.player_gender = GameEnvironment.BOY
         GameEnvironment.PLAYER = MainCharacter(self.player_name, self.player_gender)
         self.maze_environment.generate_maze_difficulty()
-        self.maze_environment.generate_boosters()
-        #self.maze_environment.generate_enemies()
         # put player at maze start, calculate all coords
         # relative = absolute - maze
         start = MazeEnvironment.MAZE.start
@@ -251,13 +249,13 @@ class GameEnvironment:
                 hardButton = pygame.Rect(675,350,200,60)
                 quitButton = pygame.Rect(100, 550, 200, 60)
                 if easyButton.collidepoint(event.pos):
-                    GameEnvironment.DIFFUCLTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
+                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
                     self.switch_to_ingame()
                 elif mediumButton.collidepoint(event.pos):
-                    GameEnvironment.DIFFUCLTY_TRACKER = GameEnvironment.DIFFICULTY_MEDIUM
+                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_MEDIUM
                     self.switch_to_ingame()
                 elif hardButton.collidepoint(event.pos):
-                    GameEnvironment.DIFFUCLTY_TRACKER = GameEnvironment.DIFFICULTY_HARD
+                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_HARD
                     self.switch_to_ingame()
                 elif quitButton.collidepoint(event.pos):
                     pygame.quit()
