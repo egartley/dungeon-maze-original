@@ -42,24 +42,9 @@ class MazeEnvironment:
         self.last_player_pos = (0, 0)
         self.tiles = []
         self.chunks = []
-        self.enemy_spawns = []
-        self.booster_spawns = []
 
-    def generate_maze_difficulty(self):
-        if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
-            randH = random.randint(30,40)
-            randW = random.randint(0,5) + randH
-            self.generate_maze(randH, randW)
-        elif game.GameEnvironment.DIFFICULTY_TRACKER == 1:
-            randH = random.randint(11,30)
-            randW = random.randint(0,5) + randH
-            self.generate_maze(randH, randW)
-        else:
-            randH = random.randint(5,10)
-            randW = random.randint(0,5) + randH
-            self.generate_maze(randH, randW)
-            
-    def generate_maze(self, rows, columns):
+    def generate_maze(self, rows, columns, difficulty):
+        self.difficulty = difficulty
         self.size = (rows, columns)
         m = Maze()
         # difficulty currently has no effect
