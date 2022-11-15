@@ -17,6 +17,8 @@ class Booster:
         # see explaination for relative coords in maincharacter
         self.relative_x = 0
         self.relative_y = 0
+        self.placed = False
+        self.collision_set = False
 
     def booster_collision(self):
         pass

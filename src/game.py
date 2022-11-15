@@ -54,11 +54,18 @@ class GameEnvironment:
     def set_booster_collisions(self):
         for b in self.boosters:
             booster = b[0]
+            if booster.collision_set:
+                continue
+            booster.collision_set = True
             c = collision.BoosterCollision(booster, GameEnvironment.PLAYER.rect)
             self.booster_collisions.append(c)
 
     def set_enemy_collisions(self):
         for e in self.enemies:
+            enemy = e[0]
+            if enemy.collision_set:
+                continue
+            enemy.collision_set = True
             c = collision.EnemyCollision(e[0], GameEnvironment.PLAYER.combat_rect)
             self.enemy_collisions.append(c)
 
@@ -70,22 +77,12 @@ class GameEnvironment:
         self.enemy_collisions = []
         self.active_combat_collisions = []
         MazeEnvironment.SPEED = 4
-        self.maze_environment.up = False
-        self.maze_environment.down = False
-        self.maze_environment.left = False
-        self.maze_environment.right = False
-        self.maze_environment.calculated_walls = []
-        self.maze_environment.corners = []
-        self.maze_environment.last_player_pos = (0, 0)
-        self.maze_environment.tiles = []
-        self.maze_environment.chunks = []
+        self.maze_environment.reset()
         # default values for testing
         self.player_name = "Player"
         self.player_gender = GameEnvironment.BOY
         GameEnvironment.PLAYER = MainCharacter(self.player_name, self.player_gender)
         self.maze_environment.generate_maze_difficulty()
-        self.maze_environment.generate_boosters()
-        self.maze_environment.generate_enemies()
         # put player at maze start, calculate all coords
         # relative = absolute - maze
         start = MazeEnvironment.MAZE.start
@@ -106,12 +103,6 @@ class GameEnvironment:
             MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.TILE_SIZE * start[0]) + ((pygame.display.get_window_size()[1] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         GameEnvironment.PLAYER.x = GameEnvironment.PLAYER.relative_x + MazeEnvironment.MAP_X
         GameEnvironment.PLAYER.y = GameEnvironment.PLAYER.relative_y + MazeEnvironment.MAP_Y
-        # set boosters
-        self.maze_environment.place_boosters()
-        self.set_booster_collisions()
-        # set enemies
-        self.maze_environment.place_enemies()
-        self.set_enemy_collisions()
 
     def on_enemy_death(self, enemy):
         # when an enemy is killed, remove them and their collision(s)
@@ -258,13 +249,13 @@ class GameEnvironment:
                 hardButton = pygame.Rect(675,350,200,60)
                 quitButton = pygame.Rect(100, 550, 200, 60)
                 if easyButton.collidepoint(event.pos):
-                    GameEnvironment.DIFFUCLTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
+                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
                     self.switch_to_ingame()
                 elif mediumButton.collidepoint(event.pos):
-                    GameEnvironment.DIFFUCLTY_TRACKER = GameEnvironment.DIFFICULTY_MEDIUM
+                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_MEDIUM
                     self.switch_to_ingame()
                 elif hardButton.collidepoint(event.pos):
-                    GameEnvironment.DIFFUCLTY_TRACKER = GameEnvironment.DIFFICULTY_HARD
+                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_HARD
                     self.switch_to_ingame()
                 elif quitButton.collidepoint(event.pos):
                     pygame.quit()
