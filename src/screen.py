@@ -80,7 +80,8 @@ class Screen:
         s = 4
         wall = pygame.Surface((s, s))
         wall.convert()
-        wall.fill((160, 160, 160)) 
+        #wall.fill((160, 160, 160)) 
+        wall.fill((255, 255, 255))
         start = pygame.Surface((s, s))
         start.convert()
         start.fill((0, 255, 0)) # green
@@ -95,24 +96,26 @@ class Screen:
 
         background = pygame.Surface((len(grid[0]) * s + 8, len(grid) * s + 8))
         background.convert()
-        background.fill((255, 255, 255))
-        surface.blit(background, (pygame.display.get_surface().get_width() - 20 - len(grid[0]) * s, 12))
+        background.fill((210, 186, 147))
+
+        for chunk in MazeEnvironment.CHUNKS:
+            if chunk not in MazeEnvironment.TRACKED_CHUNKS:
+                MazeEnvironment.TRACKED_CHUNKS.append(chunk)
 
         # the "base" x/y the use for calculating the indiviudal x/y of each tile
-        x = pygame.display.get_surface().get_width() - 16 - (len(grid[0]) * s)
-        y = 16
-
-        for i in range(len(grid)):
-            for j in range(len(grid[i])):
-                position = (x + (j * s), y + (i * s))
-                if game.GameEnvironment.PLAYER.tile_pos == (i, j):
-                    surface.blit(player, position)
-                elif MazeEnvironment.MAZE.start == (i, j):
-                    surface.blit(start, position)
-                elif MazeEnvironment.MAZE.end == (i, j):
-                    surface.blit(end, position)
-                elif grid[i][j] == 1:
-                    surface.blit(wall, position)
+        for chunk in MazeEnvironment.TRACKED_CHUNKS:
+            i = chunk.r
+            j = chunk.c
+            position = (4 + (j * s), 4 + (i * s))
+            if game.GameEnvironment.PLAYER.tile_pos == (i, j):
+                background.blit(player, position)
+            elif MazeEnvironment.MAZE.start == (i, j):
+                background.blit(start, position)
+            elif MazeEnvironment.MAZE.end == (i, j):
+                background.blit(end, position)
+            elif len(grid) > 0 and i < len(grid) and j < len(grid[0]) and grid[i][j] == 1:
+                background.blit(wall, position)
+        surface.blit(background, (pygame.display.get_surface().get_width() - 20 - len(grid[0]) * s, 12))
 
     def activeGameView(self):
         surface = pygame.display.get_surface() 

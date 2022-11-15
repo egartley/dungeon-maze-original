@@ -18,6 +18,8 @@ class MazeEnvironment:
     END = 3
 
     MAZE = Maze()
+    CHUNKS = []
+    TRACKED_CHUNKS = []
 
     # whether the map (not player!) can move in the direction
     CAN_MOVE_UP = False
@@ -43,7 +45,7 @@ class MazeEnvironment:
         self.corners = []
         self.last_player_pos = (0, 0)
         self.tiles = []
-        self.chunks = []
+        MazeEnvironment.CHUNKS = []
         self.enemy_spawns = []
         self.booster_spawns = []
 
@@ -56,7 +58,8 @@ class MazeEnvironment:
         self.corners = []
         self.last_player_pos = (0, 0)
         self.tiles = []
-        self.chunks = []
+        MazeEnvironment.CHUNKS = []
+        MazeEnvironment.TRACKED_CHUNKS = []
         self.enemy_spawns = []
         self.booster_spawns = []
 
@@ -181,7 +184,9 @@ class MazeEnvironment:
             surface = pygame.Surface((s, s))
 
     def set_chunks(self):
-        self.chunks = []
+        if self.last_player_pos == (0, 0):
+            return
+        MazeEnvironment.CHUNKS = []
         pos = self.last_player_pos
         r = pos[0]
         c = pos[1]
@@ -218,7 +223,7 @@ class MazeEnvironment:
         for i in range(0, len(self.tiles)):
             tile = self.tiles[i]
             if (tile.r, tile.c) in to_add:
-                self.chunks.append(tile)
+                MazeEnvironment.CHUNKS.append(tile)
         self.generate_boosters()
         self.generate_enemies()
 
@@ -236,7 +241,7 @@ class MazeEnvironment:
             to_remove = []
             for s in self.booster_spawns:
                 spawn = False
-                for chunk in self.chunks:
+                for chunk in MazeEnvironment.CHUNKS:
                     if s[0] == chunk.r and s[1] == chunk.c:
                         spawn = True
                         break
@@ -364,7 +369,7 @@ class MazeEnvironment:
             to_remove = []
             for s in self.enemy_spawns:
                 spawn = False
-                for chunk in self.chunks:
+                for chunk in MazeEnvironment.CHUNKS:
                     if s[0] == chunk.r and s[1] == chunk.c:
                         spawn = True
                         break
@@ -466,8 +471,8 @@ class MazeEnvironment:
 
     def render(self, surface):
         s = MazeEnvironment.TILE_SIZE
-        for i in range(0, len(self.chunks)):
-            tile = self.chunks[i]
+        for i in range(0, len(MazeEnvironment.CHUNKS)):
+            tile = MazeEnvironment.CHUNKS[i]
             tile.render(surface, MazeEnvironment.MAP_X + (tile.c * s), MazeEnvironment.MAP_Y + (tile.r * s))
 
         for b in self.game_environment.boosters:
