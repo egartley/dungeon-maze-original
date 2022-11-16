@@ -1,8 +1,7 @@
 import sys
 
-import pygame.mouse
-
 import collision
+import pygame.mouse
 from character import *
 from screen import Screen
 
@@ -28,7 +27,7 @@ class GameEnvironment:
     # assuming only one booster with a timer is active at a time, unique event id for it
     BOOSTER_EVENT_ID = pygame.USEREVENT + 9
 
-    def __init__(self, screen_width, screen_height, ):
+    def __init__(self, screen_width, screen_height):
         self.maze_environment = MazeEnvironment(self)
         # set default player values for testing, since no selection yet
         self.player_gender = GameEnvironment.BOY
