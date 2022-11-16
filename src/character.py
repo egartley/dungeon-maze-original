@@ -25,7 +25,7 @@ class Character(pygame.sprite.Sprite):
         self.width = 0
         self.height = 0
         self.speed = 0
-        self.arrow_count = 0
+        self.arrow_count = 1000
         # whether or not charater (enemy or player) is moving in said direction
         self.up = False
         self.down = False
