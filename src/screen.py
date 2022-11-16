@@ -151,19 +151,23 @@ class Screen:
         shieldSprite.convert()
         shieldSprite.fill(blue)
         surface.blit(shieldSprite, (12,52))
-        surface.blit(
-            self.font.render("Arrows: " + str(int(game.GameEnvironment.PLAYER.arrow_count)), True, Screen.TEXT_COLOR),
-            (12, surface.get_height() - 29))
+        
+        arrow_sprite = pygame.image.load('src/sprites/Boosters/arrow.png')
+        arrow_sprite = pygame.transform.scale(arrow_sprite, (50,30))
+        surface.blit(arrow_sprite,(12,surface.get_height() - 50))
+        surface.blit(self.font.render(str(game.GameEnvironment.PLAYER.arrow_count) + 'X', True, Screen.TEXT_COLOR), (75,surface.get_height() -45))
         
         if not game.GameEnvironment.PLAYER.weapon.in_cooldown:
             sprite = pygame.image.load('src\sprites\Weapons\Sword\sprite_swing_sword_left0.png')
             sprite =  pygame.transform.scale(sprite, (90,90))
             
-            surface.blit(sprite,(12, surface.get_height() - 100))
+            surface.blit(sprite,(12, surface.get_height() - 150))
         else:
             sprite = pygame.image.load('src\sprites\Weapons\Sword\sprite_swing_sword_left4.png')
             sprite =  pygame.transform.scale(sprite, (90,90))
-            surface.blit(sprite,(12, surface.get_height() - 100))
+            surface.blit(sprite,(12, surface.get_height() - 150))
+        
+        
         
 
     def victory(self):
