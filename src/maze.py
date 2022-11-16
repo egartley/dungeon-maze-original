@@ -237,27 +237,26 @@ class MazeEnvironment:
                         x = r.randint(1, 100)
                         if x <= 50:
                             self.booster_spawns.append((i, j))
-        else:
-            to_remove = []
-            for s in self.booster_spawns:
-                spawn = False
-                for chunk in MazeEnvironment.CHUNKS:
-                    if s[0] == chunk.r and s[1] == chunk.c:
-                        spawn = True
-                        break
-                if spawn:
-                    rooms = (chunk.r, chunk.c)
-                    if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_EASY:
-                        self.room_loop_easy(rooms)
-                    elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_MEDIUM:
-                        self.room_loop_medium(rooms)
-                    elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_HARD:
-                        self.room_loop_hard(rooms)
-                    to_remove.append(s)
-            for r in to_remove:
-                self.booster_spawns.remove(r)
-            self.place_boosters()
-            self.game_environment.set_booster_collisions()
+        to_remove = []
+        for s in self.booster_spawns:
+            spawn = False
+            for chunk in MazeEnvironment.CHUNKS:
+                if s[0] == chunk.r and s[1] == chunk.c:
+                    spawn = True
+                    break
+            if spawn:
+                rooms = (chunk.r, chunk.c)
+                if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_EASY:
+                    self.room_loop_easy(rooms)
+                elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_MEDIUM:
+                    self.room_loop_medium(rooms)
+                elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_HARD:
+                    self.room_loop_hard(rooms)
+                to_remove.append(s)
+        for r in to_remove:
+            self.booster_spawns.remove(r)
+        self.place_boosters()
+        self.game_environment.set_booster_collisions()
 
     def room_loop_easy(self,room):
         r = random.Random()
@@ -365,26 +364,25 @@ class MazeEnvironment:
                         x = r.randint(1, 100)
                         if x <= 50:
                             self.enemy_spawns.append((i, j))
-        else:
-            to_remove = []
-            for s in self.enemy_spawns:
-                spawn = False
-                for chunk in MazeEnvironment.CHUNKS:
-                    if s[0] == chunk.r and s[1] == chunk.c:
-                        spawn = True
-                        break
-                if spawn:
-                    e = character.Enemy(damage)
-                    if r.randint(1, 2) == 1:
-                        e.direction = character.Enemy.RIGHT
-                    else:
-                        e.direction = character.Enemy.LEFT
-                    self.game_environment.enemies.append((e, s[0], s[1]))
-                    to_remove.append(s)
-            for r in to_remove:
-                self.enemy_spawns.remove(r)
-            self.place_enemies()
-            self.game_environment.set_enemy_collisions()
+        to_remove = []
+        for s in self.enemy_spawns:
+            spawn = False
+            for chunk in MazeEnvironment.CHUNKS:
+                if s[0] == chunk.r and s[1] == chunk.c:
+                    spawn = True
+                    break
+            if spawn:
+                e = character.Enemy(damage)
+                if r.randint(1, 2) == 1:
+                    e.direction = character.Enemy.RIGHT
+                else:
+                    e.direction = character.Enemy.LEFT
+                self.game_environment.enemies.append((e, s[0], s[1]))
+                to_remove.append(s)
+        for r in to_remove:
+            self.enemy_spawns.remove(r)
+        self.place_enemies()
+        self.game_environment.set_enemy_collisions()
 
     def place_enemies(self):
         # do all the yucky math for determing where to actually render the enemies based on their generation
