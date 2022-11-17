@@ -246,7 +246,7 @@ class GameEnvironment:
                 easyButton = pygame.Rect(100, 350, 200, 60)
                 mediumButton = pygame.Rect(375, 350, 200, 60)
                 hardButton = pygame.Rect(675,350,200,60)
-                quitButton = pygame.Rect(100, 550, 200, 60)
+                quitButton = pygame.Rect(375, 550, 200, 60)
                 if easyButton.collidepoint(event.pos):
                     GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
                     self.switch_to_ingame()

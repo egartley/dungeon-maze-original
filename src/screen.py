@@ -55,6 +55,13 @@ class Screen:
         #easy button
         surface = pygame.display.get_surface()  ## since hard coded position values, if this change it changes in game.py event handler
         startSurface = pygame.Surface((200,60))
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface, (375, 150))
+        
+        
+        
+        #easy buttons
         startSurface.convert()  # 100, 350, 200, 60
         startSurface.fill(green)
         surface.blit(startSurface,(100,350))
@@ -72,8 +79,8 @@ class Screen:
         ## check if when mouse clicks on button it changes game state 
         startSurface.convert()
         startSurface.fill(orange)
-        surface.blit(startSurface,(100,550))
-        surface.blit(self.font.render("QUIT",True, black), (180,570))
+        surface.blit(startSurface,(375,550)) 
+        surface.blit(self.font.render("QUIT",True, white), (455,570))
         
         
     def draw_minimap(self, surface):
