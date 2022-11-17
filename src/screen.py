@@ -52,14 +52,13 @@ class Screen:
         pygame.display.get_surface().blit(self.font.render("Press ENTER to begin playing", True, Screen.TEXT_COLOR),
                                           (12, 30))
         pygame.mouse.set_cursor(self.cursor)
-        #easy button
+        #nick name button
         surface = pygame.display.get_surface()  ## since hard coded position values, if this change it changes in game.py event handler
         startSurface = pygame.Surface((200,60))
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface, (375, 150))
-        
-        
+        surface.blit(self.font.render("Enter a three letter nickname", True,white),(382.5,165))
         
         #easy buttons
         startSurface.convert()  # 100, 350, 200, 60
