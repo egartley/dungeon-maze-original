@@ -157,15 +157,10 @@ class Screen:
         surface.blit(arrow_sprite,(12,surface.get_height() - 50))
         surface.blit(self.font.render(str(game.GameEnvironment.PLAYER.arrow_count) + 'X', True, Screen.TEXT_COLOR), (75,surface.get_height() -45))
         
-        if not game.GameEnvironment.PLAYER.weapon.in_cooldown:
+        if game.GameEnvironment.PLAYER.weapon.in_cooldown:
             sprite = pygame.image.load('src\sprites\Weapons\Sword\sprite_swing_sword_left0.png')
             sprite =  pygame.transform.scale(sprite, (90,90))
-            
-            surface.blit(sprite,(12, surface.get_height() - 150))
-        else:
-            sprite = pygame.image.load('src\sprites\Weapons\Sword\sprite_swing_sword_left4.png')
-            sprite =  pygame.transform.scale(sprite, (90,90))
-            surface.blit(sprite,(12, surface.get_height() - 150))
+            surface.blit(sprite,(game.GameEnvironment.PLAYER.x - 40, game.GameEnvironment.PLAYER.y - 50))
         
         
         
