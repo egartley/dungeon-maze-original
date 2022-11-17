@@ -321,7 +321,7 @@ class Enemy(Character):
     LEFT = 0
     RIGHT = 1
 
-    ATTACK_EVENT_ID = pygame.USEREVENT + 76
+    ENEMY_ATTACK_EVENT_ID = pygame.USEREVENT + 76
 
     enemy_walk_frames = []
     enemy_walk_frames_left = []
@@ -339,6 +339,8 @@ class Enemy(Character):
         self.height = 123
         self.image = pygame.image.load('src/sprites/Enemies/Minotaur_01_Idle_000.png')
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        self.image2 = (pygame.transform.flip(self.image, True, False))
+
         self.sprite = [self.image]
         self.sprite_counter = 0
         self.sprites_right_walk = []
@@ -347,6 +349,7 @@ class Enemy(Character):
         self.sprites_left_attack = []
         self.sprite_modes = [self.sprite, self.sprites_right_walk, self.sprites_right_attack]
         self.sprite_mode = 0
+        self.attack_animation = 0
         self.damage = damage
         
 
@@ -421,16 +424,23 @@ class Enemy(Character):
             self.sprite_counter += 0.5       
 
     def render(self, surface):
-
         if(self.chasing):
-            if (self.player_in_combat_range):
+            if (self.attack_animation == 1):
                 self.sprite_mode = 2
                 self.change_sprite()
                 if(self.direction):
                     surface.blit(self.sprites_right_attack[int(self.sprite_counter)], (self.x, self.y))
                 else:
                     surface.blit(self.sprites_left_attack[int(self.sprite_counter)], (self.x, self.y))
+                if(self.sprite_counter == len(self.sprites_right_attack) - 2):
+                    self.attack_animation = 0
 
+            elif (self.player_in_combat_range):
+                if(self.direction):
+                    surface.blit(self.image, (self.x, self.y))
+                else:
+                    surface.blit(self.image2, (self.x, self.y))
+                
             else:
                 self.sprite_mode = 1
                 self.change_sprite()
@@ -440,7 +450,10 @@ class Enemy(Character):
                     surface.blit(self.sprites_left_walk[int(self.sprite_counter)], (self.x, self.y))
         
         else:
-            surface.blit(self.image, (self.x, self.y))
+            if(self.direction):
+                surface.blit(self.image, (self.x, self.y))
+            else:
+                surface.blit(self.image2, (self.x, self.y))
 
     def self_load_animations(self):
         for i in range(len(Enemy.enemy_walk_frames)):
@@ -492,4 +505,10 @@ class Enemy(Character):
             Enemy.enemy_attack_frames_left.append(pygame.transform.flip(Enemy.enemy_attack_frames[i], True, False))
 
     def attack(self):
-        game.GameEnvironment.PLAYER.take_damage(self.damage)
+        if not self.weapon.in_cooldown:
+            self.attack_animation = 1
+            # start cooldown timer
+            pygame.time.set_timer(Enemy.ENEMY_ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
+            self.weapon.in_cooldown = True
+            # do the actual damage to all enemies in range
+            game.GameEnvironment.PLAYER.take_damage(self.damage)
