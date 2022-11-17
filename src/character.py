@@ -337,6 +337,7 @@ class Enemy(Character):
         self.weapon = weapon.Sword()
         self.width = 180
         self.height = 123
+        self.buffer = 35
         self.image = pygame.image.load('src/sprites/Enemies/Minotaur_01_Idle_000.png')
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
         self.image2 = (pygame.transform.flip(self.image, True, False))
@@ -373,10 +374,10 @@ class Enemy(Character):
         # move in the direction of the player if not already next to them
         px = game.GameEnvironment.PLAYER.x
         py = game.GameEnvironment.PLAYER.y
-        player_to_left = px + game.GameEnvironment.PLAYER.width < self.x
-        player_to_right = px > self.x + self.width
-        player_above = py + game.GameEnvironment.PLAYER.height < self.y
-        player_below = py > self.y + self.height
+        player_to_left = px + game.GameEnvironment.PLAYER.width < self.x + self.buffer
+        player_to_right = px > self.x + self.width - self.buffer 
+        player_above = py + game.GameEnvironment.PLAYER.height < self.y + self.buffer
+        player_below = py > self.y + self.height - self.buffer
         if player_above:
             self.y -= self.speed
         elif player_below:
