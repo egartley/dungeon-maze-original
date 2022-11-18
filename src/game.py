@@ -66,7 +66,7 @@ class GameEnvironment:
             if enemy.collision_set:
                 continue
             enemy.collision_set = True
-            c = collision.EnemyCollision(e[0], GameEnvironment.PLAYER.combat_rect)
+            c = collision.EnemyCollision(e[0], GameEnvironment.PLAYER.rect)
             self.enemy_collisions.append(c)
 
     def start_ingame(self):
@@ -200,7 +200,7 @@ class GameEnvironment:
                 self.booster_collisions.remove(r)
 
             for c in self.enemy_collisions:
-                c.tick(c.enemy.rect, GameEnvironment.PLAYER.combat_rect)
+                c.tick(c.enemy.rect, GameEnvironment.PLAYER.rect)
                 c.check()
                 if c.is_collided and c not in self.active_combat_collisions:
                     c.collision_occurrence()
