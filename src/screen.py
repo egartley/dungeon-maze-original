@@ -193,12 +193,12 @@ class Screen:
         startSurface.convert()
         startSurface.fill(green)
         surface.blit(startSurface,(200,350))
-        surface.blit(self.font.render("RESTART", True, black), (265, 370))
+        surface.blit(self.secondary_font.render("RESTART", True, black), (207, 350))
         #QUIT button
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface,(575,350))
-        surface.blit(self.font.render("QUIT",True, black), (660,370))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (630,350))
         show_score(0, red, 'Times New Roman', 20)
         # add checck for position
 
