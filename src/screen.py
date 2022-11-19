@@ -52,45 +52,42 @@ class Screen:
         surface.blit(self.font.render("QUIT",True, black), (680,370))
         
     def startView(self):
-        pygame.display.get_surface().blit(self.font.render("Start screen", True, Screen.TEXT_COLOR), (12, 8))
-        pygame.display.get_surface().blit(self.font.render("Press ENTER to begin playing", True, Screen.TEXT_COLOR),
-                                          (12, 30))
         pygame.mouse.set_cursor(self.cursor)
         #nick name button
         surface = pygame.display.get_surface()  ## since hard coded position values, if this change it changes in game.py event handler
-        surface.blit(self.font.render("Enter a three letter nickname", True,white),(382.5,130))
+        surface.blit(self.font.render("Enter a three letter nickname", True,white),(362.5,130))
         startSurface = pygame.Surface((60,60))
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface, (355, 160))
-        surface.blit(self.secondary_font.render(Screen.CHARONE, True,white),(370.5,160))
+        surface.blit(self.secondary_font.render(Screen.CHARONE, True,black),(370.5,160))
         startSurface.fill(green)
         surface.blit(startSurface, (435, 160))
-        surface.blit(self.secondary_font.render(Screen.CHARTWO, True,white),(450.5,160))
+        surface.blit(self.secondary_font.render(Screen.CHARTWO, True,black),(450.5,160))
         startSurface.fill(blue)
         surface.blit(startSurface, (510.5, 160))
-        surface.blit(self.secondary_font.render(Screen.CHARTHREE, True,white),(525.5,160))
+        surface.blit(self.secondary_font.render(Screen.CHARTHREE, True,black),(525.5,160))
         #easy buttons
         startSurface = pygame.Surface((200,60))
         startSurface.convert()  # 100, 350, 200, 60
         startSurface.fill(green)
         surface.blit(startSurface,(100,350))
-        surface.blit(self.font.render("EASY", True, black), (180, 370))
+        surface.blit(self.secondary_font.render("EASY", True, black), (150, 350))
         #medium button
         startSurface.convert()
         startSurface.fill(yellow)
         surface.blit(startSurface,(375,350))  ## since hard coded if this change it changes in game.py event handler
-        surface.blit(self.font.render("MEDIUM",True, black), (440,370))
+        surface.blit(self.secondary_font.render("MEDIUM",True, black), (395,350))
         #hard button
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface,(675,350))
-        surface.blit(self.font.render("HARD",True, black), (750,370))
+        surface.blit(self.secondary_font.render("HARD",True, black), (720,350))
         ## check if when mouse clicks on button it changes game state 
         startSurface.convert()
         startSurface.fill(orange)
         surface.blit(startSurface,(375,550)) 
-        surface.blit(self.font.render("QUIT",True, white), (455,570))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (430,550))
         
         
     def draw_minimap(self, surface):
