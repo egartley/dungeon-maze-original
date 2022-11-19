@@ -1,3 +1,4 @@
+from numpy import char
 import pygame
 import game
 from maze import MazeEnvironment
@@ -18,7 +19,9 @@ orange = pygame.Color(255,127,0)
 
 class Screen:
     TEXT_COLOR = (255, 255, 255)
-
+    CHARONE = chr(ord('A'))
+    CHARTWO = chr(ord('A'))
+    CHARTHREE = chr(ord('A'))
     def __init__(self, maze_env, width, height):
         self.cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_NO)
         self.maze_environment = maze_env
@@ -27,6 +30,7 @@ class Screen:
         self.width = width
         self.height = height
         self.font = pygame.font.SysFont("Arial", 18)
+        self.secondary_font = pygame.font.SysFont("Arial", 50)
 
     def pauseView(self):
         surface = pygame.display.get_surface() 
@@ -54,13 +58,20 @@ class Screen:
         pygame.mouse.set_cursor(self.cursor)
         #nick name button
         surface = pygame.display.get_surface()  ## since hard coded position values, if this change it changes in game.py event handler
-        startSurface = pygame.Surface((200,60))
+        surface.blit(self.font.render("Enter a three letter nickname", True,white),(382.5,130))
+        startSurface = pygame.Surface((60,60))
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface, (375, 150))
-        surface.blit(self.font.render("Enter a three letter nickname", True,white),(382.5,165))
-        
+        surface.blit(startSurface, (355, 160))
+        surface.blit(self.secondary_font.render(Screen.CHARONE, True,white),(370.5,160))
+        startSurface.fill(green)
+        surface.blit(startSurface, (435, 160))
+        surface.blit(self.secondary_font.render(Screen.CHARTWO, True,white),(450.5,160))
+        startSurface.fill(blue)
+        surface.blit(startSurface, (510.5, 160))
+        surface.blit(self.secondary_font.render(Screen.CHARTHREE, True,white),(525.5,160))
         #easy buttons
+        startSurface = pygame.Surface((200,60))
         startSurface.convert()  # 100, 350, 200, 60
         startSurface.fill(green)
         surface.blit(startSurface,(100,350))

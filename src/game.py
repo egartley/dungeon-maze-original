@@ -1,5 +1,7 @@
 import sys
 
+from numpy import char
+
 import collision
 import pygame.mouse
 from character import *
@@ -78,9 +80,8 @@ class GameEnvironment:
         MazeEnvironment.SPEED = 4
         self.maze_environment.reset()
         # default values for testing
-        self.player_name = "Player"
-        self.player_gender = GameEnvironment.BOY
-        GameEnvironment.PLAYER = MainCharacter(self.player_name, self.player_gender)
+        self.player_name = Screen.CHARONE + Screen.CHARTWO + Screen.CHARTHREE
+        GameEnvironment.PLAYER = MainCharacter(self.player_name)
         self.maze_environment.generate_maze_difficulty()
         # put player at maze start, calculate all coords
         # relative = absolute - maze
@@ -247,6 +248,25 @@ class GameEnvironment:
                 mediumButton = pygame.Rect(375, 350, 200, 60)
                 hardButton = pygame.Rect(675,350,200,60)
                 quitButton = pygame.Rect(375, 550, 200, 60)
+                
+                char_one = pygame.Rect(355, 160, 60, 60)
+                char_two = pygame.Rect(435, 160, 60, 60)
+                char_three = pygame.Rect(510.5, 160, 60, 60)
+                if char_one.collidepoint(event.pos) and Screen.CHARONE != chr(ord('Z')):
+                    Screen.CHARONE = chr(ord(Screen.CHARONE)+1)
+                elif char_one.collidepoint(event.pos) and Screen.CHARONE == chr(ord('Z')):
+                    Screen.CHARONE = chr(ord(Screen.CHARONE)-25)
+                
+                elif char_two.collidepoint(event.pos) and Screen.CHARTWO != chr(ord('Z')):
+                    Screen.CHARTWO = chr(ord(Screen.CHARTWO)+1)
+                elif char_two.collidepoint(event.pos) and Screen.CHARTWO == chr(ord('Z')):
+                    Screen.CHARTWO =  chr(ord(Screen.CHARTWO)-25)
+                    
+                if char_three.collidepoint(event.pos) and Screen.CHARTHREE != chr(ord('Z')):
+                    Screen.CHARTHREE = chr(ord(Screen.CHARTHREE)+1)
+                elif char_three.collidepoint(event.pos) and Screen.CHARTHREE == chr(ord('Z')):
+                    Screen.CHARTHREE = chr(ord(Screen.CHARTHREE)-25)
+                
                 if easyButton.collidepoint(event.pos):
                     GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
                     self.switch_to_ingame()
