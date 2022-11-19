@@ -1,8 +1,9 @@
 import sys
 
-import pygame.mouse
+from numpy import char
 
 import collision
+import pygame.mouse
 from character import *
 from screen import Screen
 
@@ -28,7 +29,7 @@ class GameEnvironment:
     # assuming only one booster with a timer is active at a time, unique event id for it
     BOOSTER_EVENT_ID = pygame.USEREVENT + 9
 
-    def __init__(self, screen_width, screen_height, ):
+    def __init__(self, screen_width, screen_height):
         self.maze_environment = MazeEnvironment(self)
         # set default player values for testing, since no selection yet
         self.player_gender = GameEnvironment.BOY
@@ -66,7 +67,7 @@ class GameEnvironment:
             if enemy.collision_set:
                 continue
             enemy.collision_set = True
-            c = collision.EnemyCollision(e[0], GameEnvironment.PLAYER.combat_rect)
+            c = collision.EnemyCollision(e[0], GameEnvironment.PLAYER.rect)
             self.enemy_collisions.append(c)
 
     def start_ingame(self):
@@ -79,9 +80,8 @@ class GameEnvironment:
         MazeEnvironment.SPEED = 4
         self.maze_environment.reset()
         # default values for testing
-        self.player_name = "Player"
-        self.player_gender = GameEnvironment.BOY
-        GameEnvironment.PLAYER = MainCharacter(self.player_name, self.player_gender)
+        self.player_name = Screen.CHARONE + Screen.CHARTWO + Screen.CHARTHREE
+        GameEnvironment.PLAYER = MainCharacter(self.player_name)
         self.maze_environment.generate_maze_difficulty()
         # put player at maze start, calculate all coords
         # relative = absolute - maze
@@ -200,7 +200,7 @@ class GameEnvironment:
                 self.booster_collisions.remove(r)
 
             for c in self.enemy_collisions:
-                c.tick(c.enemy.rect, GameEnvironment.PLAYER.combat_rect)
+                c.tick(c.enemy.rect, GameEnvironment.PLAYER.rect)
                 c.check()
                 if c.is_collided and c not in self.active_combat_collisions:
                     c.collision_occurrence()
@@ -247,7 +247,26 @@ class GameEnvironment:
                 easyButton = pygame.Rect(100, 350, 200, 60)
                 mediumButton = pygame.Rect(375, 350, 200, 60)
                 hardButton = pygame.Rect(675,350,200,60)
-                quitButton = pygame.Rect(100, 550, 200, 60)
+                quitButton = pygame.Rect(375, 550, 200, 60)
+                
+                char_one = pygame.Rect(355, 160, 60, 60)
+                char_two = pygame.Rect(435, 160, 60, 60)
+                char_three = pygame.Rect(510.5, 160, 60, 60)
+                if char_one.collidepoint(event.pos) and Screen.CHARONE != chr(ord('Z')):
+                    Screen.CHARONE = chr(ord(Screen.CHARONE)+1)
+                elif char_one.collidepoint(event.pos) and Screen.CHARONE == chr(ord('Z')):
+                    Screen.CHARONE = chr(ord(Screen.CHARONE)-25)
+                
+                elif char_two.collidepoint(event.pos) and Screen.CHARTWO != chr(ord('Z')):
+                    Screen.CHARTWO = chr(ord(Screen.CHARTWO)+1)
+                elif char_two.collidepoint(event.pos) and Screen.CHARTWO == chr(ord('Z')):
+                    Screen.CHARTWO =  chr(ord(Screen.CHARTWO)-25)
+                    
+                if char_three.collidepoint(event.pos) and Screen.CHARTHREE != chr(ord('Z')):
+                    Screen.CHARTHREE = chr(ord(Screen.CHARTHREE)+1)
+                elif char_three.collidepoint(event.pos) and Screen.CHARTHREE == chr(ord('Z')):
+                    Screen.CHARTHREE = chr(ord(Screen.CHARTHREE)-25)
+                
                 if easyButton.collidepoint(event.pos):
                     GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
                     self.switch_to_ingame()
@@ -271,6 +290,11 @@ class GameEnvironment:
             if event.type == MainCharacter.SWORD_SWING_EVENT_ID:
                 GameEnvironment.PLAYER.swinging_sword = False
                 pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 0)
+            if event.type == Enemy.ENEMY_ATTACK_EVENT_ID:
+                self.enemy_list = [enemy[0] for enemy in self.enemies]
+                for enemy in range(len(self.enemy_list)):
+                    self.enemy_list[enemy].weapon.in_cooldown = False
+                pygame.time.set_timer(Enemy.ENEMY_ATTACK_EVENT_ID, 0)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     GameEnvironment.PLAYER.attack_motion()

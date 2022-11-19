@@ -25,7 +25,7 @@ class Character(pygame.sprite.Sprite):
         self.width = 0
         self.height = 0
         self.speed = 0
-        self.arrow_count = 0
+        self.arrow_count = 1000
         # whether or not charater (enemy or player) is moving in said direction
         self.up = False
         self.down = False
@@ -53,7 +53,7 @@ class MainCharacter(Character):
     ATTACK_EVENT_ID = pygame.USEREVENT + 74
     SWORD_SWING_EVENT_ID = pygame.USEREVENT + 75
 
-    def __init__(self, name=None, gender=None):
+    def __init__(self, name=None):
         super().__init__()
         # relative coordinates:
         # these are the x/y based on relative = absolute - map
@@ -64,9 +64,9 @@ class MainCharacter(Character):
         self.name = name
         self.health = 100
         self.shield = 100
-        self.weapon = None
-        if name is not None:
-            self.weapon = weapon.Sword()
+       
+        
+        self.weapon = weapon.Sword()
 
         self.speed = 4
         self.speedStackLen = 3
@@ -89,7 +89,6 @@ class MainCharacter(Character):
         self.height = 285 / 4
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
         self.active_booster = [False] * 2 # 0 for attack 1 for speed
-        self.gender = gender
         self.direction = None
         self.image = pygame.image.load('src/sprites/Character/Wraith_01_Idle_000.png')
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
@@ -321,7 +320,7 @@ class Enemy(Character):
     LEFT = 0
     RIGHT = 1
 
-    ATTACK_EVENT_ID = pygame.USEREVENT + 76
+    ENEMY_ATTACK_EVENT_ID = pygame.USEREVENT + 76
 
     enemy_walk_frames = []
     enemy_walk_frames_left = []
@@ -337,8 +336,11 @@ class Enemy(Character):
         self.weapon = weapon.Sword()
         self.width = 180
         self.height = 123
-        self.image = pygame.image.load("src/sprites/Enemies/Minotaur_01_Idle_000.png")
+        self.buffer = 35
+        self.image = pygame.image.load('src/sprites/Enemies/Minotaur_01_Idle_000.png')
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        self.image2 = (pygame.transform.flip(self.image, True, False))
+
         self.sprite = [self.image]
         self.sprite_counter = 0
         self.sprites_right_walk = []
@@ -347,6 +349,7 @@ class Enemy(Character):
         self.sprites_left_attack = []
         self.sprite_modes = [self.sprite, self.sprites_right_walk, self.sprites_right_attack]
         self.sprite_mode = 0
+        self.attack_animation = 0
         self.damage = damage
         self.health_bar_surface = pygame.Surface((self.width / 2, 8))
         self.health_bar_surface.convert()
@@ -374,10 +377,10 @@ class Enemy(Character):
         # move in the direction of the player if not already next to them
         px = game.GameEnvironment.PLAYER.x
         py = game.GameEnvironment.PLAYER.y
-        player_to_left = px + game.GameEnvironment.PLAYER.width < self.x
-        player_to_right = px > self.x + self.width
-        player_above = py + game.GameEnvironment.PLAYER.height < self.y
-        player_below = py > self.y + self.height
+        player_to_left = px + game.GameEnvironment.PLAYER.width < self.x + self.buffer
+        player_to_right = px > self.x + self.width - self.buffer 
+        player_above = py + game.GameEnvironment.PLAYER.height < self.y + self.buffer
+        player_below = py > self.y + self.height - self.buffer
         if player_above:
             self.y -= self.speed
         elif player_below:
@@ -421,14 +424,23 @@ class Enemy(Character):
             self.sprite_counter += 0.5       
 
     def render(self, surface):
-        if self.chasing:
-            if self.player_in_combat_range:
+        if(self.chasing):
+            if (self.attack_animation == 1):
                 self.sprite_mode = 2
                 self.change_sprite()
                 if self.direction:
                     surface.blit(self.sprites_right_attack[int(self.sprite_counter)], (self.x, self.y))
                 else:
                     surface.blit(self.sprites_left_attack[int(self.sprite_counter)], (self.x, self.y))
+                if(self.sprite_counter == len(self.sprites_right_attack) - 2):
+                    self.attack_animation = 0
+
+            elif (self.player_in_combat_range):
+                if(self.direction):
+                    surface.blit(self.image, (self.x, self.y))
+                else:
+                    surface.blit(self.image2, (self.x, self.y))
+                
             else:
                 self.sprite_mode = 1
                 self.change_sprite()
@@ -437,7 +449,10 @@ class Enemy(Character):
                 else:
                     surface.blit(self.sprites_left_walk[int(self.sprite_counter)], (self.x, self.y))
         else:
-            surface.blit(self.image, (self.x, self.y))
+            if(self.direction):
+                surface.blit(self.image, (self.x, self.y))
+            else:
+                surface.blit(self.image2, (self.x, self.y))
 
         # render health bar
         o = 1
@@ -486,4 +501,10 @@ class Enemy(Character):
             Enemy.enemy_attack_frames_left.append(pygame.transform.flip(img, True, False))
 
     def attack(self):
-        game.GameEnvironment.PLAYER.take_damage(self.damage)
+        if not self.weapon.in_cooldown:
+            self.attack_animation = 1
+            # start cooldown timer
+            pygame.time.set_timer(Enemy.ENEMY_ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
+            self.weapon.in_cooldown = True
+            # do the actual damage to all enemies in range
+            game.GameEnvironment.PLAYER.take_damage(self.damage)
