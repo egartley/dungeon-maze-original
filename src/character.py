@@ -340,6 +340,7 @@ class Enemy(Character):
         self.image = pygame.image.load('src/sprites/Enemies/Minotaur_01_Idle_000.png')
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
         self.image2 = (pygame.transform.flip(self.image, True, False))
+        self.mask = pygame.mask.from_surface(self.image)
 
         self.sprite = [self.image]
         self.sprite_counter = 0

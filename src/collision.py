@@ -1,4 +1,5 @@
 import game
+import pygame
 
 
 class Collision:
@@ -44,3 +45,8 @@ class EnemyCollision(Collision):
 class ArrowCollision(Collision):
     def __init__(self, arrow, enemy):
         super().__init__(arrow, enemy)
+        self.arrow = arrow
+        self.enemy = enemy
+
+    def check(self):
+        self.is_collided = pygame.sprite.collide_mask(self.arrow, self.enemy)

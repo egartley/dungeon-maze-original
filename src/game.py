@@ -46,7 +46,7 @@ class GameEnvironment:
     def set_arrow_collisions(self):
         for a in self.PLAYER.arrow_group:
             for e in range(len(self.enemies)):
-                arrow_collision = collision.ArrowCollision(a.rect, self.enemies[e][0].rect)
+                arrow_collision = collision.ArrowCollision(a, self.enemies[e][0])
                 arrow_collision.check()
                 if arrow_collision.is_collided:
                     self.enemies[e][0].health -= GameEnvironment.PLAYER.bow.damage
