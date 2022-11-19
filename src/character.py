@@ -25,7 +25,7 @@ class Character(pygame.sprite.Sprite):
         self.width = 0
         self.height = 0
         self.speed = 0
-        self.arrow_count = 0
+        self.arrow_count = 1000
         # whether or not charater (enemy or player) is moving in said direction
         self.up = False
         self.down = False
@@ -53,7 +53,7 @@ class MainCharacter(Character):
     ATTACK_EVENT_ID = pygame.USEREVENT + 74
     SWORD_SWING_EVENT_ID = pygame.USEREVENT + 75
 
-    def __init__(self, name=None, gender=None):
+    def __init__(self, name=None):
         super().__init__()
         # relative coordinates:
         # these are the x/y based on relative = absolute - map
@@ -64,9 +64,9 @@ class MainCharacter(Character):
         self.name = name
         self.health = 100
         self.shield = 100
-        self.weapon = None
-        if name is not None:
-            self.weapon = weapon.Sword()
+       
+        
+        self.weapon = weapon.Sword()
 
         self.speed = 4
         self.speedStackLen = 3
@@ -89,7 +89,6 @@ class MainCharacter(Character):
         self.height = 285 / 4
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
         self.active_booster = [False] * 2 # 0 for attack 1 for speed
-        self.gender = gender
         self.direction = None
         self.image = pygame.image.load('src/sprites/Character/Wraith_01_Idle_000.png')
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
