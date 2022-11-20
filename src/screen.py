@@ -36,9 +36,7 @@ class Screen:
 
     def pauseView(self):
         surface = pygame.display.get_surface() 
-        surface.blit(self.font.render("Pause screen", True, Screen.TEXT_COLOR), (12, 8))
-        surface.blit(
-            self.font.render("Press ESC again to resume playing", True, Screen.TEXT_COLOR), (12, 30))
+        surface.blit(self.secondary_font.render("Pause screen", True, Screen.TEXT_COLOR), (400, 8))
         pygame.mouse.set_cursor(self.cursor)
         #start button
         surface = pygame.display.get_surface() 
@@ -46,12 +44,12 @@ class Screen:
         startSurface.convert()
         startSurface.fill(green)
         surface.blit(startSurface,(250,350)) # hard coded button values if they get change , change in game.py event handler
-        surface.blit(self.font.render("CONTINUE",True, black), (315,370))
+        surface.blit(self.secondary_font.render("PLAY",True, black), (300,350))
         #quit button
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface,(600,350))
-        surface.blit(self.font.render("QUIT",True, black), (680,370))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (650,350))
         
     def startView(self):
         pygame.mouse.set_cursor(self.cursor)
