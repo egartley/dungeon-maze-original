@@ -124,6 +124,7 @@ class GameEnvironment:
                 remove = e
         if remove is not None:
             self.enemies.remove(remove)
+        MazeEnvironment.ENEMY_IDS.remove(enemy[0].unique_id)
 
     def check_wall(self, x, y):
         # check if there is a wall at the given x/y
@@ -290,11 +291,12 @@ class GameEnvironment:
             if event.type == MainCharacter.SWORD_SWING_EVENT_ID:
                 GameEnvironment.PLAYER.swinging_sword = False
                 pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 0)
-            if event.type == Enemy.ENEMY_ATTACK_EVENT_ID:
-                self.enemy_list = [enemy[0] for enemy in self.enemies]
-                for enemy in range(len(self.enemy_list)):
-                    self.enemy_list[enemy].weapon.in_cooldown = False
-                pygame.time.set_timer(Enemy.ENEMY_ATTACK_EVENT_ID, 0)
+            if event.type in MazeEnvironment.ENEMY_IDS:
+                for enemy in self.enemies:
+                    if event.type == enemy[0].unique_id:
+                        enemy[0].weapon.in_cooldown = False
+                        break
+                pygame.time.set_timer(event.type, 0)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     GameEnvironment.PLAYER.attack_motion()
