@@ -17,11 +17,13 @@ blue = pygame.Color(0, 0, 255)
 yellow = pygame.Color(255,255,0)
 orange = pygame.Color(255,127,0)
 
+
 class Screen:
     TEXT_COLOR = (255, 255, 255)
     CHARONE = chr(ord('A'))
     CHARTWO = chr(ord('A'))
     CHARTHREE = chr(ord('A'))
+    SHOW_MAP = False
     def __init__(self, maze_env, width, height):
         self.cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_NO)
         self.maze_environment = maze_env
@@ -34,9 +36,7 @@ class Screen:
 
     def pauseView(self):
         surface = pygame.display.get_surface() 
-        surface.blit(self.font.render("Pause screen", True, Screen.TEXT_COLOR), (12, 8))
-        surface.blit(
-            self.font.render("Press ESC again to resume playing", True, Screen.TEXT_COLOR), (12, 30))
+        surface.blit(self.secondary_font.render("Pause screen", True, Screen.TEXT_COLOR), (400, 8))
         pygame.mouse.set_cursor(self.cursor)
         #start button
         surface = pygame.display.get_surface() 
@@ -44,12 +44,12 @@ class Screen:
         startSurface.convert()
         startSurface.fill(green)
         surface.blit(startSurface,(250,350)) # hard coded button values if they get change , change in game.py event handler
-        surface.blit(self.font.render("CONTINUE",True, black), (315,370))
+        surface.blit(self.secondary_font.render("PLAY",True, black), (300,350))
         #quit button
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface,(600,350))
-        surface.blit(self.font.render("QUIT",True, black), (680,370))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (650,350))
         
     def startView(self):
         pygame.mouse.set_cursor(self.cursor)
@@ -129,20 +129,21 @@ class Screen:
                 background.blit(end, position)
             elif len(grid) > 0 and i < len(grid) and j < len(grid[0]) and grid[i][j] == 1:
                 background.blit(wall, position)
-        surface.blit(background, (pygame.display.get_surface().get_width() - 20 - len(grid[0]) * s, 12))
+        if self.SHOW_MAP == True:
+            surface.blit(background, (pygame.display.get_surface().get_width() - 20 - len(grid[0]) * s, 12))
+        
 
     def activeGameView(self):
         surface = pygame.display.get_surface() 
         self.maze_environment.render(surface)
         game.GameEnvironment.PLAYER.render(surface)
-
+        
         self.draw_minimap(surface)
-
+    
         surface.blit(self.font.render("In-game view", True, Screen.TEXT_COLOR), (12, 8))
         surface.blit(self.font.render("Move with WASD", True, Screen.TEXT_COLOR), (12, 30))
         
-        
-        ## back fill of health bar plus health bar
+        # back fill of health bar plus health bar
         backFillSprite = pygame.Surface((90,10))
         backFillSprite.convert()
         backFillSprite.fill(white)
@@ -156,7 +157,7 @@ class Screen:
         surface.blit(sprite, (12,74))
         
         
-        ## Shield and Shield Backfill 
+        #Shield and Shield Backfill 
         shieldBarBackFill = (100 / 100) * 10
         shieldFill = pygame.Surface((90, shieldBarBackFill))
         shieldFill.convert()

@@ -1,11 +1,9 @@
 import sys
-
 from numpy import char
-
 import collision
 import pygame.mouse
 from character import *
-from screen import Screen
+from screen import *
 
 
 class GameEnvironment:
@@ -209,14 +207,11 @@ class GameEnvironment:
                 if not c.is_collided and c in self.active_combat_collisions:
                     c.collision_end()
                     self.active_combat_collisions.remove(c)
-
             # dirty way to check for enemy death
             for e in self.enemies:
                 if e[0].health <= 0:
                     self.on_enemy_death(e)
-
             self.set_arrow_collisions()
-
             if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and GameEnvironment.PLAYER.tile_pos[1] == MazeEnvironment.MAZE.end[1]:
                 GameEnvironment.state = GameEnvironment.VICTORY_STATE
 
@@ -304,7 +299,11 @@ class GameEnvironment:
                     GameEnvironment.PLAYER.shoot(pygame.mouse.get_pos())
                     GameEnvironment.PLAYER.is_using_bow = True
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_m and Screen.SHOW_MAP == True:
+                    Screen.SHOW_MAP = False
+                elif event.key == pygame.K_m and Screen.SHOW_MAP == False:
+                    Screen.SHOW_MAP = True
+                elif event.key == pygame.K_w:
                     self.maze_environment.up = True
                     GameEnvironment.PLAYER.up = True
                 elif event.key == pygame.K_a:

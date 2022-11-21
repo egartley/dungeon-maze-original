@@ -481,7 +481,7 @@ class Enemy(Character):
             foreground.convert()
             foreground.fill(self.health_bar_color_foreground)
             self.health_bar_surface.blit(foreground, (o, o))
-        surface.blit(self.health_bar_surface, (self.x + int(w / 2), self.y - h - 4))
+            surface.blit(self.health_bar_surface, (self.x + int(w / 2), self.y - h - 4))
 
     def self_load_animations(self):
         for i in range(len(Enemy.enemy_walk_frames)):

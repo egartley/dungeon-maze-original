@@ -228,7 +228,7 @@ class MazeEnvironment:
                 MazeEnvironment.CHUNKS.append(tile)
         self.generate_boosters()
         self.generate_enemies()
-
+         
     def generate_boosters(self):
         r = random.Random()
         if len(self.booster_spawns) == 0:
