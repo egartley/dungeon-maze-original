@@ -5,6 +5,7 @@ import game
 import weapon
 import math
 import arrow
+import random
 from os import *
 from maze import MazeEnvironment
 
@@ -317,8 +318,6 @@ class Enemy(Character):
     LEFT = 0
     RIGHT = 1
 
-    ENEMY_ATTACK_EVENT_ID = pygame.USEREVENT + 76
-
     enemy_walk_frames = []
     enemy_walk_frames_left = []
     enemy_attack_frames = []
@@ -366,10 +365,17 @@ class Enemy(Character):
         self.direction = Enemy.LEFT
         self.speed = 3
         self.chasing = False
-        self.damage = 1
+        self.damage = damage
         self.coolDown = 10
         self.placed = False
         self.collision_set = False
+
+        r = random.Random()
+        x = r.randint(1000, 9999)
+        while x in MazeEnvironment.ENEMY_IDS:
+            x = r.randint(1000, 9999)
+        self.unique_id = x + pygame.USEREVENT
+        MazeEnvironment.ENEMY_IDS.append(self.unique_id)
 
     def chase_player(self):
         # move in the direction of the player if not already next to them
@@ -473,7 +479,7 @@ class Enemy(Character):
             foreground.convert()
             foreground.fill(self.health_bar_color_foreground)
             self.health_bar_surface.blit(foreground, (o, o))
-        surface.blit(self.health_bar_surface, (self.x + int(w / 2), self.y - h - 4))
+            surface.blit(self.health_bar_surface, (self.x + int(w / 2), self.y - h - 4))
 
     def self_load_animations(self):
         for i in range(len(Enemy.enemy_walk_frames)):
@@ -507,7 +513,7 @@ class Enemy(Character):
         if not self.weapon.in_cooldown:
             self.attack_animation = 1
             # start cooldown timer
-            pygame.time.set_timer(Enemy.ENEMY_ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
+            pygame.time.set_timer(self.unique_id, self.weapon.cooldown * 1000)
             self.weapon.in_cooldown = True
             # do the actual damage to all enemies in range
             game.GameEnvironment.PLAYER.take_damage(self.damage)

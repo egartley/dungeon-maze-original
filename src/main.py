@@ -5,7 +5,6 @@ from game import *
 TARGET_FPS = 60
 objects = []
 
-
 def main():
     pygame.init()
     font = pygame.font.SysFont('Arial', 40)

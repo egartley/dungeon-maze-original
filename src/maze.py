@@ -21,6 +21,8 @@ class MazeEnvironment:
     CHUNKS = []
     TRACKED_CHUNKS = []
 
+    ENEMY_IDS = []
+
     # whether the map (not player!) can move in the direction
     CAN_MOVE_UP = False
     CAN_MOVE_DOWN = False
@@ -226,7 +228,7 @@ class MazeEnvironment:
                 MazeEnvironment.CHUNKS.append(tile)
         self.generate_boosters()
         self.generate_enemies()
-
+         
     def generate_boosters(self):
         r = random.Random()
         if len(self.booster_spawns) == 0:

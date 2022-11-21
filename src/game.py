@@ -1,7 +1,5 @@
 import sys
-
 from numpy import char
-
 import collision
 import pygame.mouse
 from character import *
@@ -126,7 +124,7 @@ class GameEnvironment:
                 remove = e
         if remove is not None:
             self.enemies.remove(remove)
-            self.score_game.update_kill()
+        MazeEnvironment.ENEMY_IDS.remove(enemy[0].unique_id)
 
     def check_wall(self, x, y):
         # check if there is a wall at the given x/y
@@ -211,12 +209,10 @@ class GameEnvironment:
                 if not c.is_collided and c in self.active_combat_collisions:
                     c.collision_end()
                     self.active_combat_collisions.remove(c)
-
             # dirty way to check for enemy death
             for e in self.enemies:
                 if e[0].health <= 0:
                     self.on_enemy_death(e)
-
             self.set_arrow_collisions()
             self.score_game.name = self.player_name
 
@@ -296,11 +292,12 @@ class GameEnvironment:
             if event.type == MainCharacter.SWORD_SWING_EVENT_ID:
                 GameEnvironment.PLAYER.swinging_sword = False
                 pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 0)
-            if event.type == Enemy.ENEMY_ATTACK_EVENT_ID:
-                self.enemy_list = [enemy[0] for enemy in self.enemies]
-                for enemy in range(len(self.enemy_list)):
-                    self.enemy_list[enemy].weapon.in_cooldown = False
-                pygame.time.set_timer(Enemy.ENEMY_ATTACK_EVENT_ID, 0)
+            if event.type in MazeEnvironment.ENEMY_IDS:
+                for enemy in self.enemies:
+                    if event.type == enemy[0].unique_id:
+                        enemy[0].weapon.in_cooldown = False
+                        break
+                pygame.time.set_timer(event.type, 0)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     GameEnvironment.PLAYER.attack_motion()
@@ -308,7 +305,11 @@ class GameEnvironment:
                     GameEnvironment.PLAYER.shoot(pygame.mouse.get_pos())
                     GameEnvironment.PLAYER.is_using_bow = True
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_m and Screen.SHOW_MAP == True:
+                    Screen.SHOW_MAP = False
+                elif event.key == pygame.K_m and Screen.SHOW_MAP == False:
+                    Screen.SHOW_MAP = True
+                elif event.key == pygame.K_w:
                     self.maze_environment.up = True
                     GameEnvironment.PLAYER.up = True
                 elif event.key == pygame.K_a:
