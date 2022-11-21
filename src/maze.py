@@ -21,6 +21,8 @@ class MazeEnvironment:
     CHUNKS = []
     TRACKED_CHUNKS = []
 
+    ENEMY_IDS = []
+
     # whether the map (not player!) can move in the direction
     CAN_MOVE_UP = False
     CAN_MOVE_DOWN = False

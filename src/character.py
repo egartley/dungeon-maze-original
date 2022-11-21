@@ -5,6 +5,7 @@ import game
 import weapon
 import math
 import arrow
+import random
 from os import *
 from maze import MazeEnvironment
 
@@ -320,8 +321,6 @@ class Enemy(Character):
     LEFT = 0
     RIGHT = 1
 
-    ENEMY_ATTACK_EVENT_ID = pygame.USEREVENT + 76
-
     enemy_walk_frames = []
     enemy_walk_frames_left = []
     enemy_attack_frames = []
@@ -339,7 +338,7 @@ class Enemy(Character):
         self.buffer = 35
         self.image = pygame.image.load('src/sprites/Enemies/Minotaur_01_Idle_000.png')
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
-        self.image2 = (pygame.transform.flip(self.image, True, False))
+        self.image2 = pygame.transform.flip(self.image, True, False)
 
         self.sprite = [self.image]
         self.sprite_counter = 0
@@ -368,10 +367,17 @@ class Enemy(Character):
         self.direction = Enemy.LEFT
         self.speed = 3
         self.chasing = False
-        self.damage = 1
+        self.damage = damage
         self.coolDown = 10
         self.placed = False
         self.collision_set = False
+
+        r = random.Random()
+        x = r.randint(1000, 9999)
+        while x in MazeEnvironment.ENEMY_IDS:
+            x = r.randint(1000, 9999)
+        self.unique_id = x + pygame.USEREVENT
+        MazeEnvironment.ENEMY_IDS.append(self.unique_id)
 
     def chase_player(self):
         # move in the direction of the player if not already next to them
@@ -509,7 +515,7 @@ class Enemy(Character):
         if not self.weapon.in_cooldown:
             self.attack_animation = 1
             # start cooldown timer
-            pygame.time.set_timer(Enemy.ENEMY_ATTACK_EVENT_ID, self.weapon.cooldown * 1000)
+            pygame.time.set_timer(self.unique_id, self.weapon.cooldown * 1000)
             self.weapon.in_cooldown = True
             # do the actual damage to all enemies in range
             game.GameEnvironment.PLAYER.take_damage(self.damage)
