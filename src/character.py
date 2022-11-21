@@ -64,10 +64,7 @@ class MainCharacter(Character):
         self.name = name
         self.health = 100
         self.shield = 100
-       
-        
         self.weapon = weapon.Sword()
-
         self.speed = 4
         self.speedStackLen = 3
         self.speedStackCount = -1

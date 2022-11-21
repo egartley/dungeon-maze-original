@@ -1,6 +1,7 @@
 from numpy import char
 import pygame
 import game
+import scores
 from maze import MazeEnvironment
 
 frame_size_x = 1000
@@ -31,6 +32,8 @@ class Screen:
         self.height = height
         self.font = pygame.font.SysFont("Arial", 18)
         self.secondary_font = pygame.font.SysFont("Arial", 50)
+        self.third_font = pygame.font.SysFont("calibri.ttf", 30)
+        self.victory_font = pygame.font.SysFont("calibri.ttf", 80)
 
     def pauseView(self):
         surface = pygame.display.get_surface() 
@@ -178,28 +181,44 @@ class Screen:
         
         
         
+    def top_scores(self):
+        x = 150
+        s = scores.Score()
+        list_scores = s.read_score()
+        for i in range(len(list_scores)):
+            score = ' '.join(map(str, list_scores[i]))
+            pygame.display.get_surface().blit(
+                self.font.render(score, True, Screen.TEXT_COLOR), (frame_size_x/2-200, x))
+            x += 40
 
     def victory(self):
-        pygame.display.get_surface().blit(self.font.render("Victory screen", True, Screen.TEXT_COLOR), (12, 8))
+        bg_img = pygame.image.load('src\\sprites\\background\\victorybg.jpg')
+        bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
+        pygame.display.get_surface().blit(bg_img, (0,0))
+        pygame.display.get_surface().blit(self.victory_font.render("VICTORY", True, Screen.TEXT_COLOR), (frame_size_x/2-125, 8))
+        show_score(0, red, 'Times New Roman', 20)
         pygame.display.get_surface().blit(
-            self.font.render("Press ENTER to play again, or BACKSPACE to quit", True, Screen.TEXT_COLOR), (12, 30))
-        pygame.display.get_surface().blit(self.font.render("Score: 9999", True, Screen.TEXT_COLOR), (12, 52))
-        pygame.display.get_surface().blit(
-            self.font.render("Top 10 scores: 9999, 0, 0, 0, 0, 0, 0, 0, 0, 0", True, Screen.TEXT_COLOR), (12, 74))
+            self.third_font.render("TOP 10 SCORES", True, Screen.TEXT_COLOR), (frame_size_x/2-75, 74))
         pygame.mouse.set_cursor(self.cursor)
         #RESTART BUTTON
         surface = pygame.display.get_surface() 
-        startSurface = pygame.Surface((200,60))
+        #pygame.draw.rect(surface, black, pygame.Rect(frame_size_x/2-150, 100, 300, 400))
+        #pygame.gfxdraw.box(surface, pygame.Rect(frame_size_x/2-150, 100, 300, 400), black)
+        s = pygame.Surface((480,550))  # the size of your rect
+        s.set_alpha(150)
+        s.fill(black)
+        surface.blit(s, (260,100))
+        self.top_scores()
+        startSurface = pygame.Surface((250,60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface,(200,350))
-        surface.blit(self.secondary_font.render("RESTART", True, black), (207, 350))
+        surface.blit(startSurface,(200,450))
+        surface.blit(self.secondary_font.render("RESTART", True, black), (207, 450))
         #QUIT button
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface,(575,350))
-        surface.blit(self.secondary_font.render("QUIT",True, black), (630,350))
-        show_score(0, red, 'Times New Roman', 20)
+        surface.blit(startSurface,(575,450))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (630,450))
         # add checck for position
 
     def death(self):
