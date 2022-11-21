@@ -20,9 +20,12 @@ class Arrow(pygame.sprite.Sprite):
         self.y = pos_y
         self.relative_x = 0
         self.relative_y = 0
+        self.image = self.picture
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
         self.image = pygame.transform.rotate(self.picture, 360-self.angle*57.29)
+        self.mask = pygame.mask.from_surface(self.image)
         self.x += int(self.velx)
         self.y += int(self.vely)
         self.rect.x = int(self.x - self.image.get_rect().width/2)
