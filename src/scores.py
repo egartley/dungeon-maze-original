@@ -3,8 +3,8 @@ import time
 
 class Score:
     def __init__(self, name):
-        self.start_t = 0
-        self.end_t = 0
+        self.start_t = time.time()
+        self.end_t = time.time()
         self.different_t = 0
         self.player_score = 0
         self.kill_count = 0
@@ -22,8 +22,9 @@ class Score:
 
     def cal_score(self):
         if self.player_score == 0:
-            self.player_score = (self.kill_count * 100) - (self.different_t) + 1000
-            print(self.different_t)
+            print("The kill count is: "+ str(self.total))
+            self.player_score = (5 * 100) + (self.total * .25) + 1000
+            print("Score is" + str(self.player_score))
 
     def read_score(self):
         full_path = self.get_path()
@@ -42,15 +43,12 @@ class Score:
             self.is_no_write = False
 
     def start_time(self):
-        if self.start_t == 0:
-            self.start_t = time.time()
+      self.start_t = time.time()
         
     def end_time(self):
-        if self.end_t == 0:
-            self.end_t = time.time()
-            self.total += self.end_t - self.start_t
-            self.start_t = 0
-            self.end_t = 0
+        self.end_t = time.time()
+        self.total += self.end_t - self.start_t
+            
             
 
     def update_kill(self):

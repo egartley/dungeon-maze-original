@@ -38,10 +38,12 @@ class Screen:
         self.CHARTHREE = chr(ord('A'))
         self.name = self.CHARONE + self.CHARTWO + self.CHARTHREE
         self.score = Score(self.name)
-        
+        self.timeGlitch = 0
         
     def pauseView(self):
-        self.score.end_time()
+        if self.timeGlitch == 0:
+            self.score.end_time()
+            self.timeGlitch +=1
         surface = pygame.display.get_surface() 
         surface.blit(self.secondary_font.render("Pause screen", True, Screen.TEXT_COLOR), (400, 8))
         pygame.mouse.set_cursor(self.cursor)
@@ -141,6 +143,7 @@ class Screen:
         
 
     def activeGameView(self):
+        self.timeGlitch = 0
         self.score.start_time()
         surface = pygame.display.get_surface() 
         self.maze_environment.render(surface)
@@ -202,7 +205,9 @@ class Screen:
             x += 40
 
     def victory(self):
-        self.score.end_time()
+        if self.timeGlitch == 0:
+            self.score.end_time()
+            self.timeGlitch +=1
         bg_img = pygame.image.load('src\\sprites\\background\\victorybg.jpg')
         bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
         pygame.display.get_surface().blit(bg_img, (0,0))
@@ -233,6 +238,9 @@ class Screen:
         # add checck for position
 
     def death(self):
+        if self.timeGlitch == 0:
+            self.score.end_time()
+            self.timeGlitch +=1
         pygame.mouse.set_cursor(self.cursor)
         my_font = pygame.font.SysFont('Times New Roman', 90)
         game_over_surface = my_font.render('YOU DIED', True, red)
