@@ -195,7 +195,7 @@ class Screen:
         
         
     def top_scores(self):
-        x = 150
+        x = 100
         
         list_scores = self.score.read_score()
         for i in range(len(list_scores)):
@@ -212,31 +212,28 @@ class Screen:
         bg_img = pygame.image.load('src\\sprites\\background\\victorybg.jpg')
         bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
         surface.blit(bg_img, (0,0))
-        surface.blit(self.victory_font.render("VICTORY", True, Screen.TEXT_COLOR), (frame_size_x/2-125, 8))
+        surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (250, 8))
         self.show_score(0, red, 'Times New Roman', 20)
-        surface.blit(
-            self.third_font.render("TOP 10 SCORES", True, Screen.TEXT_COLOR), (frame_size_x/2-75, 74))
         pygame.mouse.set_cursor(self.cursor)
-        #RESTART BUTTON
-        
         #pygame.draw.rect(surface, black, pygame.Rect(frame_size_x/2-150, 100, 300, 400))
         #pygame.gfxdraw.box(surface, pygame.Rect(frame_size_x/2-150, 100, 300, 400), black)
-        s = pygame.Surface((480,500))  # the size of your rect
+        s = pygame.Surface((480,440))  # the size of your rect
         s.set_alpha(150)
         s.fill(black)
         surface.blit(s, (200,90))
         self.top_scores()
+        
+        #RESTART BUTTON
         startSurface = pygame.Surface((250,60))
         startSurface.convert()
         startSurface.fill(green)
         surface.blit(startSurface,(200,600))
-        surface.blit(self.secondary_font.render("RESTART", True, black), (210, 600))
+        surface.blit(self.secondary_font.render("RESTART", True, black), (230, 600))
         #QUIT button
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface,(575,600))
         surface.blit(self.secondary_font.render("QUIT",True, black), (630,600))
-        # add checck for position
 
     def death(self):
         if self.timeGlitch == 0:
