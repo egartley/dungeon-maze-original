@@ -248,7 +248,7 @@ class MazeEnvironment:
                     spawn = True
                     break
             if spawn:
-                rooms = (chunk.r, chunk.c)
+                rooms = (s[0], s[1])
                 if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_EASY:
                     self.room_loop_easy(rooms)
                 elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_MEDIUM:
