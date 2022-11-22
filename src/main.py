@@ -1,7 +1,6 @@
 from game import *
 
 TARGET_FPS = 60
-objects = []
 
 
 def main():
