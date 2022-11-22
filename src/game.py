@@ -6,6 +6,11 @@ from screen import Screen
 import scores
 
 
+def get_player_pos(r, c):
+    return MazeEnvironment.TILE_SIZE * r + (MazeEnvironment.TILE_SIZE / 2 - game.GameEnvironment.PLAYER.width / 2), \
+           MazeEnvironment.TILE_SIZE * c + (MazeEnvironment.TILE_SIZE / 2 - game.GameEnvironment.PLAYER.height / 2)
+
+
 class GameEnvironment:
     # constants for keeping track of the game state
     START_STATE = 0
@@ -85,7 +90,7 @@ class GameEnvironment:
         # put player at maze start, calculate all coords
         # relative = absolute - maze
         start = MazeEnvironment.MAZE.start
-        pos = self.maze_environment.get_player_pos(start[1], start[0])
+        pos = get_player_pos(start[1], start[0])
         GameEnvironment.PLAYER.relative_x = pos[0]
         GameEnvironment.PLAYER.relative_y = pos[1]
         if start[0] == 0:

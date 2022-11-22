@@ -114,13 +114,14 @@ class Screen:
         background.fill((210, 186, 147))
 
         for chunk in MazeEnvironment.CHUNKS:
-            if chunk not in MazeEnvironment.TRACKED_CHUNKS:
-                MazeEnvironment.TRACKED_CHUNKS.append(chunk)
+            rc = (chunk.r, chunk.c)
+            if rc not in MazeEnvironment.TRACKED_CHUNKS:
+                MazeEnvironment.TRACKED_CHUNKS.append(rc)
 
-        # the "base" x/y the use for calculating the indiviudal x/y of each tile
+        # the "base" x/y the use for calculating the individual x/y of each tile
         for chunk in MazeEnvironment.TRACKED_CHUNKS:
-            i = chunk.r
-            j = chunk.c
+            i = chunk[0]
+            j = chunk[1]
             position = (4 + (j * s), 4 + (i * s))
             if game.GameEnvironment.PLAYER.tile_pos == (i, j):
                 background.blit(player, position)
