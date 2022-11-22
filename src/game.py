@@ -354,8 +354,8 @@ class GameEnvironment:
                     sys.exit()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(200,450,200,60)
-                quitButton = pygame.Rect(575,450,200,60)
+                startButton = pygame.Rect(200,600,200,60)
+                quitButton = pygame.Rect(575,600,200,60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
                     pygame.quit()
                     sys.exit()
