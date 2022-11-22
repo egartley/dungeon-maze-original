@@ -208,33 +208,34 @@ class Screen:
         if self.timeGlitch == 0:
             self.score.end_time()
             self.timeGlitch +=1
+        surface = pygame.display.get_surface() 
         bg_img = pygame.image.load('src\\sprites\\background\\victorybg.jpg')
         bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
-        pygame.display.get_surface().blit(bg_img, (0,0))
-        pygame.display.get_surface().blit(self.victory_font.render("VICTORY", True, Screen.TEXT_COLOR), (frame_size_x/2-125, 8))
+        surface.blit(bg_img, (0,0))
+        surface.blit(self.victory_font.render("VICTORY", True, Screen.TEXT_COLOR), (frame_size_x/2-125, 8))
         self.show_score(0, red, 'Times New Roman', 20)
-        pygame.display.get_surface().blit(
+        surface.blit(
             self.third_font.render("TOP 10 SCORES", True, Screen.TEXT_COLOR), (frame_size_x/2-75, 74))
         pygame.mouse.set_cursor(self.cursor)
         #RESTART BUTTON
-        surface = pygame.display.get_surface() 
+        
         #pygame.draw.rect(surface, black, pygame.Rect(frame_size_x/2-150, 100, 300, 400))
         #pygame.gfxdraw.box(surface, pygame.Rect(frame_size_x/2-150, 100, 300, 400), black)
-        s = pygame.Surface((480,550))  # the size of your rect
+        s = pygame.Surface((480,500))  # the size of your rect
         s.set_alpha(150)
         s.fill(black)
-        surface.blit(s, (260,100))
+        surface.blit(s, (200,90))
         self.top_scores()
         startSurface = pygame.Surface((250,60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface,(200,450))
-        surface.blit(self.secondary_font.render("RESTART", True, black), (207, 450))
+        surface.blit(startSurface,(200,600))
+        surface.blit(self.secondary_font.render("RESTART", True, black), (210, 600))
         #QUIT button
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface,(575,450))
-        surface.blit(self.secondary_font.render("QUIT",True, black), (630,450))
+        surface.blit(startSurface,(575,600))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (630,600))
         # add checck for position
 
     def death(self):
@@ -253,12 +254,12 @@ class Screen:
         startSurface.convert()
         startSurface.fill(green)
         surface.blit(startSurface,(200,350))
-        surface.blit(self.secondary_font.render("RESTART", True, black), (210, 350))
+        surface.blit(self.secondary_font.render("RESTART", True, black), (210, 550))
         #QUIT BUTTON
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface,(575,350))
-        surface.blit(self.secondary_font.render("QUIT",True, black), (627,350))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (627,650))
         self.show_score(0, red, 'Times New Roman', 20)
         #check for position 
         
