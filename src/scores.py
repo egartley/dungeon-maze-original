@@ -1,6 +1,7 @@
 import os
 import time
 
+
 class Score:
     def __init__(self):
         self.start_t = 0
@@ -50,5 +51,3 @@ class Score:
 
     def update_kill(self):
         self.kill_count += 1
-
-    

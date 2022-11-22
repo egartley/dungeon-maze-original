@@ -1,4 +1,3 @@
-from numpy import char
 import pygame
 import game
 import scores
@@ -25,6 +24,7 @@ class Screen:
     CHARTWO = chr(ord('A'))
     CHARTHREE = chr(ord('A'))
     SHOW_MAP = False
+
     def __init__(self, maze_env, width, height):
         self.cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_NO)
         self.maze_environment = maze_env
@@ -38,66 +38,64 @@ class Screen:
         self.victory_font = pygame.font.SysFont("calibri.ttf", 80)
 
     def pauseView(self):
-        surface = pygame.display.get_surface() 
+        surface = pygame.display.get_surface()
         surface.blit(self.secondary_font.render("Pause screen", True, Screen.TEXT_COLOR), (400, 8))
         pygame.mouse.set_cursor(self.cursor)
         #start button
-        surface = pygame.display.get_surface() 
-        startSurface = pygame.Surface((200,60))
+        surface = pygame.display.get_surface()
+        startSurface = pygame.Surface((200, 60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface,(250,350)) # hard coded button values if they get change , change in game.py event handler
-        surface.blit(self.secondary_font.render("PLAY",True, black), (300,350))
+        surface.blit(startSurface, (250, 350)) # hard coded button values if they get change , change in game.py event handler
+        surface.blit(self.secondary_font.render("PLAY", True, black), (300, 350))
         #quit button
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface,(600,350))
-        surface.blit(self.secondary_font.render("QUIT",True, black), (650,350))
-        
+        surface.blit(startSurface, (600, 350))
+        surface.blit(self.secondary_font.render("QUIT", True, black), (650, 350))
+
     def startView(self):
         pygame.mouse.set_cursor(self.cursor)
         #nick name button
         surface = pygame.display.get_surface()  ## since hard coded position values, if this change it changes in game.py event handler
-        surface.blit(self.font.render("Enter a three letter nickname", True,white),(362.5,130))
-        startSurface = pygame.Surface((60,60))
+        surface.blit(self.font.render("Enter a three letter nickname", True, white), (362.5, 130))
+        startSurface = pygame.Surface((60, 60))
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface, (355, 160))
-        surface.blit(self.secondary_font.render(Screen.CHARONE, True,black),(370.5,160))
+        surface.blit(self.secondary_font.render(Screen.CHARONE, True, black), (370.5, 160))
         startSurface.fill(green)
         surface.blit(startSurface, (435, 160))
-        surface.blit(self.secondary_font.render(Screen.CHARTWO, True,black),(450.5,160))
+        surface.blit(self.secondary_font.render(Screen.CHARTWO, True, black), (450.5, 160))
         startSurface.fill(blue)
         surface.blit(startSurface, (510.5, 160))
-        surface.blit(self.secondary_font.render(Screen.CHARTHREE, True,black),(525.5,160))
+        surface.blit(self.secondary_font.render(Screen.CHARTHREE, True, black), (525.5, 160))
         #easy buttons
-        startSurface = pygame.Surface((200,60))
+        startSurface = pygame.Surface((200, 60))
         startSurface.convert()  # 100, 350, 200, 60
         startSurface.fill(green)
-        surface.blit(startSurface,(100,350))
+        surface.blit(startSurface, (100, 350))
         surface.blit(self.secondary_font.render("EASY", True, black), (150, 350))
         #medium button
         startSurface.convert()
         startSurface.fill(yellow)
-        surface.blit(startSurface,(375,350))  ## since hard coded if this change it changes in game.py event handler
-        surface.blit(self.secondary_font.render("MEDIUM",True, black), (395,350))
+        surface.blit(startSurface, (375, 350))  ## since hard coded if this change it changes in game.py event handler
+        surface.blit(self.secondary_font.render("MEDIUM", True, black), (395, 350))
         #hard button
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface,(675,350))
-        surface.blit(self.secondary_font.render("HARD",True, black), (720,350))
+        surface.blit(startSurface, (675, 350))
+        surface.blit(self.secondary_font.render("HARD", True, black), (720, 350))
         ## check if when mouse clicks on button it changes game state 
         startSurface.convert()
         startSurface.fill(orange)
-        surface.blit(startSurface,(375,550)) 
-        surface.blit(self.secondary_font.render("QUIT",True, black), (430,550))
-        
-        
+        surface.blit(startSurface, (375, 550))
+        surface.blit(self.secondary_font.render("QUIT", True, black), (430, 550))
+
     def draw_minimap(self, surface):
         s = 4
         wall = pygame.Surface((s, s))
         wall.convert()
-        #wall.fill((160, 160, 160)) 
         wall.fill((255, 255, 255))
         start = pygame.Surface((s, s))
         start.convert()
@@ -132,60 +130,56 @@ class Screen:
                 background.blit(end, position)
             elif len(grid) > 0 and i < len(grid) and j < len(grid[0]) and grid[i][j] == 1:
                 background.blit(wall, position)
-        if self.SHOW_MAP == True:
+        if self.SHOW_MAP:
             surface.blit(background, (pygame.display.get_surface().get_width() - 20 - len(grid[0]) * s, 12))
-        
 
     def activeGameView(self):
-        surface = pygame.display.get_surface() 
+        surface = pygame.display.get_surface()
         self.maze_environment.render(surface)
         game.GameEnvironment.PLAYER.render(surface)
-        
+
         self.draw_minimap(surface)
-    
+
         surface.blit(self.font.render("In-game view", True, Screen.TEXT_COLOR), (12, 8))
         surface.blit(self.font.render("Move with WASD", True, Screen.TEXT_COLOR), (12, 30))
-        
+
         # back fill of health bar plus health bar
-        backFillSprite = pygame.Surface((90,10))
+        backFillSprite = pygame.Surface((90, 10))
         backFillSprite.convert()
         backFillSprite.fill(white)
-        surface.blit(backFillSprite,(12,74))
-        healthBarWidth = (game.GameEnvironment.PLAYER.health / 100)  * 90
+        surface.blit(backFillSprite, (12, 74))
+        healthBarWidth = (game.GameEnvironment.PLAYER.health / 100) * 90
         if healthBarWidth < 0:
             healthBarWidth = 0
-        sprite = pygame.Surface((healthBarWidth,10))
+        sprite = pygame.Surface((healthBarWidth, 10))
         sprite.convert()
         sprite.fill(red)
-        surface.blit(sprite, (12,74))
-        
-        
-        #Shield and Shield Backfill 
+        surface.blit(sprite, (12, 74))
+
+        #Shield and Shield Backfill
         shieldBarBackFill = (100 / 100) * 10
         shieldFill = pygame.Surface((90, shieldBarBackFill))
         shieldFill.convert()
         shieldFill.fill(white)
-        surface.blit(shieldFill, (12,52))
-        shieldBarWidth = (game.GameEnvironment.PLAYER.shield / 100 ) * 90
+        surface.blit(shieldFill, (12, 52))
+        shieldBarWidth = (game.GameEnvironment.PLAYER.shield / 100) * 90
         if shieldBarWidth < 0:
             shieldBarWidth = 0
-        shieldSprite = pygame.Surface((shieldBarWidth,10))
+        shieldSprite = pygame.Surface((shieldBarWidth, 10))
         shieldSprite.convert()
         shieldSprite.fill(blue)
-        surface.blit(shieldSprite, (12,52))
-        
+        surface.blit(shieldSprite, (12, 52))
+
         arrow_sprite = pygame.image.load('src/sprites/Boosters/arrow.png')
-        arrow_sprite = pygame.transform.scale(arrow_sprite, (50,30))
-        surface.blit(arrow_sprite,(12,surface.get_height() - 50))
-        surface.blit(self.font.render(str(game.GameEnvironment.PLAYER.arrow_count) + 'X', True, Screen.TEXT_COLOR), (75,surface.get_height() -45))
-        
+        arrow_sprite = pygame.transform.scale(arrow_sprite, (50, 30))
+        surface.blit(arrow_sprite, (12, surface.get_height() - 50))
+        surface.blit(self.font.render(str(game.GameEnvironment.PLAYER.arrow_count) + 'X', True, Screen.TEXT_COLOR), (75, surface.get_height() - 45))
+
         if game.GameEnvironment.PLAYER.weapon.in_cooldown:
             sprite = pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_right4.png')
-            sprite =  pygame.transform.scale(sprite, (90,90))
-            surface.blit(sprite,(game.GameEnvironment.PLAYER.x - 40, game.GameEnvironment.PLAYER.y - 70))
-        
-        
-        
+            sprite = pygame.transform.scale(sprite, (90, 90))
+            surface.blit(sprite, (game.GameEnvironment.PLAYER.x - 40, game.GameEnvironment.PLAYER.y - 70))
+
     def top_scores(self):
         x = 150
         s = scores.Score()
@@ -193,37 +187,37 @@ class Screen:
         for i in range(len(list_scores)):
             score = ' '.join(map(str, list_scores[i]))
             pygame.display.get_surface().blit(
-                self.font.render(score, True, Screen.TEXT_COLOR), (frame_size_x/2-200, x))
+                self.font.render(score, True, Screen.TEXT_COLOR), (frame_size_x / 2 - 200, x))
             x += 40
 
     def victory(self):
         bg_img = pygame.image.load('src\\sprites\\background\\victorybg.jpg')
-        bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
-        pygame.display.get_surface().blit(bg_img, (0,0))
-        pygame.display.get_surface().blit(self.victory_font.render("VICTORY", True, Screen.TEXT_COLOR), (frame_size_x/2-125, 8))
+        bg_img = pygame.transform.scale(bg_img, (frame_size_x, frame_size_y))
+        pygame.display.get_surface().blit(bg_img, (0, 0))
+        pygame.display.get_surface().blit(self.victory_font.render("VICTORY", True, Screen.TEXT_COLOR), (frame_size_x / 2 - 125, 8))
         show_score(0, red, 'Times New Roman', 20)
         pygame.display.get_surface().blit(
-            self.third_font.render("TOP 10 SCORES", True, Screen.TEXT_COLOR), (frame_size_x/2-75, 74))
+            self.third_font.render("TOP 10 SCORES", True, Screen.TEXT_COLOR), (frame_size_x / 2 - 75, 74))
         pygame.mouse.set_cursor(self.cursor)
         #RESTART BUTTON
-        surface = pygame.display.get_surface() 
+        surface = pygame.display.get_surface()
         #pygame.draw.rect(surface, black, pygame.Rect(frame_size_x/2-150, 100, 300, 400))
         #pygame.gfxdraw.box(surface, pygame.Rect(frame_size_x/2-150, 100, 300, 400), black)
-        s = pygame.Surface((480,550))  # the size of your rect
+        s = pygame.Surface((480, 550))  # the size of your rect
         s.set_alpha(150)
         s.fill(black)
-        surface.blit(s, (260,100))
+        surface.blit(s, (260, 100))
         self.top_scores()
-        startSurface = pygame.Surface((250,60))
+        startSurface = pygame.Surface((250, 60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface,(200,450))
+        surface.blit(startSurface, (200, 450))
         surface.blit(self.secondary_font.render("RESTART", True, black), (207, 450))
         #QUIT button
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface,(575,450))
-        surface.blit(self.secondary_font.render("QUIT",True, black), (630,450))
+        surface.blit(startSurface, (575, 450))
+        surface.blit(self.secondary_font.render("QUIT", True, black), (630, 450))
         # add checck for position
 
     def death(self):
@@ -234,29 +228,26 @@ class Screen:
         game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
         pygame.display.get_surface().blit(game_over_surface, game_over_rect)
         #RESTART BUTTON
-        surface = pygame.display.get_surface() 
-        startSurface = pygame.Surface((200,60))
+        surface = pygame.display.get_surface()
+        startSurface = pygame.Surface((200, 60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface,(200,350))
+        surface.blit(startSurface, (200, 350))
         surface.blit(self.secondary_font.render("RESTART", True, black), (210, 350))
         #QUIT BUTTON
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface,(575,350))
-        surface.blit(self.secondary_font.render("QUIT",True, black), (627,350))
+        surface.blit(startSurface, (575, 350))
+        surface.blit(self.secondary_font.render("QUIT", True, black), (627, 350))
         show_score(0, red, 'Times New Roman', 20)
-        #check for position 
-        
+        #check for position
+
 def show_score(choice, color, font, size):
     score_font = pygame.font.SysFont(font, size)
     score_surface = score_font.render('Score : ' + str(score), True, color)
     score_rect = score_surface.get_rect()
     if choice == 1:
-        score_rect.midtop = (frame_size_x/10, 15)
+        score_rect.midtop = (frame_size_x / 10, 15)
     else:
-        score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
+        score_rect.midtop = (frame_size_x / 2, frame_size_y / 1.25)
     pygame.display.get_surface().blit(score_surface, score_rect)
-
-    def quit(self):
-        pass

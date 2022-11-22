@@ -1,5 +1,4 @@
 import sys
-from numpy import char
 import collision
 import pygame.mouse
 from character import *
@@ -248,7 +247,7 @@ class GameEnvironment:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 easyButton = pygame.Rect(100, 350, 200, 60)
                 mediumButton = pygame.Rect(375, 350, 200, 60)
-                hardButton = pygame.Rect(675,350,200,60)
+                hardButton = pygame.Rect(675, 350, 200, 60)
                 quitButton = pygame.Rect(375, 550, 200, 60)
                 
                 char_one = pygame.Rect(355, 160, 60, 60)
@@ -262,7 +261,7 @@ class GameEnvironment:
                 elif char_two.collidepoint(event.pos) and Screen.CHARTWO != chr(ord('Z')):
                     Screen.CHARTWO = chr(ord(Screen.CHARTWO)+1)
                 elif char_two.collidepoint(event.pos) and Screen.CHARTWO == chr(ord('Z')):
-                    Screen.CHARTWO =  chr(ord(Screen.CHARTWO)-25)
+                    Screen.CHARTWO = chr(ord(Screen.CHARTWO)-25)
                     
                 if char_three.collidepoint(event.pos) and Screen.CHARTHREE != chr(ord('Z')):
                     Screen.CHARTHREE = chr(ord(Screen.CHARTHREE)+1)
@@ -342,8 +341,8 @@ class GameEnvironment:
                     GameEnvironment.state = GameEnvironment.DEATH_STATE
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(250,350,200,60)
-                quitButton = pygame.Rect(600,350,200,60)
+                startButton = pygame.Rect(250, 350, 200, 60)
+                quitButton = pygame.Rect(600, 350, 200, 60)
                 # goes in if clicked = buttonrect.collidepoint(event.pos)
                 if startButton.collidepoint(event.pos):
                     self.switch_to_ingame()
@@ -354,8 +353,8 @@ class GameEnvironment:
             self.score_game.end_time()
             self.score_game.cal_score()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(200,450,200,60)
-                quitButton = pygame.Rect(575,450,200,60)
+                startButton = pygame.Rect(200, 450, 200, 60)
+                quitButton = pygame.Rect(575, 450, 200, 60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
                     pygame.quit()
                     sys.exit()
@@ -365,8 +364,8 @@ class GameEnvironment:
             self.score_game.end_time()
             self.score_game.cal_score()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(250,350,200,60)
-                quitButton = pygame.Rect(575,350,200,60)
+                startButton = pygame.Rect(250, 350, 200, 60)
+                quitButton = pygame.Rect(575, 350, 200, 60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
                     pygame.quit()
                     sys.exit()

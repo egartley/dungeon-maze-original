@@ -5,6 +5,7 @@ from mazelib import Maze
 from mazelib.generate.Prims import Prims
 import pygame
 
+
 class MazeEnvironment:
     TILE_SIZE = 500
     MAP_X = 0
@@ -260,7 +261,7 @@ class MazeEnvironment:
         self.place_boosters()
         self.game_environment.set_booster_collisions()
 
-    def room_loop_easy(self,room):
+    def room_loop_easy(self, room):
         r = random.Random()
         x = r.randint(1, 5)
         if x == 1:
@@ -274,54 +275,54 @@ class MazeEnvironment:
         else:
             self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
 
-    def room_loop_medium(self,room):
+    def room_loop_medium(self, room):
         r = random.Random()
         x = r.randint(1, 5)
         if x == 1:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1 or s == 2:
                 self.game_environment.boosters.append((ArrowBooster(), room[0], room[1]))
         elif x == 2:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1 or s == 2:
                 self.game_environment.boosters.append((SpeedBooster(), room[0], room[1]))
         elif x == 3:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1 or s == 2:
                 self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
         elif x == 4:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1 or s == 2:
                 self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
         else:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1 or s == 2:
                 self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
     
-    def room_loop_hard(self,room):
+    def room_loop_hard(self, room):
         r = random.Random()
         x = r.randint(1, 5)
         if x == 1:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1:
                 self.game_environment.boosters.append((ArrowBooster(), room[0], room[1]))
                 self.game_environment.boosters.append((ArrowBooster(), room[0], room[1]))
         elif x == 2:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1:
                 self.game_environment.boosters.append((SpeedBooster(), room[0], room[1]))
         elif x == 3:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1:
                 self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
                 self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
         elif x == 4:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1:
                 self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
                 self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
         else:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1:
                 self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
 
