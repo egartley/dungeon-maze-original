@@ -22,9 +22,7 @@ class Score:
 
     def cal_score(self):
         if self.player_score == 0:
-            print("The kill count is: "+ str(self.total))
-            self.player_score = (5 * 100) + (self.total * .25) + 1000
-            print("Score is" + str(self.player_score))
+            self.player_score = (self.kill_count * 100) + (self.total * .25) + 1000
 
     def read_score(self):
         full_path = self.get_path()

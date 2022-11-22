@@ -126,6 +126,7 @@ class GameEnvironment:
         if remove is not None:
             self.enemies.remove(remove)
         MazeEnvironment.ENEMY_IDS.remove(enemy[0].unique_id)
+        self.screen.score.update_kill()
 
     def check_wall(self, x, y):
         # check if there is a wall at the given x/y
