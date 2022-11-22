@@ -196,8 +196,8 @@ class Screen:
         
     def display_top_scores(self):
         x = 100
-        for i in range(score.top_scores):
-            score = ' '.join(map(str, score.top_scores[i]))
+        for i in range(len(self.score.top_scores)):
+            score = ' '.join(map(str, self.score.top_scores[i]))
             pygame.display.get_surface().blit(
                 self.font.render(score, True, Screen.TEXT_COLOR), (frame_size_x/2-200, x ))
             x += 40
@@ -215,8 +215,7 @@ class Screen:
         self.score.determine_writability()
         self.score.top_scores
         pygame.mouse.set_cursor(self.cursor)
-        #pygame.draw.rect(surface, black, pygame.Rect(frame_size_x/2-150, 100, 300, 400))
-        #pygame.gfxdraw.box(surface, pygame.Rect(frame_size_x/2-150, 100, 300, 400), black)
+        
         s = pygame.Surface((630,440))  # the size of your rect
         s.set_alpha(150)
         s.fill(black)

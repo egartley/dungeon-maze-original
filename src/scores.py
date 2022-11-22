@@ -18,7 +18,7 @@ class Score:
         self.topScores = self.read_score()
         self.min_score = 0
         self.max_score = 0
-        self.string_lst = [None] * 11
+        self.string_lst = [None] * 12
         self.total_multiplier = 0
         if dif == 2:
             self.total_multiplier = .75
@@ -87,9 +87,11 @@ class Score:
         else:
             pass
         with open('topScores.txt','w',) as file: 
-            for i in range(len(self.top_scores)-1):
+            i = 0
+            k = 0
+            for i in range(len(self.top_scores)):
                 string = ""
-                for k in range (len(self.top_scores[i])-1):
+                for k in range (len(self.top_scores[i])):
                     string += str(self.top_scores[i]) + " "
                 self.string_lst[i] = string
                 file.writelines(string)
