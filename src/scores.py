@@ -93,7 +93,7 @@ class Score:
                 string = ""
                 for k in range (len(self.top_scores[i])):
                     string += str(self.top_scores[i]) + " "
-                self.string_lst[i] = string
+                
                 file.writelines(string)
                 k+=1
             i+=1
