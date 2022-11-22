@@ -6,6 +6,46 @@ from mazelib.generate.Prims import Prims
 import pygame
 
 
+def get_chunks_around(pos, size_r, size_c):
+    area = [pos]
+    r = pos[0]
+    c = pos[1]
+    size_r = (size_r - 1) // 2
+    size_c = (size_c - 1) // 2
+    for t in get_row_area(r, c, size_r, size_c):
+        area.append(t)
+    print(area)
+    return area
+
+
+def get_row_area(r, c, size_r, size_c):
+    area = []
+    for i in range(1, size_r + 1):
+        if r - i >= 0:
+            area.append((r - i, c))
+            for t in get_column_area(r - i, c, size_c):
+                area.append(t)
+    for t in get_column_area(r, c, size_c):
+        area.append(t)
+    for i in range(1, size_r + 1):
+        if r + i < len(MazeEnvironment.MAZE.grid):
+            area.append((r + i, c))
+            for t in get_column_area(r + i, c, size_c):
+                area.append(t)
+    return area
+
+
+def get_column_area(r, c, size_c):
+    area = []
+    for i in range(1, size_c + 1):
+        if c - i >= 0:
+            area.append((r, c - i))
+    for i in range(1, size_c + 1):
+        if c + i < len(MazeEnvironment.MAZE.grid[0]):
+            area.append((r, c + i))
+    return area
+
+
 class MazeEnvironment:
     TILE_SIZE = 500
     MAP_X = 0
@@ -190,38 +230,7 @@ class MazeEnvironment:
         if self.last_player_pos == (0, 0):
             return
         MazeEnvironment.CHUNKS = []
-        pos = self.last_player_pos
-        r = pos[0]
-        c = pos[1]
-        to_add = [pos]
-        if r - 1 >= 0:
-            to_add.append((r - 1, c))
-            if c - 2 >= 0:
-                to_add.append((r - 1, c - 2))
-            if c - 1 >= 0:
-                to_add.append((r - 1, c - 1))
-            if c + 1 < len(MazeEnvironment.MAZE.grid[0]):
-                to_add.append((r - 1, c + 1))
-            if c + 2 < len(MazeEnvironment.MAZE.grid[0]):
-                to_add.append((r - 1, c + 2))
-        if c - 2 >= 0:
-            to_add.append((r, c - 2))
-        if c - 1 >= 0:
-            to_add.append((r, c - 1))
-        if c + 1 < len(MazeEnvironment.MAZE.grid[0]):
-            to_add.append((r, c + 1))
-        if c + 2 < len(MazeEnvironment.MAZE.grid[0]):
-            to_add.append((r, c + 2))
-        if r + 1 < len(MazeEnvironment.MAZE.grid):
-            to_add.append((r + 1, c))
-            if c - 2 >= 0:
-                to_add.append((r + 1, c - 2))
-            if c - 1 >= 0:
-                to_add.append((r + 1, c - 1))
-            if c + 1 < len(MazeEnvironment.MAZE.grid[0]):
-                to_add.append((r + 1, c + 1))
-            if c + 2 < len(MazeEnvironment.MAZE.grid[0]):
-                to_add.append((r + 1, c + 2))
+        to_add = get_chunks_around(self.last_player_pos, 3, 5)
         self.build_tiles(to_add)
         for i in range(0, len(self.tiles)):
             tile = self.tiles[i]
@@ -229,7 +238,7 @@ class MazeEnvironment:
                 MazeEnvironment.CHUNKS.append(tile)
         self.generate_boosters()
         self.generate_enemies()
-         
+
     def generate_boosters(self):
         r = random.Random()
         if len(self.booster_spawns) == 0:
