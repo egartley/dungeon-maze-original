@@ -8,13 +8,10 @@ import pygame
 
 def get_chunks_around(pos, size_r, size_c):
     area = [pos]
-    r = pos[0]
-    c = pos[1]
     size_r = (size_r - 1) // 2
     size_c = (size_c - 1) // 2
-    for t in get_row_area(r, c, size_r, size_c):
+    for t in get_row_area(pos[0], pos[1], size_r, size_c):
         area.append(t)
-    print(area)
     return area
 
 
