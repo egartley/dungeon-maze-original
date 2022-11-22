@@ -470,16 +470,15 @@ class Enemy(Character):
         background.convert()
         background.fill(self.health_bar_color_background)
         self.health_bar_surface.blit(background, (o, o))
-        
-        if self.health < 0:
-            self.health = 0
-            
-        else:
-            foreground = pygame.Surface((int((self.health / self.max_health) * w) - (o * 2), h - (o * 2)))
-            foreground.convert()
-            foreground.fill(self.health_bar_color_foreground)
-            self.health_bar_surface.blit(foreground, (o, o))
-            surface.blit(self.health_bar_surface, (self.x + int(w / 2), self.y - h - 4))
+
+        precalcw = int((self.health / self.max_health) * w) - (o * 2)
+        if precalcw < 0:
+            precalcw = 0
+        foreground = pygame.Surface((precalcw, h - (o * 2)))
+        foreground.convert()
+        foreground.fill(self.health_bar_color_foreground)
+        self.health_bar_surface.blit(foreground, (o, o))
+        surface.blit(self.health_bar_surface, (self.x + int(w / 2), self.y - h - 4))
 
     def self_load_animations(self):
         for i in range(len(Enemy.enemy_walk_frames)):
