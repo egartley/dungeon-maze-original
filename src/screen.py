@@ -202,7 +202,7 @@ class Screen:
                     score += self.score.top_scores[i][k]
             score.replace('/m','')
             pygame.display.get_surface().blit(
-                self.font.render(score, True, white), (frame_size_x/2-200, x ))
+                self.font.render(score, True, white), (frame_size_x/2-150, x ))
             x += 40
 
            
@@ -222,7 +222,6 @@ class Screen:
             self.display_top_scores()
             self.display_score = False
         pygame.mouse.set_cursor(self.cursor)
-        self.display_top_scores()
         s = pygame.Surface((630,440))  # the size of your rect
         s.set_alpha(150)
         s.fill(black)
@@ -239,7 +238,7 @@ class Screen:
         startSurface.fill(red)
         surface.blit(startSurface,(575,600))
         surface.blit(self.secondary_font.render("QUIT",True, black), (650,600))
-
+        self.display_top_scores()
     def death(self):
         if self.timeGlitch == 0:
             self.score.end_time()
