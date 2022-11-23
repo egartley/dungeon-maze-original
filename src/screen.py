@@ -197,14 +197,7 @@ class Screen:
     def display_top_scores(self):
         x = 100
         for i in range(len(self.score.top_scores)):
-            score = ''
-            for k in range(len(self.score.top_scores[i])):
-                if k == len(self.display_top_scores[i]):
-                    score += self.score.top_scores[i][k].strip('/n')
-                else:
-                    score += self.score.top_scores[i][k]
-            score.replace('/','')
-            print(score)
+            score = ' '.join(map(str, self.score.top_scores[i]))
             pygame.display.get_surface().blit(
                 self.font.render(score, True, Screen.TEXT_COLOR), ((frame_size_x/2)-150, x ))
             x += 40
@@ -243,7 +236,6 @@ class Screen:
         surface.blit(self.secondary_font.render("QUIT",True, black), (650,600))
 
     def death(self):
-        surface = pygame.display.get_surface() 
         if self.timeGlitch == 0:
             self.score.end_time()
             self.timeGlitch +=1
@@ -253,16 +245,17 @@ class Screen:
         surface.blit(bg_img, (0,0))
         surface.blit(self.victory_font.render("DEATH", True, red), (400, 8))
         #RESTART BUTTON
+        surface = pygame.display.get_surface() 
         startSurface = pygame.Surface((200,60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface,(175,550))
-        surface.blit(self.secondary_font.render("RESTART", True, black), (185, 550))
+        surface.blit(startSurface,(200,350))
+        surface.blit(self.secondary_font.render("RESTART", True, black), (210, 550))
         #QUIT BUTTON
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface,(645,550))
-        surface.blit(self.secondary_font.render("QUIT",True, black), (697,550))
+        surface.blit(startSurface,(575,350))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (627,650))
         self.show_score(0, red, 'Times New Roman', 20)
         #check for position 
         
