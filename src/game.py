@@ -3,7 +3,7 @@ import collision
 import pygame.mouse
 from character import *
 from screen import Screen
-import scores
+#from scores import Score
 
 
 def get_player_pos(r, c):
@@ -36,7 +36,6 @@ class GameEnvironment:
         self.maze_environment = MazeEnvironment(self)
         # set default player values for testing, since no selection yet
         self.player_gender = GameEnvironment.BOY
-        self.player_name = ""
         GameEnvironment.state = GameEnvironment.START_STATE
         self.screen = Screen(self.maze_environment, screen_width, screen_height)
         self.display_surface = pygame.display.set_mode((self.screen.width, self.screen.height))
@@ -45,6 +44,8 @@ class GameEnvironment:
         self.enemies = []
         self.enemy_collisions = []
         self.active_combat_collisions = []
+        self.player_name = self.screen.CHARONE + self.screen.CHARTWO + self.screen.CHARTHREE
+        #self.score = Score(self.player_name)
 
     def set_arrow_collisions(self):
         for a in self.PLAYER.arrow_group:
@@ -82,9 +83,9 @@ class GameEnvironment:
         self.active_combat_collisions = []
         MazeEnvironment.SPEED = 4
         self.maze_environment.reset()
-        self.score_game = scores.Score()
+        
         # default values for testing
-        self.player_name = Screen.CHARONE + Screen.CHARTWO + Screen.CHARTHREE
+        self.player_name = self.screen.CHARONE + self.screen.CHARTWO + self.screen.CHARTHREE
         GameEnvironment.PLAYER = MainCharacter(self.player_name)
         self.maze_environment.generate_maze_difficulty()
         # put player at maze start, calculate all coords
@@ -129,6 +130,7 @@ class GameEnvironment:
         if remove is not None:
             self.enemies.remove(remove)
         MazeEnvironment.ENEMY_IDS.remove(enemy[0].unique_id)
+        self.screen.score.update_kill()
 
     def check_wall(self, x, y):
         # check if there is a wall at the given x/y
@@ -218,7 +220,6 @@ class GameEnvironment:
                 if e[0].health <= 0:
                     self.on_enemy_death(e)
             self.set_arrow_collisions()
-            self.score_game.name = self.player_name
 
             if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and GameEnvironment.PLAYER.tile_pos[1] == MazeEnvironment.MAZE.end[1]:
                 GameEnvironment.state = GameEnvironment.VICTORY_STATE
@@ -232,14 +233,15 @@ class GameEnvironment:
         if GameEnvironment.state == GameEnvironment.START_STATE:
             self.screen.startView()
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
-            self.score_game.start_time()
+            #self.score.start_time()
             self.screen.activeGameView()
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             self.screen.pauseView()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
-            #print(self.score_game.end_time())
+            #self.score.end_time()
             self.screen.victory()
         elif GameEnvironment.state == GameEnvironment.DEATH_STATE:
+            #self.score.end_time()
             self.screen.death()
 
     def switch_to_ingame(self):
@@ -258,20 +260,20 @@ class GameEnvironment:
                 char_one = pygame.Rect(355, 160, 60, 60)
                 char_two = pygame.Rect(435, 160, 60, 60)
                 char_three = pygame.Rect(510.5, 160, 60, 60)
-                if char_one.collidepoint(event.pos) and Screen.CHARONE != chr(ord('Z')):
-                    Screen.CHARONE = chr(ord(Screen.CHARONE)+1)
-                elif char_one.collidepoint(event.pos) and Screen.CHARONE == chr(ord('Z')):
-                    Screen.CHARONE = chr(ord(Screen.CHARONE)-25)
+                if char_one.collidepoint(event.pos) and self.screen.CHARONE != chr(ord('Z')):
+                    self.screen.CHARONE = chr(ord(self.screen.CHARONE)+1)
+                elif char_one.collidepoint(event.pos) and self.screen.CHARONE == chr(ord('Z')):
+                    self.screen.CHARONE = chr(ord(self.screen.CHARONE)-25)
                 
-                elif char_two.collidepoint(event.pos) and Screen.CHARTWO != chr(ord('Z')):
-                    Screen.CHARTWO = chr(ord(Screen.CHARTWO)+1)
-                elif char_two.collidepoint(event.pos) and Screen.CHARTWO == chr(ord('Z')):
-                    Screen.CHARTWO = chr(ord(Screen.CHARTWO)-25)
+                elif char_two.collidepoint(event.pos) and self.screen.CHARTWO != chr(ord('Z')):
+                    self.screen.CHARTWO = chr(ord(self.screen.CHARTWO)+1)
+                elif char_two.collidepoint(event.pos) and self.screen.CHARTWO == chr(ord('Z')):
+                    self.screen.CHARTWO =  chr(ord(self.screen.CHARTWO)-25)
                     
-                if char_three.collidepoint(event.pos) and Screen.CHARTHREE != chr(ord('Z')):
-                    Screen.CHARTHREE = chr(ord(Screen.CHARTHREE)+1)
-                elif char_three.collidepoint(event.pos) and Screen.CHARTHREE == chr(ord('Z')):
-                    Screen.CHARTHREE = chr(ord(Screen.CHARTHREE)-25)
+                if char_three.collidepoint(event.pos) and self.screen.CHARTHREE != chr(ord('Z')):
+                    self.screen.CHARTHREE = chr(ord(self.screen.CHARTHREE)+1)
+                elif char_three.collidepoint(event.pos) and self.screen.CHARTHREE == chr(ord('Z')):
+                    self.screen.CHARTHREE = chr(ord(self.screen.CHARTHREE)-25)
                 
                 if easyButton.collidepoint(event.pos):
                     GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
@@ -355,19 +357,15 @@ class GameEnvironment:
                     pygame.quit()
                     sys.exit()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
-            self.score_game.end_time()
-            self.score_game.cal_score()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(200, 450, 200, 60)
-                quitButton = pygame.Rect(575, 450, 200, 60)
+                startButton = pygame.Rect(200,600,200,60)
+                quitButton = pygame.Rect(575,600,200,60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
                     pygame.quit()
                     sys.exit()
                 elif startButton.collidepoint(event.pos): # checck if click was restart
                     self.switch_to_ingame()
         elif  GameEnvironment.state == GameEnvironment.DEATH_STATE:
-            self.score_game.end_time()
-            self.score_game.cal_score()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startButton = pygame.Rect(250, 350, 200, 60)
                 quitButton = pygame.Rect(575, 350, 200, 60)

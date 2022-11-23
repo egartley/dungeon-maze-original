@@ -1,12 +1,12 @@
 import pygame
 import game
-import scores
+from scores import Score
 from maze import MazeEnvironment
 
 frame_size_x = 1000
 frame_size_y = 700
 
-score = 0
+
 
 # Initialise colors for resuse
 black = pygame.Color(0, 0, 0)
@@ -20,9 +20,6 @@ orange = pygame.Color(255,127,0)
 
 class Screen:
     TEXT_COLOR = (255, 255, 255)
-    CHARONE = chr(ord('A'))
-    CHARTWO = chr(ord('A'))
-    CHARTHREE = chr(ord('A'))
     SHOW_MAP = False
 
     def __init__(self, maze_env, width, height):
@@ -36,9 +33,18 @@ class Screen:
         self.secondary_font = pygame.font.SysFont("Arial", 50)
         self.third_font = pygame.font.SysFont("calibri.ttf", 30)
         self.victory_font = pygame.font.SysFont("calibri.ttf", 80)
-
+        self.CHARONE = chr(ord('A'))
+        self.CHARTWO = chr(ord('A'))
+        self.CHARTHREE = chr(ord('A'))
+        self.name = self.CHARONE + self.CHARTWO + self.CHARTHREE
+        self.score = Score(self.name,game.GameEnvironment.DIFFICULTY_TRACKER)
+        self.timeGlitch = 0
+        self.display_score = True
     def pauseView(self):
-        surface = pygame.display.get_surface()
+        if self.timeGlitch == 0:
+            self.score.end_time()
+            self.timeGlitch +=1
+        surface = pygame.display.get_surface() 
         surface.blit(self.secondary_font.render("Pause screen", True, Screen.TEXT_COLOR), (400, 8))
         pygame.mouse.set_cursor(self.cursor)
         #start button
@@ -63,13 +69,13 @@ class Screen:
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface, (355, 160))
-        surface.blit(self.secondary_font.render(Screen.CHARONE, True, black), (370.5, 160))
+        surface.blit(self.secondary_font.render(self.CHARONE, True,black),(370.5,160))
         startSurface.fill(green)
         surface.blit(startSurface, (435, 160))
-        surface.blit(self.secondary_font.render(Screen.CHARTWO, True, black), (450.5, 160))
+        surface.blit(self.secondary_font.render(self.CHARTWO, True,black),(450.5,160))
         startSurface.fill(blue)
         surface.blit(startSurface, (510.5, 160))
-        surface.blit(self.secondary_font.render(Screen.CHARTHREE, True, black), (525.5, 160))
+        surface.blit(self.secondary_font.render(self.CHARTHREE, True,black),(525.5,160))
         #easy buttons
         startSurface = pygame.Surface((200, 60))
         startSurface.convert()  # 100, 350, 200, 60
@@ -135,7 +141,9 @@ class Screen:
             surface.blit(background, (pygame.display.get_surface().get_width() - 20 - len(grid[0]) * s, 12))
 
     def activeGameView(self):
-        surface = pygame.display.get_surface()
+        self.timeGlitch = 0
+        self.score.start_time()
+        surface = pygame.display.get_surface() 
         self.maze_environment.render(surface)
         game.GameEnvironment.PLAYER.render(surface)
 
@@ -178,77 +186,90 @@ class Screen:
 
         if game.GameEnvironment.PLAYER.weapon.in_cooldown:
             sprite = pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_right4.png')
-            sprite = pygame.transform.scale(sprite, (90, 90))
-            surface.blit(sprite, (game.GameEnvironment.PLAYER.x - 40, game.GameEnvironment.PLAYER.y - 70))
-
-    def top_scores(self):
-        x = 150
-        s = scores.Score()
-        list_scores = s.read_score()
-        for i in range(len(list_scores)):
-            score = ' '.join(map(str, list_scores[i]))
+            sprite =  pygame.transform.scale(sprite, (90,90))
+            surface.blit(sprite,(game.GameEnvironment.PLAYER.x - 40, game.GameEnvironment.PLAYER.y - 70))
+        
+        
+        
+    def display_top_scores(self):
+        x = 100
+        for i in range(len(self.score.top_scores)):
+            score = ''
+            for k in range(len(self.score.top_scores[i])):
+                    score += self.score.top_scores[i][k]
+            score.replace('/m','')
             pygame.display.get_surface().blit(
-                self.font.render(score, True, Screen.TEXT_COLOR), (frame_size_x / 2 - 200, x))
+                self.font.render(score, True, white), (frame_size_x/2-150, x ))
             x += 40
 
+           
+            
     def victory(self):
+        if self.timeGlitch == 0:
+            self.score.end_time()
+            self.timeGlitch +=1
+        surface = pygame.display.get_surface() 
         bg_img = pygame.image.load('src\\sprites\\background\\victorybg.jpg')
-        bg_img = pygame.transform.scale(bg_img, (frame_size_x, frame_size_y))
-        pygame.display.get_surface().blit(bg_img, (0, 0))
-        pygame.display.get_surface().blit(self.victory_font.render("VICTORY", True, Screen.TEXT_COLOR), (frame_size_x / 2 - 125, 8))
-        show_score(0, red, 'Times New Roman', 20)
-        pygame.display.get_surface().blit(
-            self.third_font.render("TOP 10 SCORES", True, Screen.TEXT_COLOR), (frame_size_x / 2 - 75, 74))
+        bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
+        surface.blit(bg_img, (0,0))
+        surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (270, 8))
+        self.show_score(0, red, 'Times New Roman', 20)
+        if self.display_score:
+            self.display_score = False
+            self.score.determine_writability()
+            self.display_top_scores()
         pygame.mouse.set_cursor(self.cursor)
-        #RESTART BUTTON
-        surface = pygame.display.get_surface()
-        #pygame.draw.rect(surface, black, pygame.Rect(frame_size_x/2-150, 100, 300, 400))
-        #pygame.gfxdraw.box(surface, pygame.Rect(frame_size_x/2-150, 100, 300, 400), black)
-        s = pygame.Surface((480, 550))  # the size of your rect
+        s = pygame.Surface((630,440))  # the size of your rect
         s.set_alpha(150)
         s.fill(black)
-        surface.blit(s, (260, 100))
-        self.top_scores()
-        startSurface = pygame.Surface((250, 60))
+        surface.blit(s, (200,90))
+        
+        #RESTART BUTTON
+        startSurface = pygame.Surface((250,60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface, (200, 450))
-        surface.blit(self.secondary_font.render("RESTART", True, black), (207, 450))
+        surface.blit(startSurface,(200,600))
+        surface.blit(self.secondary_font.render("RESTART", True, black), (230, 600))
         #QUIT button
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface, (575, 450))
-        surface.blit(self.secondary_font.render("QUIT", True, black), (630, 450))
-        # add checck for position
-
+        surface.blit(startSurface,(575,600))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (650,600))
+        self.display_top_scores()
     def death(self):
+        if self.timeGlitch == 0:
+            self.score.end_time()
+            self.timeGlitch +=1
         pygame.mouse.set_cursor(self.cursor)
-        my_font = pygame.font.SysFont('Times New Roman', 90)
-        game_over_surface = my_font.render('YOU DIED', True, red)
-        game_over_rect = game_over_surface.get_rect()
-        game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
-        pygame.display.get_surface().blit(game_over_surface, game_over_rect)
+        bg_img = pygame.image.load('src/sprites/background/tombstone.png') # https://www.pinterest.com/pin/677651075162388819/
+        bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
+        surface.blit(bg_img, (0,0))
+        surface.blit(self.victory_font.render("DEATH", True, red), (400, 8))
         #RESTART BUTTON
         surface = pygame.display.get_surface()
         startSurface = pygame.Surface((200, 60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface, (200, 350))
-        surface.blit(self.secondary_font.render("RESTART", True, black), (210, 350))
+        surface.blit(startSurface,(200,350))
+        surface.blit(self.secondary_font.render("RESTART", True, black), (210, 550))
         #QUIT BUTTON
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface, (575, 350))
-        surface.blit(self.secondary_font.render("QUIT", True, black), (627, 350))
-        show_score(0, red, 'Times New Roman', 20)
-        #check for position
+        surface.blit(startSurface,(575,350))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (627,650))
+        self.show_score(0, red, 'Times New Roman', 20)
+        #check for position 
+        
+    def show_score(self,choice, color, font, size):
+        score_font = pygame.font.SysFont(font, size)
+        self.score.cal_score()
+        score_surface = score_font.render('Score : ' + str(self.score.player_score), True, color)
+        score_rect = score_surface.get_rect()
+        if choice == 1:
+            score_rect.midtop = (frame_size_x/10, 15)
+        else:
+            score_rect.midtop = ((frame_size_x/2)+10, frame_size_y/1.25)
+        pygame.display.get_surface().blit(score_surface, score_rect)
 
-def show_score(choice, color, font, size):
-    score_font = pygame.font.SysFont(font, size)
-    score_surface = score_font.render('Score : ' + str(score), True, color)
-    score_rect = score_surface.get_rect()
-    if choice == 1:
-        score_rect.midtop = (frame_size_x / 10, 15)
-    else:
-        score_rect.midtop = (frame_size_x / 2, frame_size_y / 1.25)
-    pygame.display.get_surface().blit(score_surface, score_rect)
+    def quit(self):
+        pass
