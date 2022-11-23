@@ -47,9 +47,8 @@ class Score:
             full_path = self.get_path()
             with open(full_path,'r') as f:
                 lines = f.read().split("\n")
-                for i in range(0, 10):
+                for i in range(0, 11):
                     lines[i] = lines[i].split(',')
-                    i+=1
                 f.close()
             
             self.top_scores = copy.deepcopy(lines)
@@ -63,20 +62,22 @@ class Score:
         self.total += self.end_t - self.start_t
     
     def determine_writability(self):
+        print(len(self.top_scores))
         print(self.top_scores)
+        print(self.top_scores[10][1])
         self.max_score = int(self.top_scores[1][1])
         self.min_score = int(self.top_scores[10][1])
         
         if self.player_score < int(self.min_score):
             pass
         elif self.player_score >= self.min_score and self.player_score<= self.player_score:
-            for i in range(1,11):
+            for i in range(1,10):
                 if self.player_score > int(self.top_scores[i][1]):
                     break
             row = [self.name, str(self.player_score), str(time.strftime("%H:%M:%S", time.gmtime(self.total))), str(self.kill_count),str(time.ctime(time.time()))]
             self.top_scores.insert(i,row)  
 
-            
+            self.top_scores = self.top_scores[0:11] #should limit to first 11 lines of a file which is the top 10 in our case 
             with open('topScores.txt','w',) as file: 
                 i = 0
                 j = 7
