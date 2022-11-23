@@ -199,7 +199,7 @@ class Screen:
         for i in range(len(self.score.top_scores)):
             score = ' '.join(map(str, self.score.top_scores[i]))
             pygame.display.get_surface().blit(
-                self.font.render(score, True, Screen.TEXT_COLOR), (frame_size_x/2-200, x ))
+                self.font.render(score, True, Screen.TEXT_COLOR), ((frame_size_x/2)-150, x ))
             x += 40
 
     def victory(self):
@@ -210,7 +210,7 @@ class Screen:
         bg_img = pygame.image.load('src\\sprites\\background\\victorybg.jpg')
         bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
         surface.blit(bg_img, (0,0))
-        surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (250, 8))
+        surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (270, 8))
         self.show_score(0, red, 'Times New Roman', 20)
         if self.display_score:
             self.score.determine_writability()
@@ -234,7 +234,7 @@ class Screen:
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface,(575,600))
-        surface.blit(self.secondary_font.render("QUIT",True, black), (630,600))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (650,600))
 
     def death(self):
         if self.timeGlitch == 0:
@@ -269,7 +269,7 @@ class Screen:
         if choice == 1:
             score_rect.midtop = (frame_size_x/10, 15)
         else:
-            score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
+            score_rect.midtop = ((frame_size_x/2)+10, frame_size_y/1.25)
         pygame.display.get_surface().blit(score_surface, score_rect)
 
     def quit(self):
