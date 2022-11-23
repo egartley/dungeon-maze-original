@@ -39,7 +39,7 @@ class Screen:
         self.name = self.CHARONE + self.CHARTWO + self.CHARTHREE
         self.score = Score(self.name,game.GameEnvironment.DIFFICULTY_TRACKER)
         self.timeGlitch = 0
-        
+        self.display_score = True
     def pauseView(self):
         if self.timeGlitch == 0:
             self.score.end_time()
@@ -212,8 +212,10 @@ class Screen:
         surface.blit(bg_img, (0,0))
         surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (250, 8))
         self.show_score(0, red, 'Times New Roman', 20)
-        self.score.determine_writability()
-        self.score.top_scores
+        if self.display_score:
+            self.score.determine_writability()
+            self.display_top_scores()
+            self.display_score = False
         pygame.mouse.set_cursor(self.cursor)
         
         s = pygame.Surface((630,440))  # the size of your rect

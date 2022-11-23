@@ -53,8 +53,6 @@ class Score:
             f.close()
         self.top_scores = copy.deepcopy(lst)
 
-    
-
     def start_time(self):
       self.start_t = time.time()
       
@@ -63,8 +61,6 @@ class Score:
         self.total += self.end_t - self.start_t
     
     def determine_writability(self):
-        print('dt write')
-        print(self.top_scores)
         self.max_score = int(self.top_scores[1][1])
         self.min_score = int(self.top_scores[10][1])
         
@@ -79,24 +75,29 @@ class Score:
                         break
                    
                 if flag:        
-                    row = [self.name, str(self.player_score), str(self.total), str(self.kill_count),str(time.time())]
+                    row = [self.name, str(self.player_score), str(time.strftime("%H:%M:%S", time.gmtime(self.total))), str(self.kill_count),str(time.ctime(time.time()))]
                     self.top_scores.insert(i, row)
             elif self.player_score == int(self.max_score):
-                row = [self.name, str(self.player_score), str(self.total), str(self.kill_count),str(time.time())]
+                row = [self.name, str(self.player_score), str(time.strftime("%H:%M:%S", time.gmtime(self.total))), str(self.kill_count),str(time.ctime(time.time()))]
                 self.top_scores.insert(0, row)
         else:
             pass
-        with open('topScores.txt','w',) as file: 
-            i = 0
-            k = 0
-            for i in range(len(self.top_scores)):
-                string = ""
-                for k in range (len(self.top_scores[i])):
-                    string += str(self.top_scores[i]) + " "
+        i = 0
+        k = 0
+        l = len(self.top_scores)
+        if l > 11:
+            l = 11
+        tmp = ['0'] * l
+        for i in range(l):
+            string = ""
+            for k in range (len(self.top_scores[i])):
+                string += str(self.top_scores[i]) + " "
                 
-                file.writelines(string)
                 k+=1
+            tmp[i] = string
             i+=1
+        with open('topScores.txt','w',) as file: 
+            file.writelines(tmp)
             file.close()
             
     def update_kill(self):
