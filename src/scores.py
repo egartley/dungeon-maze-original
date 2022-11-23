@@ -19,8 +19,8 @@ class Score:
         self.topScores = self.read_score()
         self.min_score = 0
         self.max_score = 0
-        self.string_lst = [None] * 12
         self.total_multiplier = 0
+        #level difficulty multiplier
         if dif == 2:
             self.total_multiplier = .75
         elif dif == 1:
@@ -39,7 +39,7 @@ class Score:
 
     def cal_score(self):
         if self.player_score == 0:
-            self.player_score = math.ceil((self.kill_count * 100) + (self.total * self.total_multiplier) + 1000)
+            self.player_score = math.ceil((self.kill_count * 100) + (self.total * self.total_multiplier) + 2000)
 
     def read_score(self):
         if self.read:
@@ -47,11 +47,9 @@ class Score:
             full_path = self.get_path()
             with open(full_path,'r') as f:
                 lines = f.read().split("\n")
-                for i in range(0, len(lines) - 1):
-                    print(i)
+                for i in range(0, 10):
                     lines[i] = lines[i].split(',')
-                    print('now equals')
-                    print(lines[i])
+                    i+=1
                 f.close()
             
             self.top_scores = copy.deepcopy(lines)
@@ -65,25 +63,32 @@ class Score:
         self.total += self.end_t - self.start_t
     
     def determine_writability(self):
-        
-        
+        print(self.top_scores)
         self.max_score = int(self.top_scores[1][1])
         self.min_score = int(self.top_scores[10][1])
         
         if self.player_score < int(self.min_score):
             pass
-        else:
-            for i in range(1,10):
+        elif self.player_score >= self.min_score and self.player_score<= self.player_score:
+            for i in range(1,11):
                 if self.player_score > int(self.top_scores[i][1]):
                     break
             row = [self.name, str(self.player_score), str(time.strftime("%H:%M:%S", time.gmtime(self.total))), str(self.kill_count),str(time.ctime(time.time()))]
-            self.top_scores.insert(i,row)      
-            print(self.top_scores)
-            
-            
+            self.top_scores.insert(i,row)  
+
             
             with open('topScores.txt','w',) as file: 
-                file.writelines(tmp)
+                i = 0
+                j = 7
+                for i in range(len(self.top_scores) - 1):
+                    if self.top_scores[i] == row:
+                        s = ', '.join(self.top_scores[i]) +"\n"
+                    else:
+                        s = ','.join(self.top_scores[i]) +"\n"
+                    print("S of " + str(i))
+                    print(s)
+                    file.writelines(s)
+                    i+=1
                 file.close()
             
     def update_kill(self):
