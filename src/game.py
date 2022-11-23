@@ -24,6 +24,7 @@ class GameEnvironment:
     DIFFICULTY_MEDIUM = 1
     DIFFICULTY_HARD = 2
     DIFFICULTY_TRACKER = -1
+    
 
     # assuming only one booster with a timer is active at a time, unique event id for it
     BOOSTER_EVENT_ID = pygame.USEREVENT + 9
@@ -41,6 +42,8 @@ class GameEnvironment:
         self.enemy_collisions = []
         self.active_combat_collisions = []
         self.player_name = self.screen.CHARONE + self.screen.CHARTWO + self.screen.CHARTHREE
+        SCREEN_WIDTH = screen_width
+        SCREEN_HEIGHT = screen_height
         #self.score = Score(self.player_name)
 
     def set_arrow_collisions(self):

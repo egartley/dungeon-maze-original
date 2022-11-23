@@ -197,7 +197,14 @@ class Screen:
     def display_top_scores(self):
         x = 100
         for i in range(len(self.score.top_scores)):
-            score = ' '.join(map(str, self.score.top_scores[i]))
+            score = ''
+            for k in range(len(self.score.top_scores[i])):
+                if k == len(self.display_top_scores[i]):
+                    score += self.score.top_scores[i][k].strip('/n')
+                else:
+                    score += self.score.top_scores[i][k]
+            score.replace('/','')
+            print(score)
             pygame.display.get_surface().blit(
                 self.font.render(score, True, Screen.TEXT_COLOR), ((frame_size_x/2)-150, x ))
             x += 40
@@ -237,27 +244,31 @@ class Screen:
         surface.blit(self.secondary_font.render("QUIT",True, black), (650,600))
 
     def death(self):
+        surface = pygame.display.get_surface() 
         if self.timeGlitch == 0:
             self.score.end_time()
             self.timeGlitch +=1
         pygame.mouse.set_cursor(self.cursor)
-        my_font = pygame.font.SysFont('Times New Roman', 90)
-        game_over_surface = my_font.render('YOU DIED', True, red)
-        game_over_rect = game_over_surface.get_rect()
-        game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
-        pygame.display.get_surface().blit(game_over_surface, game_over_rect)
+        # my_font = pygame.font.SysFont('Times New Roman', 90)
+        # game_over_surface = my_font.render('YOU DIED', True, red)
+        # game_over_rect = game_over_surface.get_rect()
+        # game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
+        # pygame.display.get_surface().blit(game_over_surface, game_over_rect)
+        bg_img = pygame.image.load('src/sprites/background/tombstone.png') # https://www.pinterest.com/pin/677651075162388819/
+        bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
+        surface.blit(bg_img, (0,0))
+        surface.blit(self.victory_font.render("DEATH", True, red), (400, 8))
         #RESTART BUTTON
-        surface = pygame.display.get_surface() 
         startSurface = pygame.Surface((200,60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface,(200,350))
-        surface.blit(self.secondary_font.render("RESTART", True, black), (210, 550))
+        surface.blit(startSurface,(175,550))
+        surface.blit(self.secondary_font.render("RESTART", True, black), (185, 550))
         #QUIT BUTTON
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface,(575,350))
-        surface.blit(self.secondary_font.render("QUIT",True, black), (627,650))
+        surface.blit(startSurface,(645,550))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (697,550))
         self.show_score(0, red, 'Times New Roman', 20)
         #check for position 
         
