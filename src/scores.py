@@ -13,6 +13,7 @@ class Score:
         self.player_score = 0
         self.kill_count = 0
         self.is_no_write = True
+        self.read = True
         self.total = 0
         self.name = name
         self.topScores = self.read_score()
@@ -41,17 +42,19 @@ class Score:
             self.player_score = math.ceil((self.kill_count * 100) + (self.total * self.total_multiplier) + 1000)
 
     def read_score(self):
-        full_path = self.get_path()
-        lst = []
-        with open(full_path,'r') as f:
-            lines = f.readlines()
-            i = 0
-            for i in range(len(lines)):
-                one_line = lines[i]
-                lst.append(one_line.split(' '))
-                i+=1
-            f.close()
-        self.top_scores = copy.deepcopy(lst)
+        if self.read:
+            self.read = False
+            full_path = self.get_path()
+            lst = []
+            with open(full_path,'r') as f:
+                lines = f.readlines()
+                i = 0
+                for i in range(len(lines)):
+                    one_line = lines[i]
+                    lst.append(one_line.split(' '))
+                    i+=1
+                f.close()
+            self.top_scores = copy.deepcopy(lst)
 
     def start_time(self):
       self.start_t = time.time()
