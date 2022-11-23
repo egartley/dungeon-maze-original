@@ -5,7 +5,8 @@
 from pygame import *
 import pygame
 import game
-from os import *
+
+
 class Booster:
     def __init__(self):
         self.increase = 0
@@ -14,7 +15,7 @@ class Booster:
         self.rect = self.sprite.get_rect()
         self.x = 0
         self.y = 0
-        # see explaination for relative coords in maincharacter
+        # see explanation for relative coords in maincharacter
         self.relative_x = 0
         self.relative_y = 0
         self.placed = False
@@ -47,13 +48,13 @@ class ArrowBooster(Booster):
 class SpeedBooster(Booster):
     increase = 1.5
     BOOSTERID = pygame.USEREVENT + 69
+
     def __init__(self):
         super().__init__()
         self.time = 15
         self.sprite = image.load('src/sprites/Boosters/speed.png')
         self.sprite = transform.scale(self.sprite, (200,40))
         self.rect = self.sprite.get_rect()
-        
         
     def booster_collision(self):
         game.GameEnvironment.PLAYER.apply_booster(self) 
@@ -62,6 +63,7 @@ class SpeedBooster(Booster):
 class HealthBooster(Booster):
     BOOSTERID = 1000
     increase = 20
+
     def __init__(self):
         super().__init__()
         
@@ -75,6 +77,7 @@ class HealthBooster(Booster):
 
 class ShieldBooster(Booster):
     increase = 20
+
     def __init__(self):
         super().__init__()
         
@@ -89,6 +92,7 @@ class ShieldBooster(Booster):
 class AttackBooster(Booster):
     increase = 10
     BOOSTERID = pygame.USEREVENT + 710
+
     def __init__(self):
         super().__init__()
         self.time = 30

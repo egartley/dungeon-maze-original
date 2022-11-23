@@ -1,18 +1,16 @@
-import py
 import screen
 import pygame
 import math
 import maze
-from os import *
 
 
 class Arrow(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, target_x, target_y):
         super().__init__()
         self.picture = pygame.image.load('src/sprites/Boosters/arrow.png')
-        self.picture = pygame.transform.scale(self.picture, (50,50))
+        self.picture = pygame.transform.scale(self.picture, (50, 50))
         self.picture = pygame.transform.rotate(self.picture, 225)
-        self.rect = self.picture.get_rect(topleft = (pos_x, pos_y))
+        self.rect = self.picture.get_rect(topleft=(pos_x, pos_y))
         self.angle = math.atan2(target_y - pos_y, target_x - pos_x)
         self.velx = math.cos(self.angle) * 20
         self.vely = math.sin(self.angle) * 20
@@ -39,7 +37,6 @@ class Arrow(pygame.sprite.Sprite):
 
         if self.check_wall(self.relative_x - 20, self.relative_y - 20):
             self.self_destruct()
-
 
     def check_wall(self, x, y):
         # check if there is a wall at the given x/y

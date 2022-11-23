@@ -5,6 +5,7 @@ import math
 
 
 
+
 class Score:
     def __init__(self, name,dif):
         self.start_t = time.time()
@@ -94,5 +95,3 @@ class Score:
             
     def update_kill(self):
         self.kill_count += 1
-
-    

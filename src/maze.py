@@ -5,13 +5,52 @@ from mazelib import Maze
 from mazelib.generate.Prims import Prims
 import pygame
 
+
+def get_chunks_around(pos, size_r, size_c):
+    area = [pos]
+    size_r = (size_r - 1) // 2
+    size_c = (size_c - 1) // 2
+    for t in get_row_area(pos[0], pos[1], size_r, size_c):
+        area.append(t)
+    return area
+
+
+def get_row_area(r, c, size_r, size_c):
+    area = []
+    for i in range(1, size_r + 1):
+        if r - i >= 0:
+            area.append((r - i, c))
+            for t in get_column_area(r - i, c, size_c):
+                area.append(t)
+    for t in get_column_area(r, c, size_c):
+        area.append(t)
+    for i in range(1, size_r + 1):
+        if r + i < len(MazeEnvironment.MAZE.grid):
+            area.append((r + i, c))
+            for t in get_column_area(r + i, c, size_c):
+                area.append(t)
+    return area
+
+
+def get_column_area(r, c, size_c):
+    area = []
+    for i in range(1, size_c + 1):
+        if c - i >= 0:
+            area.append((r, c - i))
+    for i in range(1, size_c + 1):
+        if c + i < len(MazeEnvironment.MAZE.grid[0]):
+            area.append((r, c + i))
+    return area
+
+
 class MazeEnvironment:
     TILE_SIZE = 500
+    PIXEL_WIDTH = 0
+    PIXEL_HEIGHT = 0
     MAP_X = 0
     MAP_Y = 0
     SPEED = 4
-    PIXEL_WIDTH = 0
-    PIXEL_HEIGHT = 0
+
     ROOM = 0
     WALL = 1
     START = 2
@@ -23,7 +62,6 @@ class MazeEnvironment:
 
     ENEMY_IDS = []
 
-    # whether the map (not player!) can move in the direction
     CAN_MOVE_UP = False
     CAN_MOVE_DOWN = False
     CAN_MOVE_LEFT = False
@@ -39,7 +77,8 @@ class MazeEnvironment:
         self.right = False
         self.floor_surface = pygame.image.load("src/sprites/maze/floor.png")
         self.corner_surface = pygame.image.load("src/sprites/maze/corner.png")
-        walls = ["0001", "0010", "0011", "0100", "0110", "0111", "1000", "1001", "1011", "1100", "1101", "1110", "1010", "0101"]
+        walls = ["0001", "0010", "0011", "0100", "0110", "0111", "1000", "1001", "1011", "1100", "1101", "1110", "1010",
+                 "0101"]
         self.wall_surfaces = []
         for i in range(0, len(walls)):
             self.wall_surfaces.append((walls[i], pygame.image.load("src/sprites/maze/" + walls[i] + ".png")))
@@ -67,16 +106,16 @@ class MazeEnvironment:
 
     def generate_maze_difficulty(self):
         if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
-            randH = random.randint(30,40)
-            randW = random.randint(0,5) + randH
+            randH = random.randint(30, 40)
+            randW = random.randint(0, 5) + randH
             self.generate_maze(randH, randW)
         elif game.GameEnvironment.DIFFICULTY_TRACKER == 1:
-            randH = random.randint(11,30)
-            randW = random.randint(0,5) + randH
+            randH = random.randint(11, 30)
+            randW = random.randint(0, 5) + randH
             self.generate_maze(randH, randW)
         else:
-            randH = random.randint(5,10)
-            randW = random.randint(0,5) + randH
+            randH = random.randint(5, 10)
+            randW = random.randint(0, 5) + randH
             self.generate_maze(randH, randW)
 
     def generate_maze(self, rows, columns):
@@ -98,6 +137,8 @@ class MazeEnvironment:
             self.wall_surfaces[i][1].convert()
         self.calculate_walls()
         self.calculate_corners()
+        self.generate_booster_spawns()
+        self.generate_enemy_spawns()
         self.set_chunks()
 
     def calculate_walls(self):
@@ -122,13 +163,17 @@ class MazeEnvironment:
             for j in range(len(grid[i])):
                 if not grid[i][j] == MazeEnvironment.WALL:
                     continue
-                if j - 1 >= 0 and grid[i][j - 1] == MazeEnvironment.WALL and i - 1 >= 0 and grid[i - 1][j] == MazeEnvironment.WALL:
+                if j - 1 >= 0 and grid[i][j - 1] == MazeEnvironment.WALL and i - 1 >= 0 and grid[i - 1][
+                    j] == MazeEnvironment.WALL:
                     self.corners.append(([i, j], 1))
-                if j + 1 < len(grid[i]) and grid[i][j + 1] == MazeEnvironment.WALL and i - 1 >= 0 and grid[i - 1][j] == MazeEnvironment.WALL:
+                if j + 1 < len(grid[i]) and grid[i][j + 1] == MazeEnvironment.WALL and i - 1 >= 0 and grid[i - 1][
+                    j] == MazeEnvironment.WALL:
                     self.corners.append(([i, j], 2))
-                if j + 1 < len(grid[i]) and grid[i][j + 1] == MazeEnvironment.WALL and i + 1 < len(grid) and grid[i + 1][j] == MazeEnvironment.WALL:
+                if j + 1 < len(grid[i]) and grid[i][j + 1] == MazeEnvironment.WALL and i + 1 < len(grid) and \
+                        grid[i + 1][j] == MazeEnvironment.WALL:
                     self.corners.append(([i, j], 3))
-                if j - 1 >= 0 and grid[i][j - 1] == MazeEnvironment.WALL and i + 1 < len(grid) and grid[i + 1][j] == MazeEnvironment.WALL:
+                if j - 1 >= 0 and grid[i][j - 1] == MazeEnvironment.WALL and i + 1 < len(grid) and grid[i + 1][
+                    j] == MazeEnvironment.WALL:
                     self.corners.append(([i, j], 4))
 
     def build_tiles(self, to_add):
@@ -175,11 +220,14 @@ class MazeEnvironment:
                         if num == 1:
                             surface.blit(self.corner_surface, position)
                         elif num == 2:
-                            surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(), position[1]))
+                            surface.blit(self.corner_surface,
+                                         (position[0] + s - self.corner_surface.get_width(), position[1]))
                         elif num == 3:
-                            surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(), position[1] + s - self.corner_surface.get_height()))
+                            surface.blit(self.corner_surface, (position[0] + s - self.corner_surface.get_width(),
+                                                               position[1] + s - self.corner_surface.get_height()))
                         elif num == 4:
-                            surface.blit(self.corner_surface, (position[0], position[1] + s - self.corner_surface.get_height()))
+                            surface.blit(self.corner_surface,
+                                         (position[0], position[1] + s - self.corner_surface.get_height()))
             else:
                 surface.blit(self.floor_surface, position)
             self.tiles.append(Tile(surface, i, j))
@@ -189,38 +237,7 @@ class MazeEnvironment:
         if self.last_player_pos == (0, 0):
             return
         MazeEnvironment.CHUNKS = []
-        pos = self.last_player_pos
-        r = pos[0]
-        c = pos[1]
-        to_add = [pos]
-        if r - 1 >= 0:
-            to_add.append((r - 1, c))
-            if c - 2 >= 0:
-                to_add.append((r - 1, c - 2))
-            if c - 1 >= 0:
-                to_add.append((r - 1, c - 1))
-            if c + 1 < len(MazeEnvironment.MAZE.grid[0]):
-                to_add.append((r - 1, c + 1))
-            if c + 2 < len(MazeEnvironment.MAZE.grid[0]):
-                to_add.append((r - 1, c + 2))
-        if c - 2 >= 0:
-            to_add.append((r, c - 2))
-        if c - 1 >= 0:
-            to_add.append((r, c - 1))
-        if c + 1 < len(MazeEnvironment.MAZE.grid[0]):
-            to_add.append((r, c + 1))
-        if c + 2 < len(MazeEnvironment.MAZE.grid[0]):
-            to_add.append((r, c + 2))
-        if r + 1 < len(MazeEnvironment.MAZE.grid):
-            to_add.append((r + 1, c))
-            if c - 2 >= 0:
-                to_add.append((r + 1, c - 2))
-            if c - 1 >= 0:
-                to_add.append((r + 1, c - 1))
-            if c + 1 < len(MazeEnvironment.MAZE.grid[0]):
-                to_add.append((r + 1, c + 1))
-            if c + 2 < len(MazeEnvironment.MAZE.grid[0]):
-                to_add.append((r + 1, c + 2))
+        to_add = get_chunks_around(self.last_player_pos, 3, 5)
         self.build_tiles(to_add)
         for i in range(0, len(self.tiles)):
             tile = self.tiles[i]
@@ -228,17 +245,28 @@ class MazeEnvironment:
                 MazeEnvironment.CHUNKS.append(tile)
         self.generate_boosters()
         self.generate_enemies()
-         
-    def generate_boosters(self):
+
+    def generate_booster_spawns(self):
         r = random.Random()
-        if len(self.booster_spawns) == 0:
-            grid = MazeEnvironment.MAZE.grid
-            for i in range(len(grid)):
-                for j in range(len(grid[0])):
-                    if grid[i][j] == MazeEnvironment.ROOM:
-                        x = r.randint(1, 100)
-                        if x <= 50:
-                            self.booster_spawns.append((i, j))
+        grid = MazeEnvironment.MAZE.grid
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == MazeEnvironment.ROOM:
+                    x = r.randint(1, 100)
+                    if x <= 50:
+                        self.booster_spawns.append((i, j))
+
+    def generate_enemy_spawns(self):
+        r = random.Random()
+        grid = MazeEnvironment.MAZE.grid
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == MazeEnvironment.ROOM:
+                    x = r.randint(1, 100)
+                    if x <= 50:
+                        self.enemy_spawns.append((i, j))
+
+    def generate_boosters(self):
         to_remove = []
         for s in self.booster_spawns:
             spawn = False
@@ -247,7 +275,7 @@ class MazeEnvironment:
                     spawn = True
                     break
             if spawn:
-                rooms = (chunk.r, chunk.c)
+                rooms = (s[0], s[1])
                 if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_EASY:
                     self.room_loop_easy(rooms)
                 elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_MEDIUM:
@@ -260,7 +288,7 @@ class MazeEnvironment:
         self.place_boosters()
         self.game_environment.set_booster_collisions()
 
-    def room_loop_easy(self,room):
+    def room_loop_easy(self, room):
         r = random.Random()
         x = r.randint(1, 5)
         if x == 1:
@@ -274,54 +302,54 @@ class MazeEnvironment:
         else:
             self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
 
-    def room_loop_medium(self,room):
+    def room_loop_medium(self, room):
         r = random.Random()
         x = r.randint(1, 5)
         if x == 1:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1 or s == 2:
                 self.game_environment.boosters.append((ArrowBooster(), room[0], room[1]))
         elif x == 2:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1 or s == 2:
                 self.game_environment.boosters.append((SpeedBooster(), room[0], room[1]))
         elif x == 3:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1 or s == 2:
                 self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
         elif x == 4:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1 or s == 2:
                 self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
         else:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1 or s == 2:
                 self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
-    
-    def room_loop_hard(self,room):
+
+    def room_loop_hard(self, room):
         r = random.Random()
         x = r.randint(1, 5)
         if x == 1:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1:
                 self.game_environment.boosters.append((ArrowBooster(), room[0], room[1]))
                 self.game_environment.boosters.append((ArrowBooster(), room[0], room[1]))
         elif x == 2:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1:
                 self.game_environment.boosters.append((SpeedBooster(), room[0], room[1]))
         elif x == 3:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1:
                 self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
                 self.game_environment.boosters.append((HealthBooster(), room[0], room[1]))
         elif x == 4:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1:
                 self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
                 self.game_environment.boosters.append((ShieldBooster(), room[0], room[1]))
         else:
-            s = r.randint(1,3)
+            s = r.randint(1, 3)
             if s == 1:
                 self.game_environment.boosters.append((AttackBooster(), room[0], room[1]))
 
@@ -350,7 +378,6 @@ class MazeEnvironment:
                 return
 
     def generate_enemies(self):
-        damage = 0
         if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
             damage = 15
         elif game.GameEnvironment.DIFFICULTY_TRACKER == 1:
@@ -358,14 +385,6 @@ class MazeEnvironment:
         else:
             damage = 5
         r = random.Random()
-        if len(self.enemy_spawns) == 0:
-            grid = MazeEnvironment.MAZE.grid
-            for i in range(len(grid)):
-                for j in range(len(grid[0])):
-                    if grid[i][j] == MazeEnvironment.ROOM:
-                        x = r.randint(1, 100)
-                        if x <= 50:
-                            self.enemy_spawns.append((i, j))
         to_remove = []
         for s in self.enemy_spawns:
             spawn = False
@@ -387,7 +406,7 @@ class MazeEnvironment:
         self.game_environment.set_enemy_collisions()
 
     def place_enemies(self):
-        # do all the yucky math for determing where to actually render the enemies based on their generation
+        # do all the yucky math for determining where to actually render the enemies based on their generation
         r = random.Random()
         for e in self.game_environment.enemies:
             enemy = e[0]
@@ -409,14 +428,6 @@ class MazeEnvironment:
             if e[0] == enemy:
                 self.game_environment.enemies.remove(e)
                 return
-
-    def get_player_pos(self, r, c):
-        # get the player's tile position (ex. 0, 0 is top left)
-        return MazeEnvironment.TILE_SIZE * r + (MazeEnvironment.TILE_SIZE / 2 - game.GameEnvironment.PLAYER.width / 2), \
-               MazeEnvironment.TILE_SIZE * c + (MazeEnvironment.TILE_SIZE / 2 - game.GameEnvironment.PLAYER.height / 2)
-
-    def fog_of_war(self):
-        pass
 
     def tick(self):
         if self.up and MazeEnvironment.CAN_MOVE_UP:
@@ -471,9 +482,8 @@ class MazeEnvironment:
 
     def render(self, surface):
         s = MazeEnvironment.TILE_SIZE
-        for i in range(0, len(MazeEnvironment.CHUNKS)):
-            tile = MazeEnvironment.CHUNKS[i]
-            tile.render(surface, MazeEnvironment.MAP_X + (tile.c * s), MazeEnvironment.MAP_Y + (tile.r * s))
+        for chunk in MazeEnvironment.CHUNKS:
+            chunk.render(surface, MazeEnvironment.MAP_X + (chunk.c * s), MazeEnvironment.MAP_Y + (chunk.r * s))
 
         for b in self.game_environment.boosters:
             if -300 < b[0].x < surface.get_width():
