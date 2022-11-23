@@ -112,7 +112,7 @@ class Screen:
         start.fill((0, 255, 0)) # green
         end = pygame.Surface((s, s))
         end.convert()
-        end.fill((160, 160, 160))
+        end.fill((255, 0, 0)) # red
         player = pygame.Surface((s, s))
         player.convert()
         player.fill((138, 43, 226)) #purple

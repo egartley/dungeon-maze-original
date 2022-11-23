@@ -3,9 +3,6 @@ import os
 import time
 import math
 
-
-
-
 class Score:
     def __init__(self, name,dif):
         self.start_t = time.time()
@@ -28,8 +25,6 @@ class Score:
             self.total_multiplier = .6
         else:
             self.total_multiplier = .45
-        
-        
 
     def get_path(self):
         absolute_path = os.path.dirname(__file__)
@@ -40,7 +35,7 @@ class Score:
 
     def cal_score(self):
         if self.player_score == 0:
-            self.player_score = math.ceil((self.kill_count * 100) + (self.total * self.total_multiplier) + 2000)
+            self.player_score = math.ceil((self.kill_count * 100) + (self.total * self.total_multiplier))
 
     def read_score(self):
         if self.read:
@@ -54,7 +49,6 @@ class Score:
             
             self.top_scores = copy.deepcopy(lines[0:11])
             
-
     def start_time(self):
       self.start_t = time.time()
       
@@ -81,9 +75,8 @@ class Score:
                 j = 7
                 for i in range(0,len(self.top_scores)):
                     if i == len(self.top_scores) - 1:
-                        s = ', '.join(self.top_scores[i])  
-                    elif self.top_scores[i] == row:
-                        s = ', '.join(self.top_scores[i]) +"\n"
+                        s = ','.join(self.top_scores[i]) 
+                    
                     else:
                         s = ','.join(self.top_scores[i]) +"\n"
                     file.writelines(s)

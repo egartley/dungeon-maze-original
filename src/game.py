@@ -5,11 +5,9 @@ from character import *
 from screen import Screen
 #from scores import Score
 
-
 def get_player_pos(r, c):
     return MazeEnvironment.TILE_SIZE * r + (MazeEnvironment.TILE_SIZE / 2 - game.GameEnvironment.PLAYER.width / 2), \
            MazeEnvironment.TILE_SIZE * c + (MazeEnvironment.TILE_SIZE / 2 - game.GameEnvironment.PLAYER.height / 2)
-
 
 class GameEnvironment:
     # constants for keeping track of the game state
@@ -349,7 +347,7 @@ class GameEnvironment:
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startButton = pygame.Rect(250, 550, 200, 60)
-                quitButton = pygame.Rect(600, 550, 200, 60)
+                quitButton = pygame.Rect(600, 55e0, 200, 60)
                 # goes in if clicked = buttonrect.collidepoint(event.pos)
                 if startButton.collidepoint(event.pos):
                     self.switch_to_ingame()
