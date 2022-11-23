@@ -197,11 +197,16 @@ class Screen:
     def display_top_scores(self):
         x = 100
         for i in range(len(self.score.top_scores)):
-            score = ' '.join(map(str, self.score.top_scores[i]))
+            score = ''
+            for k in range(len(self.score.top_scores[i])):
+                    score += self.score.top_scores[i][k]
+            score.replace('/m','')
             pygame.display.get_surface().blit(
-                self.font.render(score, True, Screen.TEXT_COLOR), ((frame_size_x/2)-150, x ))
+                self.font.render(score, True, white), (frame_size_x/2-200, x ))
             x += 40
 
+           
+            
     def victory(self):
         if self.timeGlitch == 0:
             self.score.end_time()
@@ -217,7 +222,7 @@ class Screen:
             self.display_top_scores()
             self.display_score = False
         pygame.mouse.set_cursor(self.cursor)
-        
+        self.display_top_scores()
         s = pygame.Surface((630,440))  # the size of your rect
         s.set_alpha(150)
         s.fill(black)
