@@ -81,15 +81,13 @@ class Score:
             with open('topScores.txt','w',) as file: 
                 i = 0
                 j = 7
-                for i in range(len(self.top_scores) - 1):
+                for i in range(0,len(self.top_scores) - 1):
                     if self.top_scores[i] == row:
                         s = ', '.join(self.top_scores[i]) +"\n"
                     else:
                         s = ','.join(self.top_scores[i]) +"\n"
-                    print("S of " + str(i))
-                    print(s)
                     file.writelines(s)
-                    i+=1
+                    
                 file.close()
             
     def update_kill(self):
