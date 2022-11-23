@@ -229,7 +229,6 @@ class Screen:
         s.set_alpha(150)
         s.fill(black)
         surface.blit(s, (200,90))
-        self.display_top_scores()
         
         #RESTART BUTTON
         startSurface = pygame.Surface((250,60))
@@ -249,11 +248,6 @@ class Screen:
             self.score.end_time()
             self.timeGlitch +=1
         pygame.mouse.set_cursor(self.cursor)
-        # my_font = pygame.font.SysFont('Times New Roman', 90)
-        # game_over_surface = my_font.render('YOU DIED', True, red)
-        # game_over_rect = game_over_surface.get_rect()
-        # game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
-        # pygame.display.get_surface().blit(game_over_surface, game_over_rect)
         bg_img = pygame.image.load('src/sprites/background/tombstone.png') # https://www.pinterest.com/pin/677651075162388819/
         bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
         surface.blit(bg_img, (0,0))
