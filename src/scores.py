@@ -51,7 +51,7 @@ class Score:
                     lines[i] = lines[i].split(',')
                 f.close()
             
-            self.top_scores = copy.deepcopy(lines)
+            self.top_scores = copy.deepcopy(lines[0:11])
             
 
     def start_time(self):
@@ -71,7 +71,7 @@ class Score:
         if self.player_score < int(self.min_score):
             pass
         elif self.player_score >= self.min_score and self.player_score<= self.player_score:
-            for i in range(1,10):
+            for i in range(1,11):
                 if self.player_score > int(self.top_scores[i][1]):
                     break
             row = [self.name, str(self.player_score), str(time.strftime("%H:%M:%S", time.gmtime(self.total))), str(self.kill_count),str(time.ctime(time.time()))]
@@ -81,7 +81,9 @@ class Score:
             with open('topScores.txt','w',) as file: 
                 i = 0
                 j = 7
-                for i in range(0,len(self.top_scores) - 1):
+                for i in range(0,len(self.top_scores)):
+                    if i == len(self.top_scores) - 1:
+                        s = ','.join(self.top_scores[i])
                     if self.top_scores[i] == row:
                         s = ', '.join(self.top_scores[i]) +"\n"
                     else:
