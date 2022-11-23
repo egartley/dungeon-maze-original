@@ -83,8 +83,8 @@ class Score:
                 j = 7
                 for i in range(0,len(self.top_scores)):
                     if i == len(self.top_scores) - 1:
-                        s = ','.join(self.top_scores[i])
-                    if self.top_scores[i] == row:
+                        s = ', '.join(self.top_scores[i])  
+                    elif self.top_scores[i] == row:
                         s = ', '.join(self.top_scores[i]) +"\n"
                     else:
                         s = ','.join(self.top_scores[i]) +"\n"
