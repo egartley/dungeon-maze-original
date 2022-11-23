@@ -218,9 +218,9 @@ class Screen:
         surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (270, 8))
         self.show_score(0, red, 'Times New Roman', 20)
         if self.display_score:
+            self.display_score = False
             self.score.determine_writability()
             self.display_top_scores()
-            self.display_score = False
         pygame.mouse.set_cursor(self.cursor)
         s = pygame.Surface((630,440))  # the size of your rect
         s.set_alpha(150)
