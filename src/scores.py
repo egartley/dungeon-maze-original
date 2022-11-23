@@ -63,9 +63,6 @@ class Score:
         self.total += self.end_t - self.start_t
     
     def determine_writability(self):
-        print(len(self.top_scores))
-        print(self.top_scores)
-        print(self.top_scores[10][1])
         self.max_score = int(self.top_scores[1][1])
         self.min_score = int(self.top_scores[10][1])
         

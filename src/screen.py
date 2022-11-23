@@ -40,31 +40,35 @@ class Screen:
         self.score = Score(self.name,game.GameEnvironment.DIFFICULTY_TRACKER)
         self.timeGlitch = 0
         self.display_score = True
+        
     def pauseView(self):
         if self.timeGlitch == 0:
             self.score.end_time()
             self.timeGlitch +=1
         surface = pygame.display.get_surface() 
-        surface.blit(self.secondary_font.render("Pause screen", True, Screen.TEXT_COLOR), (400, 8))
+        bg_img = pygame.image.load('src/sprites/background/pause.png') #https://www.shutterstock.com/video/clip-1008683782-retro-videogame-pause-text-computer-old-tv
+        bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
+        surface.blit(bg_img, (0,0))
         pygame.mouse.set_cursor(self.cursor)
         #start button
         surface = pygame.display.get_surface()
         startSurface = pygame.Surface((200, 60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface, (250, 350)) # hard coded button values if they get change , change in game.py event handler
-        surface.blit(self.secondary_font.render("PLAY", True, black), (300, 350))
+        surface.blit(startSurface, (250, 550)) # hard coded button values if they get change , change in game.py event handler
+        surface.blit(self.secondary_font.render("PLAY", True, black), (300, 550))
         #quit button
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface, (600, 350))
-        surface.blit(self.secondary_font.render("QUIT", True, black), (650, 350))
+        surface.blit(startSurface, (600, 550))
+        surface.blit(self.secondary_font.render("QUIT", True, black), (650, 550))
 
     def startView(self):
         pygame.mouse.set_cursor(self.cursor)
         #nick name button
         surface = pygame.display.get_surface()  ## since hard coded position values, if this change it changes in game.py event handler
-        surface.blit(self.font.render("Enter a three letter nickname", True, white), (362.5, 130))
+        surface.blit(self.victory_font.render("Dungeon Maze", True, white), (270, 8))
+        surface.blit(self.font.render("Enter a three letter nickname", True, white), (367.5, 130))
         startSurface = pygame.Surface((60, 60))
         startSurface.convert()
         startSurface.fill(red)
@@ -146,12 +150,9 @@ class Screen:
         surface = pygame.display.get_surface() 
         self.maze_environment.render(surface)
         game.GameEnvironment.PLAYER.render(surface)
-
         self.draw_minimap(surface)
-
         surface.blit(self.font.render("In-game view", True, Screen.TEXT_COLOR), (12, 8))
         surface.blit(self.font.render("Move with WASD", True, Screen.TEXT_COLOR), (12, 30))
-
         # back fill of health bar plus health bar
         backFillSprite = pygame.Surface((90, 10))
         backFillSprite.convert()
@@ -201,15 +202,13 @@ class Screen:
             pygame.display.get_surface().blit(
                 self.font.render(score, True, white), (frame_size_x/2-150, x ))
             x += 40
-
-           
-            
+        
     def victory(self):
         if self.timeGlitch == 0:
             self.score.end_time()
             self.timeGlitch +=1
         surface = pygame.display.get_surface() 
-        bg_img = pygame.image.load('src\\sprites\\background\\victorybg.jpg')
+        bg_img = pygame.image.load('src/sprites/background/victorybg.jpg')
         bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
         surface.blit(bg_img, (0,0))
         surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (270, 8))
@@ -236,6 +235,7 @@ class Screen:
         surface.blit(startSurface,(575,600))
         surface.blit(self.secondary_font.render("QUIT",True, black), (650,600))
         self.display_top_scores()
+        
     def death(self):
         surface = pygame.display.get_surface()
         if self.timeGlitch == 0:
@@ -257,7 +257,7 @@ class Screen:
         startSurface.fill(red)
         surface.blit(startSurface,(605,550))
         surface.blit(self.secondary_font.render("QUIT",True, black), (655,550))
-        self.show_score(0, red, 'Times New Roman', 20)
+        self.show_score(0, white, 'Times New Roman', 20)
         #check for position 
         
     def show_score(self,choice, color, font, size):
