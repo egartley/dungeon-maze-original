@@ -70,7 +70,7 @@ class Score:
         if self.player_score > int(self.min_score):
             if self.player_score < int(self.max_score):
                 flag = False
-                for i in range(1,11):
+                for i in range(1,10):
                     if i == 0:
                         pass
                     elif self.player_score > int(self.top_scores[i][1]):
