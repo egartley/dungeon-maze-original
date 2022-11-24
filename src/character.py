@@ -51,6 +51,8 @@ class MainCharacter(Character):
     # unique event ids
     ATTACK_EVENT_ID = pygame.USEREVENT + 74
     SWORD_SWING_EVENT_ID = pygame.USEREVENT + 75
+    METH_COUNT = 0
+    ATTACK_COUNT = 0
 
     def __init__(self, name=None):
         super().__init__()
@@ -71,6 +73,7 @@ class MainCharacter(Character):
         self.speedStackLast = 0
         self.speedInstances = [None] * self.speedStackLen
         self.speedStack = [False] * self.speedStackLen
+        
 
         self.attack = 1
         self.attackStackLen = 3
@@ -79,6 +82,7 @@ class MainCharacter(Character):
         self.attackStackLast = 0
         self.attackInstances = [None] * self.attackStackLen
         self.attackStack = [False] * self.attackStackLen
+        
 
         self.width = 192 / 4
         self.height = 285 / 4

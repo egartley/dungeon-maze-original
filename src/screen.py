@@ -16,6 +16,8 @@ green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
 yellow = pygame.Color(255,255,0)
 orange = pygame.Color(255,127,0)
+purple_meth = pygame.Color(163,73,164)
+shield_blue = pygame.Color(0,162,232)
 
 
 class Screen:
@@ -177,9 +179,24 @@ class Screen:
             shieldBarWidth = 0
         shieldSprite = pygame.Surface((shieldBarWidth, 10))
         shieldSprite.convert()
-        shieldSprite.fill(blue)
+        shieldSprite.fill(shield_blue)
         surface.blit(shieldSprite, (12, 52))
-
+        
+        #Meth Backfill
+        methBackFill = (100 / 100) * 10
+        methFill = pygame.Surface((90, methBackFill))
+        methFill.convert()
+        methFill.fill(white)
+        surface.blit(methFill, (12, 94))
+        methBarWidth = (game.GameEnvironment.PLAYER.shield / 100) * 90
+        if methBarWidth < 0:
+            methBarWidth = 0
+        methSprite = pygame.Surface((methBarWidth, 10))
+        methSprite.convert()
+        methSprite.fill(purple_meth)
+        surface.blit(methSprite, (12, 94))
+        
+        #arrow
         arrow_sprite = pygame.image.load('src/sprites/Boosters/arrow.png')
         arrow_sprite = pygame.transform.scale(arrow_sprite, (50, 30))
         surface.blit(arrow_sprite, (12, surface.get_height() - 50))
