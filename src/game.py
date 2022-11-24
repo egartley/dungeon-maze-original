@@ -249,6 +249,8 @@ class GameEnvironment:
     def event_handler(self, event):
         # this handles all keyboard and mouse input, as well as timers
         if GameEnvironment.state == GameEnvironment.START_STATE:
+            GameEnvironment.PLAYER.METH_COUNT = 0
+            GameEnvironment.PLAYER.ATTACK_COUNT = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
                 easyButton = pygame.Rect(100, 350, 200, 60)
                 mediumButton = pygame.Rect(375, 350, 200, 60)
@@ -355,6 +357,8 @@ class GameEnvironment:
                     pygame.quit()
                     sys.exit()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
+            GameEnvironment.PLAYER.METH_COUNT = 0
+            GameEnvironment.PLAYER.ATTACK_COUNT = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startButton = pygame.Rect(200,600,200,60)
                 quitButton = pygame.Rect(575,600,200,60)
@@ -364,6 +368,8 @@ class GameEnvironment:
                 elif startButton.collidepoint(event.pos): # checck if click was restart
                     self.switch_to_ingame()
         elif  GameEnvironment.state == GameEnvironment.DEATH_STATE:
+            GameEnvironment.PLAYER.METH_COUNT = 0
+            GameEnvironment.PLAYER.ATTACK_COUNT = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startButton = pygame.Rect(200, 550, 200, 60)
                 quitButton = pygame.Rect(605, 550, 200, 60)

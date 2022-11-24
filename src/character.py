@@ -122,7 +122,7 @@ class MainCharacter(Character):
             MazeEnvironment.SPEED = int(math.ceil(MazeEnvironment.SPEED * booster.SpeedBooster.increase))
             self.active_booster[1] = True
             self.speedStackTop += 1
-            Character.METH_COUNT = self.speedStackTop % self.speedStackLen
+            MainCharacter.METH_COUNT += 1
             self.speedStack[self.speedStackTop % self.speedStackLen] = True
             self.speedInstances[self.speedStackTop % self.speedStackLen] = b
             pygame.time.set_timer( (b.BOOSTERID + (self.speedStackTop % self.speedStackLen)), b.time * 1000)
@@ -131,7 +131,7 @@ class MainCharacter(Character):
             self.attack_multiplier += booster.AttackBooster.increase
             self.active_booster[0] = True
             self.attackStackTop += 1
-            Character.ATTACK_COUNT = self.attackStackTop % self.attackStackLen
+            MainCharacter.ATTACK_COUNT = 1
             self.attackStack[self.attackStackTop % self.attackStackLen] = True
             self.attackInstances[self.attackStackTop % self.attackStackLen] = b
             pygame.time.set_timer((b.BOOSTERID + (self.attackStackTop % self.attackStackLen)), b.time * 1000)
@@ -188,7 +188,7 @@ class MainCharacter(Character):
             if self.isAttackEmpty():
                 self.active_booster[0] = False
         elif self.active_booster[1] and boosterID == booster.SpeedBooster.BOOSTERID + (game.GameEnvironment.PLAYER.speedStackLast % game.GameEnvironment.PLAYER.speedStackLen):
-            MainCharacter.METHCOUNT -= 1
+            MainCharacter.METH_COUNT -= 1
             self.speed = int(math.ceil(self.speed/booster.SpeedBooster.increase))
             MazeEnvironment.SPEED = int(math.ceil(MazeEnvironment.SPEED/booster.SpeedBooster.increase))
             pygame.time.set_timer(boosterID, 0)

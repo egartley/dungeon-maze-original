@@ -49,7 +49,7 @@ class Screen:
             self.timeGlitch +=1
         surface = pygame.display.get_surface() 
         bg_img = pygame.image.load('src/sprites/background/pause.png') #https://www.shutterstock.com/video/clip-1008683782-retro-videogame-pause-text-computer-old-tv
-        bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
+        bg_img = pygame.transform.scale(bg_img,(frame_size_x + 10, frame_size_y))
         surface.blit(bg_img, (0,0))
         pygame.mouse.set_cursor(self.cursor)
         #start button
@@ -199,9 +199,6 @@ class Screen:
         attack_back_fill.fill(white)
         surface.blit(attack_back_fill,(12,116))
         attack_width = (game.GameEnvironment.PLAYER.ATTACK_COUNT / 3) * 90
-        print("Attack:")
-        print(game.GameEnvironment.PLAYER.ATTACK_COUNT)
-        
         if attack_width < 0:
             attack_width = 0
         attack_sprite = pygame.Surface((attack_width,10))
