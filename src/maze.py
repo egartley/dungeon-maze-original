@@ -77,6 +77,10 @@ class MazeEnvironment:
         self.right = False
         self.floor_surface = pygame.image.load("src/sprites/maze/floor.png")
         self.corner_surface = pygame.image.load("src/sprites/maze/corner.png")
+        self.start_end_walls = [pygame.image.load("src/sprites/maze/wall_1.png"),
+                                pygame.image.load("src/sprites/maze/wall_2.png"),
+                                pygame.image.load("src/sprites/maze/wall_3.png"),
+                                pygame.image.load("src/sprites/maze/wall_4.png")]
         walls = ["0001", "0010", "0011", "0100", "0110", "0111", "1000", "1001", "1011", "1100", "1101", "1110", "1010",
                  "0101"]
         self.wall_surfaces = []
@@ -181,12 +185,6 @@ class MazeEnvironment:
         wall = pygame.Surface((s, s))
         wall.convert()
         wall.fill((0, 0, 0))
-        start = pygame.Surface((s, s))
-        start.convert()
-        start.fill((0, 255, 0))
-        end = pygame.Surface((s, s))
-        end.convert()
-        end.fill((255, 0, 0))
         grid = MazeEnvironment.MAZE.grid
         surface = pygame.Surface((s, s))
         for t in to_add:
@@ -200,10 +198,16 @@ class MazeEnvironment:
             if skip:
                 continue
             position = (0, 0)
-            if MazeEnvironment.START == grid[i][j]:
-                surface.blit(start, position)
-            elif MazeEnvironment.END == grid[i][j]:
-                surface.blit(end, position)
+            if MazeEnvironment.START == grid[i][j] or MazeEnvironment.END == grid[i][j]:
+                surface.blit(self.floor_surface, position)
+                if j == 0:
+                    surface.blit(self.start_end_walls[0], position)
+                elif i == 0:
+                    surface.blit(self.start_end_walls[1], position)
+                elif j == len(grid[i]) - 1:
+                    surface.blit(self.start_end_walls[2], (s - self.start_end_walls[2].get_width(), 0))
+                else:
+                    surface.blit(self.start_end_walls[3], (0, s - self.start_end_walls[3].get_height()))
             elif MazeEnvironment.WALL == grid[i][j]:
                 edgewall = False
                 for w in range(0, len(self.calculated_walls)):
