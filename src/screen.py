@@ -43,15 +43,23 @@ class Screen:
         self.score = Score(self.name,game.GameEnvironment.DIFFICULTY_TRACKER)
         self.timeGlitch = 0
         self.display_score = True
+        self.arrow_sprite = pygame.image.load('src/sprites/Boosters/arrow.png')
+        self.arrow_sprite = pygame.transform.scale(self.arrow_sprite, (50, 30))
+        self.bg_img = pygame.image.load('src/sprites/background/pause.png') #https://www.shutterstock.com/video/clip-1008683782-retro-videogame-pause-text-computer-old-tv
+        self.bg_img = pygame.transform.scale(self.bg_img, (frame_size_x, frame_size_y))
+        self.cooldown_sprite = pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_right4.png')
+        self.cooldown_sprite = pygame.transform.scale(self.cooldown_sprite, (90, 90))
+        self.victory_bg_img = pygame.image.load('src/sprites/background/victorybg.jpg')
+        self.victory_bg_img = pygame.transform.scale(self.victory_bg_img, (frame_size_x, frame_size_y))
+        self.death_bg_img = pygame.image.load('src/sprites/background/tombstone.png')  # https://www.pinterest.com/pin/677651075162388819/
+        self.death_bg_img = pygame.transform.scale(self.death_bg_img, (frame_size_x, frame_size_y))
         
     def pauseView(self):
         if self.timeGlitch == 0:
             self.score.end_time()
             self.timeGlitch +=1
-        surface = pygame.display.get_surface() 
-        bg_img = pygame.image.load('src/sprites/background/pause.png') #https://www.shutterstock.com/video/clip-1008683782-retro-videogame-pause-text-computer-old-tv
-        bg_img = pygame.transform.scale(bg_img,(frame_size_x + 10, frame_size_y))
-        surface.blit(bg_img, (0,0))
+        surface = pygame.display.get_surface()
+        surface.blit(self.bg_img, (0,0))
         pygame.mouse.set_cursor(self.cursor)
         #start button
         surface = pygame.display.get_surface()
@@ -207,14 +215,10 @@ class Screen:
         attack_sprite.fill(green)
         surface.blit(attack_sprite,(12,116))
         #arrow
-        arrow_sprite = pygame.image.load('src/sprites/Boosters/arrow.png')
-        arrow_sprite = pygame.transform.scale(arrow_sprite, (50, 30))
-        surface.blit(arrow_sprite, (12, surface.get_height() - 50))
+        surface.blit(self.arrow_sprite, (12, surface.get_height() - 50))
         surface.blit(self.font.render(str(game.GameEnvironment.PLAYER.arrow_count) + 'X', True, Screen.TEXT_COLOR), (75, surface.get_height() - 45))
         if game.GameEnvironment.PLAYER.weapon.in_cooldown:
-            sprite = pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_right4.png')
-            sprite =  pygame.transform.scale(sprite, (90,90))
-            surface.blit(sprite,(game.GameEnvironment.PLAYER.x - 40, game.GameEnvironment.PLAYER.y - 70))
+            surface.blit(self.cooldown_sprite,(game.GameEnvironment.PLAYER.x - 40, game.GameEnvironment.PLAYER.y - 70))
         
     def display_top_scores(self):
         x = 100
@@ -231,10 +235,8 @@ class Screen:
         if self.timeGlitch == 0:
             self.score.end_time()
             self.timeGlitch +=1
-        surface = pygame.display.get_surface() 
-        bg_img = pygame.image.load('src/sprites/background/victorybg.jpg')
-        bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
-        surface.blit(bg_img, (0,0))
+        surface = pygame.display.get_surface()
+        surface.blit(self.victory_bg_img, (0,0))
         surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (270, 8))
         self.show_score(0, red, 'Times New Roman', 20)
         if self.display_score:
@@ -266,9 +268,7 @@ class Screen:
             self.score.end_time()
             self.timeGlitch +=1
         pygame.mouse.set_cursor(self.cursor)
-        bg_img = pygame.image.load('src/sprites/background/tombstone.png') # https://www.pinterest.com/pin/677651075162388819/
-        bg_img = pygame.transform.scale(bg_img,(frame_size_x, frame_size_y))
-        surface.blit(bg_img, (0,0))
+        surface.blit(self.death_bg_img, (0,0))
         surface.blit(self.victory_font.render("DEATH", True, red), (400, 8))
         #RESTART BUTTON
         startSurface = pygame.Surface((200, 60))
