@@ -15,10 +15,11 @@ red = pygame.Color(255, 0, 0)
 green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
 yellow = pygame.Color(255,255,0)
-orange = pygame.Color(255,127,0)
+orange = pygame.Color(255,127,39)
 purple_meth = pygame.Color(163,73,164)
 shield_blue = pygame.Color(0,162,232)
-
+health_grey = pygame.Color(195,195,195)
+health_red = pygame.Color(237,28,36)
 
 class Screen:
     TEXT_COLOR = (255, 255, 255)
@@ -157,20 +158,20 @@ class Screen:
         # back fill of health bar plus health bar
         back_fill = pygame.Surface((90, 10))
         back_fill.convert()
-        back_fill.fill(white)
+        back_fill.fill(health_grey)
         surface.blit(back_fill, (12, 74))
         health_bar_width = (game.GameEnvironment.PLAYER.health / 100) * 90
         if health_bar_width < 0:
             health_bar_width = 0
         sprite = pygame.Surface((health_bar_width, 10))
         sprite.convert()
-        sprite.fill(red)
+        sprite.fill(health_red)
         surface.blit(sprite, (12, 74))
         #Shield and Shield Backfill
         shield_bar_fill = (100 / 100) * 10
         shield_fill = pygame.Surface((90, shield_bar_fill))
         shield_fill.convert()
-        shield_fill.fill(white)
+        shield_fill.fill(orange)
         surface.blit(shield_fill, (12, 52))
         shield_bar_width = (game.GameEnvironment.PLAYER.shield / 100) * 90
         if shield_bar_width < 0:

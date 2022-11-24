@@ -97,7 +97,7 @@ class AttackBooster(Booster):
         super().__init__()
         self.time = 30
         self.sprite = image.load('src/sprites/Boosters/attack.png')
-        self.sprite = transform.scale(self.sprite, (80,38))
+        self.sprite = transform.scale(self.sprite, (40,40))
         self.rect = self.sprite.get_rect()
         
     def booster_collision(self):
