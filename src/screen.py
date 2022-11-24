@@ -153,61 +153,67 @@ class Screen:
         self.maze_environment.render(surface)
         game.GameEnvironment.PLAYER.render(surface)
         self.draw_minimap(surface)
-        surface.blit(self.font.render("In-game view", True, Screen.TEXT_COLOR), (12, 8))
-        surface.blit(self.font.render("Move with WASD", True, Screen.TEXT_COLOR), (12, 30))
+        surface.blit(self.font.render("Move with WASD", True, Screen.TEXT_COLOR), (12, 8))
         # back fill of health bar plus health bar
-        backFillSprite = pygame.Surface((90, 10))
-        backFillSprite.convert()
-        backFillSprite.fill(white)
-        surface.blit(backFillSprite, (12, 74))
-        healthBarWidth = (game.GameEnvironment.PLAYER.health / 100) * 90
-        if healthBarWidth < 0:
-            healthBarWidth = 0
-        sprite = pygame.Surface((healthBarWidth, 10))
+        back_fill = pygame.Surface((90, 10))
+        back_fill.convert()
+        back_fill.fill(white)
+        surface.blit(back_fill, (12, 74))
+        health_bar_width = (game.GameEnvironment.PLAYER.health / 100) * 90
+        if health_bar_width < 0:
+            health_bar_width = 0
+        sprite = pygame.Surface((health_bar_width, 10))
         sprite.convert()
         sprite.fill(red)
         surface.blit(sprite, (12, 74))
-
         #Shield and Shield Backfill
-        shieldBarBackFill = (100 / 100) * 10
-        shieldFill = pygame.Surface((90, shieldBarBackFill))
-        shieldFill.convert()
-        shieldFill.fill(white)
-        surface.blit(shieldFill, (12, 52))
-        shieldBarWidth = (game.GameEnvironment.PLAYER.shield / 100) * 90
-        if shieldBarWidth < 0:
-            shieldBarWidth = 0
-        shieldSprite = pygame.Surface((shieldBarWidth, 10))
-        shieldSprite.convert()
-        shieldSprite.fill(shield_blue)
-        surface.blit(shieldSprite, (12, 52))
-        
+        shield_bar_fill = (100 / 100) * 10
+        shield_fill = pygame.Surface((90, shield_bar_fill))
+        shield_fill.convert()
+        shield_fill.fill(white)
+        surface.blit(shield_fill, (12, 52))
+        shield_bar_width = (game.GameEnvironment.PLAYER.shield / 100) * 90
+        if shield_bar_width < 0:
+            shield_bar_width = 0
+        shield_sprite = pygame.Surface((shield_bar_width, 10))
+        shield_sprite.convert()
+        shield_sprite.fill(shield_blue)
+        surface.blit(shield_sprite, (12, 52))
         #Meth Backfill
-        methBackFill = (100 / 100) * 10
-        methFill = pygame.Surface((90, methBackFill))
-        methFill.convert()
-        methFill.fill(white)
-        surface.blit(methFill, (12, 94))
-        methBarWidth = (game.GameEnvironment.PLAYER.shield / 100) * 90
-        if methBarWidth < 0:
-            methBarWidth = 0
-        methSprite = pygame.Surface((methBarWidth, 10))
-        methSprite.convert()
-        methSprite.fill(purple_meth)
-        surface.blit(methSprite, (12, 94))
-        
+        meth_back_fill = (100 / 100) * 10
+        meth_fill = pygame.Surface((90, meth_back_fill))
+        meth_fill.convert()
+        meth_fill.fill(white)
+        surface.blit(meth_fill, (12, 94))
+        meth_bar_width = (game.GameEnvironment.PLAYER.shield / 100) * 90
+        if meth_bar_width < 0:
+            meth_bar_width = 0
+        meth_sprite = pygame.Surface((meth_bar_width, 10))
+        meth_sprite.convert()
+        meth_sprite.fill(purple_meth)
+        surface.blit(meth_sprite, (12, 94))
+        #attack backfill
+        attack_fill = (100 / 100) * 10
+        attack_back_fill = pygame.Surface((90, attack_fill))
+        attack_back_fill.convert()
+        attack_back_fill.fill(white)
+        surface.blit(attack_back_fill,(12,116))
+        attack_width = (100/100)*90
+        if attack_width < 0:
+            attack_width = 0
+        attack_sprite = pygame.Surface((attack_width,10))
+        attack_sprite.convert()
+        attack_sprite.fill(green)
+        surface.blit(attack_sprite,(12,116))
         #arrow
         arrow_sprite = pygame.image.load('src/sprites/Boosters/arrow.png')
         arrow_sprite = pygame.transform.scale(arrow_sprite, (50, 30))
         surface.blit(arrow_sprite, (12, surface.get_height() - 50))
         surface.blit(self.font.render(str(game.GameEnvironment.PLAYER.arrow_count) + 'X', True, Screen.TEXT_COLOR), (75, surface.get_height() - 45))
-
         if game.GameEnvironment.PLAYER.weapon.in_cooldown:
             sprite = pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_right4.png')
             sprite =  pygame.transform.scale(sprite, (90,90))
             surface.blit(sprite,(game.GameEnvironment.PLAYER.x - 40, game.GameEnvironment.PLAYER.y - 70))
-        
-        
         
     def display_top_scores(self):
         x = 100

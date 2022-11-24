@@ -365,8 +365,8 @@ class GameEnvironment:
                     self.switch_to_ingame()
         elif  GameEnvironment.state == GameEnvironment.DEATH_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(250, 350, 200, 60)
-                quitButton = pygame.Rect(575, 350, 200, 60)
+                startButton = pygame.Rect(200, 550, 200, 60)
+                quitButton = pygame.Rect(605, 550, 200, 60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
                     pygame.quit()
                     sys.exit()
