@@ -185,7 +185,7 @@ class Screen:
         meth_fill.convert()
         meth_fill.fill(white)
         surface.blit(meth_fill, (12, 94))
-        meth_bar_width = (game.GameEnvironment.PLAYER.shield / 100) * 90
+        meth_bar_width = (game.GameEnvironment.PLAYER.METH_COUNT / 3) * 90
         if meth_bar_width < 0:
             meth_bar_width = 0
         meth_sprite = pygame.Surface((meth_bar_width, 10))
@@ -193,12 +193,15 @@ class Screen:
         meth_sprite.fill(purple_meth)
         surface.blit(meth_sprite, (12, 94))
         #attack backfill
-        attack_fill = (100 / 100) * 10
+        attack_fill = 1 * 10
         attack_back_fill = pygame.Surface((90, attack_fill))
         attack_back_fill.convert()
         attack_back_fill.fill(white)
         surface.blit(attack_back_fill,(12,116))
-        attack_width = (100/100)*90
+        attack_width = (game.GameEnvironment.PLAYER.ATTACK_COUNT / 3) * 90
+        print("Attack:")
+        print(game.GameEnvironment.PLAYER.ATTACK_COUNT)
+        
         if attack_width < 0:
             attack_width = 0
         attack_sprite = pygame.Surface((attack_width,10))
