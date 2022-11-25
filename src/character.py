@@ -8,6 +8,14 @@ import random
 from maze import MazeEnvironment
 
 
+def check_wall(x, y):
+    r = int(y // MazeEnvironment.TILE_SIZE)
+    c = int(x // MazeEnvironment.TILE_SIZE)
+    if r >= len(MazeEnvironment.MAZE.grid) or c >= len(MazeEnvironment.MAZE.grid[0]):
+        return True
+    return MazeEnvironment.MAZE.grid[r][c] == MazeEnvironment.WALL
+
+
 class Character(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -364,6 +372,8 @@ class Enemy(Character):
         self.coolDown = 10
         self.placed = False
         self.collision_set = False
+        self.blocked = ()
+        self.collison_rect = pygame.Rect(40, 10, 112, 105)
 
         r = random.Random()
         x = r.randint(1000, 9999)
@@ -376,21 +386,57 @@ class Enemy(Character):
         # move in the direction of the player if not already next to them
         px = game.GameEnvironment.PLAYER.x
         py = game.GameEnvironment.PLAYER.y
-        player_to_left = px + game.GameEnvironment.PLAYER.width < self.x + self.buffer
-        player_to_right = px > self.x + self.width - self.buffer 
-        player_above = py + game.GameEnvironment.PLAYER.height < self.y + self.buffer
-        player_below = py > self.y + self.height - self.buffer
-        if player_above:
-            self.y -= self.speed
-        elif player_below:
-            self.y += self.speed
+        pw = game.GameEnvironment.PLAYER.width
+        ph = game.GameEnvironment.PLAYER.height
+        pc_x = px + (pw // 2)
+        pc_y = py + (ph // 2)
+        ec_x = self.x + (self.width // 2)
+        ec_y = self.y + (self.height // 2)
+        player_to_left = pc_x < ec_x
+        player_to_right = pc_x > ec_x
+        player_above = pc_y < ec_y
+        player_below = pc_y > ec_y
 
-        if player_to_right:
-            self.x += self.speed
-            self.direction = True
-        elif player_to_left:
+        self.relative_x = self.x - MazeEnvironment.MAP_X
+        self.relative_y = self.y - MazeEnvironment.MAP_Y
+        self.collison_rect = pygame.Rect(self.relative_x + 56, self.relative_y + 10, 70, 104)
+        blocked_up = check_wall(self.collison_rect.x, self.collison_rect.y - self.speed) or \
+                     check_wall(self.collison_rect.x + self.collison_rect.width, self.collison_rect.y - self.speed) or \
+                     self.y < py + ph
+        blocked_down = check_wall(self.collison_rect.x,
+                                  self.collison_rect.y + self.collison_rect.height + self.speed) or \
+                       check_wall(self.collison_rect.x + self.collison_rect.width,
+                                  self.collison_rect.y + self.collison_rect.height + self.speed) or \
+                       game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x,
+                                  self.collison_rect.y + self.collison_rect.height + self.speed) or \
+                       game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x + self.collison_rect.width,
+                                  self.collison_rect.y + self.collison_rect.height + self.speed)
+        blocked_left = check_wall(self.collison_rect.x - self.speed, self.collison_rect.y) or \
+                       check_wall(self.collison_rect.x - self.speed, self.collison_rect.y + self.collison_rect.height) or \
+                       game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x - self.speed,
+                                                                     self.collison_rect.y) or \
+                       game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x - self.speed,
+                                                                     self.collison_rect.y + self.collison_rect.height)
+        blocked_right = check_wall(self.collison_rect.x + self.collison_rect.width + self.speed,
+                                   self.collison_rect.y) or \
+                        check_wall(self.collison_rect.x + self.collison_rect.width + self.speed,
+                                   self.collison_rect.y + self.collison_rect.height) or \
+                        game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x + self.collison_rect.width + self.speed,
+                                   self.collison_rect.y) or \
+                        game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x + self.collison_rect.width + self.speed,
+                                   self.collison_rect.y + self.collison_rect.height)
+        self.blocked = (blocked_up, blocked_down, blocked_left, blocked_right)
+
+        if player_above and not self.blocked[0]:
+            self.y -= self.speed
+        if player_below and not self.blocked[1]:
+            self.y += self.speed
+        if player_to_left and not self.blocked[2]:
             self.x -= self.speed
             self.direction = False
+        if player_to_right and not self.blocked[3]:
+            self.x += self.speed
+            self.direction = True
 
     def tick(self):
         # calculate if player is visible
