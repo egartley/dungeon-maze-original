@@ -131,7 +131,7 @@ class MainCharacter(Character):
             self.attack_multiplier += booster.AttackBooster.increase
             self.active_booster[0] = True
             self.attackStackTop += 1
-            MainCharacter.ATTACK_COUNT = 1
+            MainCharacter.ATTACK_COUNT += 1
             self.attackStack[self.attackStackTop % self.attackStackLen] = True
             self.attackInstances[self.attackStackTop % self.attackStackLen] = b
             pygame.time.set_timer((b.BOOSTERID + (self.attackStackTop % self.attackStackLen)), b.time * 1000)

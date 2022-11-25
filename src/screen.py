@@ -25,7 +25,8 @@ class Screen:
     TEXT_COLOR = (255, 255, 255)
     SHOW_MAP = False
 
-    def __init__(self, maze_env, width, height):
+    def __init__(self, player, maze_env, width, height):
+        self.player = player
         self.cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_NO)
         self.maze_environment = maze_env
         self.title = "Dungeon Maze"
@@ -66,13 +67,13 @@ class Screen:
         startSurface = pygame.Surface((200, 60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface, (250, 550)) # hard coded button values if they get change , change in game.py event handler
-        surface.blit(self.secondary_font.render("PLAY", True, black), (300, 550))
+        surface.blit(startSurface, (150, 550)) # hard coded button values if they get change , change in game.py event handler
+        surface.blit(self.secondary_font.render("PLAY", True, black), (200, 550))
         #quit button
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface, (600, 550))
-        surface.blit(self.secondary_font.render("QUIT", True, black), (650, 550))
+        surface.blit(startSurface, (700, 550))
+        surface.blit(self.secondary_font.render("QUIT", True, black), (750, 550))
 
     def startView(self):
         pygame.mouse.set_cursor(self.cursor)
@@ -202,7 +203,7 @@ class Screen:
         meth_sprite.fill(purple_meth)
         surface.blit(meth_sprite, (12, 94))
         #attack backfill
-        attack_fill = 1 * 10
+        attack_fill = (100 / 100) * 10
         attack_back_fill = pygame.Surface((90, attack_fill))
         attack_back_fill.convert()
         attack_back_fill.fill(white)
@@ -226,12 +227,14 @@ class Screen:
             score = ''
             for k in range(len(self.score.top_scores[i])):
                     score += self.score.top_scores[i][k]
-            score.replace('/m','')
+            score.replace('/n','')
             pygame.display.get_surface().blit(
                 self.font.render(score, True, white), (frame_size_x/2-150, x ))
             x += 40
         
     def victory(self):
+        self.player.METH_COUNT = 0
+        self.player.ATTACK_COUNT = 0
         if self.timeGlitch == 0:
             self.score.end_time()
             self.timeGlitch +=1
@@ -263,6 +266,8 @@ class Screen:
         self.display_top_scores()
         
     def death(self):
+        self.player.METH_COUNT = 0
+        self.player.ATTACK_COUNT = 0
         surface = pygame.display.get_surface()
         if self.timeGlitch == 0:
             self.score.end_time()
