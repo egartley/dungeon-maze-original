@@ -219,7 +219,6 @@ class Screen:
         surface.blit(self.font.render(str(game.GameEnvironment.PLAYER.arrow_count) + 'X', True, Screen.TEXT_COLOR), (75, surface.get_height() - 45))
         if game.GameEnvironment.PLAYER.weapon.in_cooldown:
             surface.blit(self.cooldown_sprite,(game.GameEnvironment.PLAYER.x - 40, game.GameEnvironment.PLAYER.y - 70))
-        pygame.draw.rect(surface, (0, 0, 255), game.GameEnvironment.PLAYER.rect, 1)
 
     def display_top_scores(self):
         x = 100
