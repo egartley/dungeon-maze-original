@@ -4,7 +4,7 @@ import time
 import math
 
 class Score:
-    def __init__(self, name,dif):
+    def __init__(self, name, dif):
         self.start_t = time.time()
         self.end_t = time.time()
         self.different_t = 0

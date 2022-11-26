@@ -25,8 +25,7 @@ class Screen:
     TEXT_COLOR = (255, 255, 255)
     SHOW_MAP = False
 
-    def __init__(self, player, maze_env, width, height):
-        self.player = player
+    def __init__(self, maze_env, width, height):
         self.cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_NO)
         self.maze_environment = maze_env
         self.title = "Dungeon Maze"
@@ -177,8 +176,7 @@ class Screen:
         sprite.fill(health_red)
         surface.blit(sprite, (12, 74))
         #Shield and Shield Backfill
-        shield_bar_fill = (100 / 100) * 10
-        shield_fill = pygame.Surface((90, shield_bar_fill))
+        shield_fill = pygame.Surface((90, 10))
         shield_fill.convert()
         shield_fill.fill(orange)
         surface.blit(shield_fill, (12, 52))
@@ -190,8 +188,7 @@ class Screen:
         shield_sprite.fill(shield_blue)
         surface.blit(shield_sprite, (12, 52))
         #Meth Backfill
-        meth_back_fill = (100 / 100) * 10
-        meth_fill = pygame.Surface((90, meth_back_fill))
+        meth_fill = pygame.Surface((90, 10))
         meth_fill.convert()
         meth_fill.fill(white)
         surface.blit(meth_fill, (12, 94))
@@ -203,8 +200,7 @@ class Screen:
         meth_sprite.fill(purple_meth)
         surface.blit(meth_sprite, (12, 94))
         #attack backfill
-        attack_fill = (100 / 100) * 10
-        attack_back_fill = pygame.Surface((90, attack_fill))
+        attack_back_fill = pygame.Surface((90, 10))
         attack_back_fill.convert()
         attack_back_fill.fill(white)
         surface.blit(attack_back_fill,(12,116))
@@ -233,8 +229,7 @@ class Screen:
             x += 40
         
     def victory(self):
-        self.player.METH_COUNT = 0
-        self.player.ATTACK_COUNT = 0
+        
         if self.timeGlitch == 0:
             self.score.end_time()
             self.timeGlitch +=1
@@ -266,8 +261,7 @@ class Screen:
         self.display_top_scores()
         
     def death(self):
-        self.player.METH_COUNT = 0
-        self.player.ATTACK_COUNT = 0
+        
         surface = pygame.display.get_surface()
         if self.timeGlitch == 0:
             self.score.end_time()

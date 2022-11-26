@@ -375,4 +375,6 @@ class GameEnvironment:
                     pygame.quit()
                     sys.exit()
                 elif startButton.collidepoint(event.pos): # checck if click was restart
+                    GameEnvironment.PLAYER.METH_COUNT = 0
+                    GameEnvironment.PLAYER.ATTACK_COUNT = 0
                     self.switch_to_ingame()

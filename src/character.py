@@ -307,6 +307,8 @@ class MainCharacter(Character):
         else:
             self.health -= damage
             if self.health <= 0:
+                MainCharacter.METH_COUNT = 0
+                MainCharacter.ATTACK_COUNT = 0
                 game.GameEnvironment.state = game.GameEnvironment.DEATH_STATE
 
 class Enemy(Character):
