@@ -162,7 +162,7 @@ class Screen:
         self.maze_environment.render(surface)
         game.GameEnvironment.PLAYER.render(surface)
         self.draw_minimap(surface)
-        surface.blit(self.font.render("Move with WASD", True, Screen.TEXT_COLOR), (12, 8))
+        surface.blit(self.font.render("Shield, Health, Speed, Attack", True, Screen.TEXT_COLOR), (12, 8))
         # back fill of health bar plus health bar
         back_fill = pygame.Surface((90, 10))
         back_fill.convert()
