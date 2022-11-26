@@ -388,53 +388,39 @@ class Enemy(Character):
         py = game.GameEnvironment.PLAYER.y
         pw = game.GameEnvironment.PLAYER.width
         ph = game.GameEnvironment.PLAYER.height
+        pr = game.GameEnvironment.PLAYER.rect
         pc_x = px + (pw // 2)
         pc_y = py + (ph // 2)
         ec_x = self.x + (self.width // 2)
         ec_y = self.y + (self.height // 2)
-        player_to_left = pc_x < ec_x
-        player_to_right = pc_x > ec_x
-        player_above = pc_y < ec_y
-        player_below = pc_y > ec_y
+        player_to_left = pc_x - 1 < ec_x
+        player_to_right = pc_x + 1 > ec_x
+        player_above = pc_y - 1 < ec_y
+        player_below = pc_y + 1 > ec_y
 
-        self.relative_x = self.x - MazeEnvironment.MAP_X
-        self.relative_y = self.y - MazeEnvironment.MAP_Y
-        self.collison_rect = pygame.Rect(self.relative_x + 56, self.relative_y + 10, 70, 104)
-        blocked_up = check_wall(self.collison_rect.x, self.collison_rect.y - self.speed) or \
-                     check_wall(self.collison_rect.x + self.collison_rect.width, self.collison_rect.y - self.speed) or \
-                     self.y < py + ph
-        blocked_down = check_wall(self.collison_rect.x,
-                                  self.collison_rect.y + self.collison_rect.height + self.speed) or \
-                       check_wall(self.collison_rect.x + self.collison_rect.width,
-                                  self.collison_rect.y + self.collison_rect.height + self.speed) or \
-                       game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x,
-                                  self.collison_rect.y + self.collison_rect.height + self.speed) or \
-                       game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x + self.collison_rect.width,
-                                  self.collison_rect.y + self.collison_rect.height + self.speed)
-        blocked_left = check_wall(self.collison_rect.x - self.speed, self.collison_rect.y) or \
-                       check_wall(self.collison_rect.x - self.speed, self.collison_rect.y + self.collison_rect.height) or \
-                       game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x - self.speed,
-                                                                     self.collison_rect.y) or \
-                       game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x - self.speed,
-                                                                     self.collison_rect.y + self.collison_rect.height)
-        blocked_right = check_wall(self.collison_rect.x + self.collison_rect.width + self.speed,
-                                   self.collison_rect.y) or \
-                        check_wall(self.collison_rect.x + self.collison_rect.width + self.speed,
-                                   self.collison_rect.y + self.collison_rect.height) or \
-                        game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x + self.collison_rect.width + self.speed,
-                                   self.collison_rect.y) or \
-                        game.GameEnvironment.PLAYER.rect.collidepoint(self.collison_rect.x + self.collison_rect.width + self.speed,
-                                   self.collison_rect.y + self.collison_rect.height)
+        wall_check_rect = pygame.Rect(self.relative_x + 56, self.relative_y + 10, 70, 104)
+        blocked_up = check_wall(wall_check_rect.x, wall_check_rect.y - self.speed) or \
+                     check_wall(wall_check_rect.x + wall_check_rect.width, wall_check_rect.y - self.speed)
+        blocked_down = check_wall(wall_check_rect.x,
+                                  wall_check_rect.y + wall_check_rect.height + self.speed) or \
+                       check_wall(wall_check_rect.x + wall_check_rect.width,
+                                  wall_check_rect.y + wall_check_rect.height + self.speed)
+        blocked_left = check_wall(wall_check_rect.x - self.speed, wall_check_rect.y) or \
+                       check_wall(wall_check_rect.x - self.speed, wall_check_rect.y + wall_check_rect.height)
+        blocked_right = check_wall(wall_check_rect.x + wall_check_rect.width + self.speed,
+                                   wall_check_rect.y) or \
+                        check_wall(wall_check_rect.x + wall_check_rect.width + self.speed,
+                                   wall_check_rect.y + wall_check_rect.height)
         self.blocked = (blocked_up, blocked_down, blocked_left, blocked_right)
 
-        if player_above and not self.blocked[0]:
+        if player_above and not self.blocked[0] and not pr.colliderect(self.collison_rect.move(0, -1 * self.speed)):
             self.y -= self.speed
-        if player_below and not self.blocked[1]:
+        if player_below and not self.blocked[1] and not pr.colliderect(self.collison_rect.move(0, self.speed)):
             self.y += self.speed
-        if player_to_left and not self.blocked[2]:
+        if player_to_left and not self.blocked[2] and not pr.colliderect(self.collison_rect.move(-1 * self.speed, 0)):
             self.x -= self.speed
             self.direction = False
-        if player_to_right and not self.blocked[3]:
+        if player_to_right and not self.blocked[3] and not pr.colliderect(self.collison_rect.move(self.speed, 0)):
             self.x += self.speed
             self.direction = True
 
@@ -447,16 +433,19 @@ class Enemy(Character):
         player_to_right = px > self.x + self.width
         in_range_x = (max(self.x, px) - min(self.x, px) - self.width  * 2) < MazeEnvironment.TILE_SIZE
         in_range_y = (max(self.y, py) - min(self.y, py) - self.height * 2) < MazeEnvironment.TILE_SIZE
+        self.relative_x = self.x - MazeEnvironment.MAP_X
+        self.relative_y = self.y - MazeEnvironment.MAP_Y
 
         self.is_player_in_view = lineofsight and (player_to_left if self.direction == Enemy.LEFT else player_to_right) and in_range_x and in_range_y
         if self.is_player_in_view:
             self.chasing = True
 
-        if self.chasing:
-            self.chase_player()
-
         # update rect based on any changes to actual x/y
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.collison_rect = pygame.Rect(self.x + 56, self.y + 10, 70, 104)
+
+        if self.chasing:
+            self.chase_player()
 
         if self.player_in_combat_range:
             self.attack()
