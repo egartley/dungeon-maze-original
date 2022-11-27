@@ -1,9 +1,7 @@
-import sys
-import pygame
 from game import *
 
 TARGET_FPS = 60
-objects = []
+
 
 def main():
     pygame.init()
@@ -16,14 +14,11 @@ def main():
                 pygame.quit()
                 sys.exit()
             game_env.event_handler(event)
-            
-        for object in objects:
-            object.process()
+
         game_env.tick()
         game_env.render(pygame.display.get_surface())
         pygame.display.flip()
         fps.tick(TARGET_FPS)
-        
 
 
 if __name__ == "__main__":

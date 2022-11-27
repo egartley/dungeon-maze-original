@@ -6,7 +6,7 @@ Brian Hinger Computer Engineering
 Tan Tran Computer Science
 Evan Gartley Computer Science
 Zanieb Radi Computer Science
-Cameron Gower Computer Science Information Technology
+Cameron Gower Computer Science/Information Technology
 
 # Course Information
 
@@ -33,15 +33,18 @@ Script for installing dependencies
 
 
 ## Art work
-
-## Defining wthe game world environment 
-        Height of walls?
-        width of passages?
+        pause screen: https://www.shutterstock.com/video/clip-1008683782-retro-videogame-pause-text-computer-old-tv
+        minotaurs: https://craftpix.net/freebies/free-minotaur-tiny-style-2d-sprites/
+        wraith: 
+        victory screen:
+        weapons: 
+                bow:
+                sword:
         
 
 ## Developer Installation Tools Before running
 
-run the script environment.sh by git bash terminal and enter bash environment.txt
+run the script environment.sh by using the git bash terminal and enter bash environment.txt
 
 
 
