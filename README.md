@@ -37,6 +37,8 @@ Script for installing dependencies
         minotaurs: https://craftpix.net/freebies/free-minotaur-tiny-style-2d-sprites/
         wraith: https://craftpix.net/freebies/free-wraith-tiny-style-2d-sprites/?num=1&count=3&sq=wraith&pos=2
         victory screen:https://www.freepik.com/vectors/dungeon-background 
+        pause screen: https://www.shutterstock.com/video/clip-1008683782-retro-videogame-pause-text-computer-old-tv
+        death screen: https://www.pinterest.com/pin/677651075162388819/
         weapons: 
                 bow:   https://craftpix.net/freebies/free-bow-and-crossbow-pixel-art-icons/?num=1&count=33&sq=bow&pos=10
                 arrow: https://minecraft-max.net/craft/bows-and-arrows/17763-arrow/
