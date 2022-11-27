@@ -7,7 +7,6 @@ objects = []
 
 def main():
     pygame.init()
-    font = pygame.font.SysFont('Arial', 40)
     fps = pygame.time.Clock()
     game_env = GameEnvironment(1000, 700)
 

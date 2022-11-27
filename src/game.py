@@ -301,9 +301,13 @@ class GameEnvironment:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     GameEnvironment.PLAYER.attack_motion()
+                if event.button == 1:
+                    GameEnvironment.PLAYER.is_using_sword = True
+                    GameEnvironment.PLAYER.is_using_bow = False
                 if event.button == 3:
                     GameEnvironment.PLAYER.shoot(pygame.mouse.get_pos())
                     GameEnvironment.PLAYER.is_using_bow = True
+                    GameEnvironment.PLAYER.is_using_sword = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_m and Screen.SHOW_MAP == True:
                     Screen.SHOW_MAP = False
