@@ -93,6 +93,7 @@ class MazeEnvironment:
         MazeEnvironment.CHUNKS = []
         self.enemy_spawns = []
         self.booster_spawns = []
+        self.start_direction = -1
 
     def reset(self):
         self.up = False
@@ -107,6 +108,7 @@ class MazeEnvironment:
         MazeEnvironment.TRACKED_CHUNKS = []
         self.enemy_spawns = []
         self.booster_spawns = []
+        self.start_direction = -1
 
     def generate_maze_difficulty(self):
         if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
@@ -201,12 +203,16 @@ class MazeEnvironment:
             if MazeEnvironment.START == grid[i][j] or MazeEnvironment.END == grid[i][j]:
                 surface.blit(self.floor_surface, position)
                 if j == 0:
+                    self.start_direction = 1
                     surface.blit(self.start_end_walls[0], position)
                 elif i == 0:
+                    self.start_direction = 2
                     surface.blit(self.start_end_walls[1], position)
                 elif j == len(grid[i]) - 1:
+                    self.start_direction = 3
                     surface.blit(self.start_end_walls[2], (s - self.start_end_walls[2].get_width(), 0))
                 else:
+                    self.start_direction = 4
                     surface.blit(self.start_end_walls[3], (0, s - self.start_end_walls[3].get_height()))
             elif MazeEnvironment.WALL == grid[i][j]:
                 edgewall = False
