@@ -66,7 +66,7 @@ class Score:
             for i in range(1,11):
                 if self.player_score > int(self.top_scores[i][1]):
                     break
-            row = [self.name, str(self.player_score), str(time.strftime("%H:%M:%S", time.gmtime(self.total))), str(self.kill_count),str(time.ctime(time.time()))]
+            row = [self.name, str(self.player_score), str(self.kill_count),str(time.strftime("%H:%M:%S", time.gmtime(self.total))),str(time.ctime(time.time()))]
             self.top_scores.insert(i,row)  
 
             self.top_scores = self.top_scores[0:11] #should limit to first 11 lines of a file which is the top 10 in our case 
