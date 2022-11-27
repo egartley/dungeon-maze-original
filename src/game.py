@@ -141,17 +141,17 @@ class GameEnvironment:
     def camera_tick(self):
         # all the yucky math for controlling the "camera"
         s = pygame.display.get_window_size()
-        px = GameEnvironment.PLAYER.x
-        py = GameEnvironment.PLAYER.y
-        ps = GameEnvironment.PLAYER.speed
-        pw = GameEnvironment.PLAYER.width
-        ph = GameEnvironment.PLAYER.height
-        GameEnvironment.PLAYER.at_center_x = abs(px - ((s[0] / 2) - (pw / 2))) <= ps
-        GameEnvironment.PLAYER.at_center_y = abs(py - ((s[1] / 2) - (ph / 2))) <= ps
-        GameEnvironment.PLAYER.relative_x = GameEnvironment.PLAYER.x - MazeEnvironment.MAP_X
-        GameEnvironment.PLAYER.relative_y = GameEnvironment.PLAYER.y - MazeEnvironment.MAP_Y
-
         p = GameEnvironment.PLAYER
+        px = p.x
+        py = p.y
+        ps = p.speed
+        pw = p.width
+        ph = p.height
+        p.at_center_x = abs(px - ((s[0] / 2) - (pw / 2))) <= ps
+        p.at_center_y = abs(py - ((s[1] / 2) - (ph / 2))) <= ps
+        p.relative_x = px - MazeEnvironment.MAP_X
+        p.relative_y = py - MazeEnvironment.MAP_Y
+
         MazeEnvironment.CAN_MOVE_UP = MazeEnvironment.MAP_Y < 0 and p.at_center_y and \
                                       not self.check_wall(p.relative_x,
                                                           p.relative_y - MazeEnvironment.SPEED) and \
@@ -175,15 +175,28 @@ class GameEnvironment:
                                          not self.check_wall(p.relative_x + p.width + MazeEnvironment.SPEED,
                                                              p.relative_y + p.height)
 
-        blocked_up = self.check_wall(p.relative_x, p.relative_y - p.speed) or \
-                     self.check_wall(p.relative_x + p.width, p.relative_y - p.speed)
-        blocked_down = self.check_wall(p.relative_x, p.relative_y + p.height + p.speed) or \
-                       self.check_wall(p.relative_x + p.width, p.relative_y + p.height + p.speed)
-        blocked_left = self.check_wall(p.relative_x - p.speed, p.relative_y) or \
-                       self.check_wall(p.relative_x - p.speed, p.relative_y + p.height)
-        blocked_right = self.check_wall(p.relative_x + p.width + p.speed, p.relative_y) or \
-                        self.check_wall(p.relative_x + p.width + p.speed, p.relative_y + p.height)
-        GameEnvironment.PLAYER.blocked = (blocked_up, blocked_down, blocked_left, blocked_right)
+        blocked_up = self.check_wall(p.relative_x, p.relative_y - ps) or \
+                     self.check_wall(p.relative_x + pw, p.relative_y - ps)
+        blocked_down = self.check_wall(p.relative_x, p.relative_y + ph + ps) or \
+                       self.check_wall(p.relative_x + pw, p.relative_y + ph + ps)
+        blocked_left = self.check_wall(p.relative_x - ps, p.relative_y) or \
+                       self.check_wall(p.relative_x - ps, p.relative_y + ph)
+        blocked_right = self.check_wall(p.relative_x + pw + ps, p.relative_y) or \
+                        self.check_wall(p.relative_x + pw + ps, p.relative_y + ph)
+
+        # edge case for when in the start tile (ignore end tile for now)
+        tp = p.tile_pos
+        if len(tp) > 0 and MazeEnvironment.MAZE.grid[tp[0]][tp[1]] == MazeEnvironment.START:
+            if self.maze_environment.start_direction == 1:
+                blocked_left = blocked_left or px - ps < self.maze_environment.start_end_walls[0].get_width()
+            elif self.maze_environment.start_direction == 2:
+                blocked_up = blocked_up or py - ps < self.maze_environment.start_end_walls[1].get_height()
+            elif self.maze_environment.start_direction == 3:
+                blocked_right = blocked_right or px + pw + ps > s[0] - self.maze_environment.start_end_walls[2].get_width()
+            elif self.maze_environment.start_direction == 4:
+                blocked_down = blocked_down or py + ph + ps > s[1] - self.maze_environment.start_end_walls[3].get_height()
+
+        p.blocked = (blocked_up, blocked_down, blocked_left, blocked_right)
 
     def tick(self):
         if GameEnvironment.state == GameEnvironment.INGAME_STATE:
