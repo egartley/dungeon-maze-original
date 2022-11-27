@@ -46,6 +46,9 @@ Script for installing dependencies
                 bow:   https://craftpix.net/freebies/free-bow-and-crossbow-pixel-art-icons/?num=1&count=33&sq=bow&pos=10
                 arrow: https://minecraft-max.net/craft/bows-and-arrows/17763-arrow/
                 sword: https://guntex17.itch.io/sword-slash
+
+        Booster Artwork:
+                Cameron Gower
         
 
 ## Developer Installation Tools Before running
