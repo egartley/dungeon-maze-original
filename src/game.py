@@ -352,8 +352,8 @@ class GameEnvironment:
                     GameEnvironment.state = GameEnvironment.DEATH_STATE
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(250, 550, 200, 60)
-                quitButton = pygame.Rect(600, 550, 200, 60)
+                startButton = pygame.Rect(150, 550, 200, 60)
+                quitButton = pygame.Rect(700, 550, 200, 60)
                 # goes in if clicked = buttonrect.collidepoint(event.pos)
                 if startButton.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.INGAME_STATE
@@ -361,8 +361,6 @@ class GameEnvironment:
                     pygame.quit()
                     sys.exit()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
-            GameEnvironment.PLAYER.METH_COUNT = 0
-            GameEnvironment.PLAYER.ATTACK_COUNT = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startButton = pygame.Rect(200,600,200,60)
                 quitButton = pygame.Rect(575,600,200,60)
@@ -370,10 +368,10 @@ class GameEnvironment:
                     pygame.quit()
                     sys.exit()
                 elif startButton.collidepoint(event.pos): # checck if click was restart
+                    GameEnvironment.PLAYER.METH_COUNT = 0
+                    GameEnvironment.PLAYER.ATTACK_COUNT = 0
                     self.switch_to_ingame()
         elif  GameEnvironment.state == GameEnvironment.DEATH_STATE:
-            GameEnvironment.PLAYER.METH_COUNT = 0
-            GameEnvironment.PLAYER.ATTACK_COUNT = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startButton = pygame.Rect(200, 550, 200, 60)
                 quitButton = pygame.Rect(605, 550, 200, 60)
@@ -381,4 +379,6 @@ class GameEnvironment:
                     pygame.quit()
                     sys.exit()
                 elif startButton.collidepoint(event.pos): # checck if click was restart
+                    GameEnvironment.PLAYER.METH_COUNT = 0
+                    GameEnvironment.PLAYER.ATTACK_COUNT = 0
                     self.switch_to_ingame()

@@ -66,13 +66,13 @@ class Screen:
         startSurface = pygame.Surface((200, 60))
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface, (250, 550)) # hard coded button values if they get change , change in game.py event handler
-        surface.blit(self.secondary_font.render("PLAY", True, black), (300, 550))
+        surface.blit(startSurface, (150, 550)) # hard coded button values if they get change , change in game.py event handler
+        surface.blit(self.secondary_font.render("PLAY", True, black), (200, 550))
         #quit button
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface, (600, 550))
-        surface.blit(self.secondary_font.render("QUIT", True, black), (650, 550))
+        surface.blit(startSurface, (700, 550))
+        surface.blit(self.secondary_font.render("QUIT", True, black), (750, 550))
 
     def startView(self):
         pygame.mouse.set_cursor(self.cursor)
@@ -162,7 +162,7 @@ class Screen:
         self.maze_environment.render(surface)
         game.GameEnvironment.PLAYER.render(surface)
         self.draw_minimap(surface)
-        surface.blit(self.font.render("Move with WASD", True, Screen.TEXT_COLOR), (12, 8))
+        surface.blit(self.font.render("Shield, Health, Speed, Attack", True, Screen.TEXT_COLOR), (12, 8))
         # back fill of health bar plus health bar
         back_fill = pygame.Surface((90, 10))
         back_fill.convert()
@@ -176,8 +176,7 @@ class Screen:
         sprite.fill(health_red)
         surface.blit(sprite, (12, 74))
         #Shield and Shield Backfill
-        shield_bar_fill = (100 / 100) * 10
-        shield_fill = pygame.Surface((90, shield_bar_fill))
+        shield_fill = pygame.Surface((90, 10))
         shield_fill.convert()
         shield_fill.fill(orange)
         surface.blit(shield_fill, (12, 52))
@@ -189,8 +188,7 @@ class Screen:
         shield_sprite.fill(shield_blue)
         surface.blit(shield_sprite, (12, 52))
         #Meth Backfill
-        meth_back_fill = (100 / 100) * 10
-        meth_fill = pygame.Surface((90, meth_back_fill))
+        meth_fill = pygame.Surface((90, 10))
         meth_fill.convert()
         meth_fill.fill(white)
         surface.blit(meth_fill, (12, 94))
@@ -202,8 +200,7 @@ class Screen:
         meth_sprite.fill(purple_meth)
         surface.blit(meth_sprite, (12, 94))
         #attack backfill
-        attack_fill = 1 * 10
-        attack_back_fill = pygame.Surface((90, attack_fill))
+        attack_back_fill = pygame.Surface((90, 10))
         attack_back_fill.convert()
         attack_back_fill.fill(white)
         surface.blit(attack_back_fill,(12,116))
@@ -226,12 +223,13 @@ class Screen:
             score = ''
             for k in range(len(self.score.top_scores[i])):
                     score += self.score.top_scores[i][k]
-            score.replace('/m','')
+            score.replace('/n','')
             pygame.display.get_surface().blit(
                 self.font.render(score, True, white), (frame_size_x/2-150, x ))
             x += 40
         
     def victory(self):
+        
         if self.timeGlitch == 0:
             self.score.end_time()
             self.timeGlitch +=1
@@ -263,6 +261,7 @@ class Screen:
         self.display_top_scores()
         
     def death(self):
+        
         surface = pygame.display.get_surface()
         if self.timeGlitch == 0:
             self.score.end_time()

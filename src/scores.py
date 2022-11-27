@@ -4,7 +4,7 @@ import time
 import math
 
 class Score:
-    def __init__(self, name,dif):
+    def __init__(self, name, dif):
         self.start_t = time.time()
         self.end_t = time.time()
         self.different_t = 0
@@ -35,7 +35,7 @@ class Score:
 
     def cal_score(self):
         if self.player_score == 0:
-            self.player_score = math.ceil((self.kill_count * 100) + (self.total * self.total_multiplier))
+            self.player_score = math.ceil((self.kill_count * 100) + (self.total * self.total_multiplier)+2500)
 
     def read_score(self):
         if self.read:

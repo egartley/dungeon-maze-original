@@ -130,7 +130,7 @@ class MainCharacter(Character):
             self.attack_multiplier += booster.AttackBooster.increase
             self.active_booster[0] = True
             self.attackStackTop += 1
-            MainCharacter.ATTACK_COUNT = 1
+            MainCharacter.ATTACK_COUNT += 1
             self.attackStack[self.attackStackTop % self.attackStackLen] = True
             self.attackInstances[self.attackStackTop % self.attackStackLen] = b
             pygame.time.set_timer((b.BOOSTERID + (self.attackStackTop % self.attackStackLen)), b.time * 1000)
@@ -304,6 +304,8 @@ class MainCharacter(Character):
         else:
             self.health -= damage
             if self.health <= 0:
+                MainCharacter.METH_COUNT = 0
+                MainCharacter.ATTACK_COUNT = 0
                 game.GameEnvironment.state = game.GameEnvironment.DEATH_STATE
 
 class Enemy(Character):
