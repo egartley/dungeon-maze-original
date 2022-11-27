@@ -8,6 +8,14 @@ import random
 from maze import MazeEnvironment
 
 
+def check_wall(x, y):
+    r = int(y // MazeEnvironment.TILE_SIZE)
+    c = int(x // MazeEnvironment.TILE_SIZE)
+    if r >= len(MazeEnvironment.MAZE.grid) or c >= len(MazeEnvironment.MAZE.grid[0]):
+        return True
+    return MazeEnvironment.MAZE.grid[r][c] == MazeEnvironment.WALL
+
+
 class Character(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -318,19 +326,19 @@ class Enemy(Character):
     enemy_attack_frames_left = []
     loaded_frames = False
 
-    def __init__(self, damage):
+    def __init__(self, damage, game_env):
         super().__init__()
+        self.game_environment = game_env
         self.weapon_type = None
         self.is_player_in_view = False
         self.player_in_combat_range = False
         self.weapon = weapon.Sword()
         self.width = 180
         self.height = 123
-        self.buffer = 35
-        self.image = pygame.image.load('src/sprites/Enemies/Minotaur_01_Idle_000.png')
+        self.collision_padding = 8
+        self.image = pygame.image.load("src/sprites/Enemies/Minotaur_01_Idle_000.png")
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
         self.image2 = (pygame.transform.flip(self.image, True, False))
-        self.mask = pygame.mask.from_surface(self.image)
 
         self.sprite = [self.image]
         self.sprite_counter = 0
@@ -363,6 +371,8 @@ class Enemy(Character):
         self.coolDown = 10
         self.placed = False
         self.collision_set = False
+        self.blocked = ()
+        self.collision_rect = pygame.Rect(0, 0, 0, 0)
 
         r = random.Random()
         x = r.randint(1000, 9999)
@@ -375,21 +385,57 @@ class Enemy(Character):
         # move in the direction of the player if not already next to them
         px = game.GameEnvironment.PLAYER.x
         py = game.GameEnvironment.PLAYER.y
-        player_to_left = px + game.GameEnvironment.PLAYER.width < self.x + self.buffer
-        player_to_right = px > self.x + self.width - self.buffer 
-        player_above = py + game.GameEnvironment.PLAYER.height < self.y + self.buffer
-        player_below = py > self.y + self.height - self.buffer
-        if player_above:
-            self.y -= self.speed
-        elif player_below:
-            self.y += self.speed
+        pw = game.GameEnvironment.PLAYER.width
+        ph = game.GameEnvironment.PLAYER.height
+        pr = game.GameEnvironment.PLAYER.rect
+        pc_x = px + (pw // 2)
+        pc_y = py + (ph // 2)
+        ec_x = self.x + (self.width // 2)
+        ec_y = self.y + (self.height // 2)
+        player_to_left = pc_x < ec_x + self.collision_padding
+        player_to_right = pc_x > ec_x - self.collision_padding
+        player_above = pc_y < ec_y + self.collision_padding
+        player_below = pc_y > ec_y - self.collision_padding
 
-        if player_to_right:
-            self.x += self.speed
-            self.direction = True
-        elif player_to_left:
-            self.x -= self.speed
-            self.direction = False
+        wall_check_rect = pygame.Rect(self.relative_x + 56, self.relative_y + 10, 70, 104)
+        blocked_up = check_wall(wall_check_rect.x, wall_check_rect.y - self.speed) or \
+                     check_wall(wall_check_rect.x + wall_check_rect.width, wall_check_rect.y - self.speed)
+        blocked_down = check_wall(wall_check_rect.x,
+                                  wall_check_rect.y + wall_check_rect.height + self.speed) or \
+                       check_wall(wall_check_rect.x + wall_check_rect.width,
+                                  wall_check_rect.y + wall_check_rect.height + self.speed)
+        blocked_left = check_wall(wall_check_rect.x - self.speed, wall_check_rect.y) or \
+                       check_wall(wall_check_rect.x - self.speed, wall_check_rect.y + wall_check_rect.height)
+        blocked_right = check_wall(wall_check_rect.x + wall_check_rect.width + self.speed,
+                                   wall_check_rect.y) or \
+                        check_wall(wall_check_rect.x + wall_check_rect.width + self.speed,
+                                   wall_check_rect.y + wall_check_rect.height)
+        self.blocked = (blocked_up, blocked_down, blocked_left, blocked_right)
+
+        next_move = (self.collision_rect.move(0, -1 * self.speed * 2), self.collision_rect.move(0, self.speed * 2),
+                     self.collision_rect.move(-1 * self.speed * 2, 0), self.collision_rect.move(self.speed * 2, 0))
+        if player_above and not self.blocked[0] and not pr.colliderect(next_move[0]):
+            if not self.would_collide_with_other_enemy(next_move[0]):
+                self.y -= self.speed
+        if player_below and not self.blocked[1] and not pr.colliderect(next_move[1]):
+            if not self.would_collide_with_other_enemy(next_move[1]):
+                self.y += self.speed
+        if player_to_left and not self.blocked[2] and not pr.colliderect(next_move[2]):
+            if not self.would_collide_with_other_enemy(next_move[2]):
+                self.x -= self.speed
+                self.direction = False
+        if player_to_right and not self.blocked[3] and not pr.colliderect(next_move[3]):
+            if not self.would_collide_with_other_enemy(next_move[3]):
+                self.x += self.speed
+                self.direction = True
+
+    def would_collide_with_other_enemy(self, r):
+        would = False
+        for e in self.game_environment.enemies:
+            if not e[0].unique_id == self.unique_id and e[0].collision_rect.colliderect(r):
+                would = True
+                break
+        return would
 
     def tick(self):
         # calculate if player is visible
@@ -400,16 +446,18 @@ class Enemy(Character):
         player_to_right = px > self.x + self.width
         in_range_x = (max(self.x, px) - min(self.x, px) - self.width  * 2) < MazeEnvironment.TILE_SIZE
         in_range_y = (max(self.y, py) - min(self.y, py) - self.height * 2) < MazeEnvironment.TILE_SIZE
+        self.relative_x = self.x - MazeEnvironment.MAP_X
+        self.relative_y = self.y - MazeEnvironment.MAP_Y
 
         self.is_player_in_view = lineofsight and (player_to_left if self.direction == Enemy.LEFT else player_to_right) and in_range_x and in_range_y
         if self.is_player_in_view:
             self.chasing = True
 
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.collision_rect = pygame.Rect(self.x + 56, self.y + 10, 70, 104)
+
         if self.chasing:
             self.chase_player()
-
-        # update rect based on any changes to actual x/y
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         if self.player_in_combat_range:
             self.attack()
@@ -463,15 +511,13 @@ class Enemy(Character):
         background.convert()
         background.fill(self.health_bar_color_background)
         self.health_bar_surface.blit(background, (o, o))
-
-        precalcw = int((self.health / self.max_health) * w) - (o * 2)
-        if precalcw < 0:
-            precalcw = 0
-        foreground = pygame.Surface((precalcw, h - (o * 2)))
+        fw = int((self.health / self.max_health) * w) - (o * 2)
+        if fw < 0:
+            fw = 0
+        foreground = pygame.Surface((fw, h - (o * 2)))
         foreground.convert()
         foreground.fill(self.health_bar_color_foreground)
         self.health_bar_surface.blit(foreground, (o, o))
-        surface.blit(self.health_bar_surface, (self.x + int(w / 2), self.y - h - 4))
 
     def self_load_animations(self):
         for i in range(len(Enemy.enemy_walk_frames)):

@@ -219,7 +219,8 @@ class GameEnvironment:
                     self.on_enemy_death(e)
             self.set_arrow_collisions()
 
-            if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and GameEnvironment.PLAYER.tile_pos[1] == MazeEnvironment.MAZE.end[1]:
+            if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and MazeEnvironment.MAZE.end[1] == \
+                    GameEnvironment.PLAYER.tile_pos[1]:
                 GameEnvironment.state = GameEnvironment.VICTORY_STATE
 
     def render(self, surface):

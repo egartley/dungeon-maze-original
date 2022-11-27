@@ -397,7 +397,7 @@ class MazeEnvironment:
                     spawn = True
                     break
             if spawn:
-                e = character.Enemy(damage)
+                e = character.Enemy(damage, self.game_environment)
                 if r.randint(1, 2) == 1:
                     e.direction = character.Enemy.RIGHT
                 else:
@@ -495,6 +495,9 @@ class MazeEnvironment:
         for e in self.game_environment.enemies:
             if -300 < e[0].x < surface.get_width():
                 e[0].render(surface)
+        for e in self.game_environment.enemies:
+            surface.blit(e[0].health_bar_surface, (e[0].x + int(e[0].health_bar_surface.get_width() / 2),
+                                                   e[0].y - e[0].health_bar_surface.get_height() - 4))
 
 
 class Tile:
