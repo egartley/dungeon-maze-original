@@ -2,12 +2,18 @@ import pygame
 from maze import MazeEnvironment
 
 
-def build_frames(image, num):
+def build_frames(image, num, reverse=False):
     w = image.get_width() / num
     h = image.get_height()
     frames = []
-    for n in range(num):
-        frames.append(image.subsurface((n * w, 0, w, h)))
+    if reverse:
+        i = num - 1
+        while i >= 0:
+            frames.append(image.subsurface(i * w, 0, w, h))
+            i -= 1
+    else:
+        for n in range(num):
+            frames.append(image.subsurface((n * w, 0, w, h)))
     return frames
 
 

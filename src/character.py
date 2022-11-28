@@ -36,10 +36,11 @@ def build_animations():
     deathsheet = pygame.image.load("src/sprites/Enemies/Death/death.png")
     deathsheet.convert_alpha()
     Enemy.ATTACK_RIGHT_FRAMES = build_frames(attacksheet, 12)
+    Enemy.ATTACK_LEFT_FRAMES = build_frames(pygame.transform.flip(attacksheet, True, False), 12, True)
     Enemy.WALK_RIGHT_FRAMES = build_frames(walksheet, 18)
-    Enemy.ATTACK_LEFT_FRAMES = build_frames(pygame.transform.flip(attacksheet, True, False), 12)
-    Enemy.WALK_LEFT_FRAMES = build_frames(pygame.transform.flip(walksheet, True, False), 18)
-    Enemy.DEATH_FRAMES = build_frames(deathsheet, 15)
+    Enemy.WALK_LEFT_FRAMES = build_frames(pygame.transform.flip(walksheet, True, False), 18, True)
+    Enemy.DEATH_RIGHT_FRAMES = build_frames(deathsheet, 15)
+    Enemy.DEATH_LEFT_FRAMES = build_frames(pygame.transform.flip(deathsheet, True, False), 15, True)
 
 
 class Character(pygame.sprite.Sprite):
@@ -322,8 +323,7 @@ class MainCharacter(Character):
             # do the actual damage to all enemies in range
             for e in self.enemies_in_range:
                 e.health -= self.weapon.damage * self.attack_multiplier
-                if not e.chasing:
-                    e.chasing = True
+                e.force_chase = True
 
     def take_damage(self, damage):
         if self.shield > 0:
@@ -352,7 +352,8 @@ class Enemy(Character):
     ATTACK_RIGHT_FRAMES = []
     WALK_LEFT_FRAMES = []
     WALK_RIGHT_FRAMES = []
-    DEATH_FRAMES = []
+    DEATH_LEFT_FRAMES = []
+    DEATH_RIGHT_FRAMES = []
     loaded_frames = False
 
     def __init__(self, damage, game_env):
@@ -381,6 +382,7 @@ class Enemy(Character):
         self.last_direction = Enemy.LEFT
         self.speed = 3
         self.chasing = False
+        self.force_chase = False
         self.damage = damage
         self.coolDown = 10
         self.placed = False
@@ -398,13 +400,15 @@ class Enemy(Character):
                                Animation(Enemy.WALK_RIGHT_FRAMES, delay, True, get_event_id())]
         self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, True, get_event_id()),
                                  Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, True, get_event_id())]
-        self.death_animation = Animation(Enemy.DEATH_FRAMES, delay, False, get_event_id())
+        self.death_animation = [Animation(Enemy.DEATH_LEFT_FRAMES, delay, False, get_event_id()),
+                                Animation(Enemy.DEATH_RIGHT_FRAMES, delay, False, get_event_id())]
         self.start_attack_animation = False
         self.current_animation = None
         self.alive = True
 
     def die(self):
-        self.current_animation = self.death_animation
+        self.x -= 20
+        self.current_animation = self.death_animation[0 if self.direction == Enemy.LEFT else 1]
         self.current_animation.restart()
         self.alive = False
 
@@ -511,7 +515,9 @@ class Enemy(Character):
             xoffset = 52 if self.direction == Enemy.LEFT else 12
         self.collision_rect = pygame.Rect(self.x + xoffset, self.y + 22, 70, 94)
 
-        if self.chasing:
+        if self.chasing or self.force_chase:
+            if not self.chasing:
+                self.chasing = True
             self.chase_player()
 
         if self.player_in_combat_range:
@@ -549,7 +555,7 @@ class Enemy(Character):
                 surface.blit(self.current_animation.frame, (self.x, self.y))
         else:
             surface.blit(self.image if self.direction == Enemy.RIGHT else self.image2, (self.x, self.y))
-        pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
+        # pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
 
         # render health bar
         o = 1
@@ -583,4 +589,5 @@ class Enemy(Character):
         self.walk_animation[1].stop()
         self.attack_animation[0].stop()
         self.attack_animation[1].stop()
-        self.death_animation.stop()
+        self.death_animation[0].stop()
+        self.death_animation[1].stop()

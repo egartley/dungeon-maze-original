@@ -504,8 +504,9 @@ class MazeEnvironment:
             if -300 < e[0].x < surface.get_width():
                 e[0].render(surface)
         for e in self.game_environment.enemies:
-            surface.blit(e[0].health_bar_surface, (e[0].collision_rect.x + 4,
-                                                   e[0].collision_rect.y - e[0].health_bar_surface.get_height() - 4))
+            if e[0].alive:
+                surface.blit(e[0].health_bar_surface, (e[0].collision_rect.x + 4,
+                                                   e[0].collision_rect.y - e[0].health_bar_surface.get_height() - 10))
 
 
 class Tile:

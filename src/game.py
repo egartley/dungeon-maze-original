@@ -54,6 +54,7 @@ class GameEnvironment:
                 arrow_collision.check()
                 if arrow_collision.is_collided:
                     self.enemies[e][0].health -= GameEnvironment.PLAYER.bow.damage
+                    self.enemies[e][0].force_chase = True
                     a.self_destruct()
 
     def set_booster_collisions(self):
@@ -88,7 +89,6 @@ class GameEnvironment:
         MazeEnvironment.SPEED = 4
         self.maze_environment.reset()
         
-        # default values for testing
         self.player_name = self.screen.CHARONE + self.screen.CHARTWO + self.screen.CHARTHREE
         GameEnvironment.PLAYER = MainCharacter(self.player_name)
         self.maze_environment.generate_maze_difficulty()
@@ -117,13 +117,13 @@ class GameEnvironment:
         enemy.on_death()
         remove = None
         for c in self.active_combat_collisions:
-            if c.enemy[0] == enemy:
+            if c.enemy == enemy:
                 remove = c
         if remove is not None:
             self.active_combat_collisions.remove(remove)
         remove = None
         for c in self.enemy_collisions:
-            if c.enemy[0] == enemy:
+            if c.enemy == enemy:
                 remove = c
         if remove is not None:
             self.enemy_collisions.remove(remove)
@@ -244,7 +244,7 @@ class GameEnvironment:
                     self.active_combat_collisions.remove(c)
             # dirty way to check for enemy death
             for e in self.enemies:
-                if e[0].health <= 0:
+                if e[0].health <= 0 and e[0].alive:
                     e[0].die()
             self.set_arrow_collisions()
 
@@ -341,6 +341,10 @@ class GameEnvironment:
                         a = enemy.attack_animation[0]
                     elif event.type == enemy.attack_animation[1].event_id:
                         a = enemy.attack_animation[1]
+                    elif event.type == enemy.death_animation[0].event_id:
+                        a = enemy.death_animation[0]
+                    elif event.type == enemy.death_animation[1].event_id:
+                        a = enemy.death_animation[1]
                     if a is None:
                         continue
                     else:
