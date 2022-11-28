@@ -6,6 +6,8 @@ import math
 import arrow
 import random
 from maze import MazeEnvironment
+from animation import Animation
+from animation import build_frames
 
 
 def check_wall(x, y):
@@ -14,6 +16,27 @@ def check_wall(x, y):
     if r >= len(MazeEnvironment.MAZE.grid) or c >= len(MazeEnvironment.MAZE.grid[0]):
         return True
     return MazeEnvironment.MAZE.grid[r][c] == MazeEnvironment.WALL
+
+
+def get_event_id():
+    r = random.Random()
+    x = r.randint(1000, 9999)
+    while x in MazeEnvironment.ENEMY_EVENT_IDS:
+        x = r.randint(1000, 9999)
+    uid = x + pygame.USEREVENT
+    MazeEnvironment.ENEMY_EVENT_IDS.append(uid)
+    return uid
+
+
+def build_animations():
+    attacksheet = pygame.image.load("src/sprites/Enemies/Attacking/attacking.png")
+    attacksheet.convert_alpha()
+    walksheet = pygame.image.load("src/sprites/Enemies/Walking/walking.png")
+    walksheet.convert_alpha()
+    Enemy.ATTACK_RIGHT_FRAMES = build_frames(attacksheet, 12)
+    Enemy.WALK_RIGHT_FRAMES = build_frames(walksheet, 18)
+    Enemy.ATTACK_LEFT_FRAMES = build_frames(pygame.transform.flip(attacksheet, True, False), 12)
+    Enemy.WALK_LEFT_FRAMES = build_frames(pygame.transform.flip(walksheet, True, False), 18)
 
 
 class Character(pygame.sprite.Sprite):
@@ -121,9 +144,9 @@ class MainCharacter(Character):
         if isinstance(b, booster.HealthBooster):
             if self.health + b.increase >= 100:
                 self.health = 100
-            else:    
+            else:
                 self.health += booster.HealthBooster.increase
-            
+
         elif isinstance(b, booster.SpeedBooster) and not self.isSpeedFull():
             self.speed = int (math.ceil(self.speed * booster.SpeedBooster.increase))
             MazeEnvironment.SPEED = int(math.ceil(MazeEnvironment.SPEED * booster.SpeedBooster.increase))
@@ -133,7 +156,7 @@ class MainCharacter(Character):
             self.speedStack[self.speedStackTop % self.speedStackLen] = True
             self.speedInstances[self.speedStackTop % self.speedStackLen] = b
             pygame.time.set_timer( (b.BOOSTERID + (self.speedStackTop % self.speedStackLen)), b.time * 1000)
-            
+
         elif isinstance(b, booster.AttackBooster) and not self.isAttackFull():
             self.attack_multiplier += booster.AttackBooster.increase
             self.active_booster[0] = True
@@ -142,13 +165,13 @@ class MainCharacter(Character):
             self.attackStack[self.attackStackTop % self.attackStackLen] = True
             self.attackInstances[self.attackStackTop % self.attackStackLen] = b
             pygame.time.set_timer((b.BOOSTERID + (self.attackStackTop % self.attackStackLen)), b.time * 1000)
-            
+
         elif isinstance(b, booster.ShieldBooster):
             if self.shield + b.increase >= 100:
                 self.shield = 100
             else:
                 self.shield += booster.ShieldBooster.increase
-            
+
         elif isinstance(b, booster.ArrowBooster):
             self.arrow_count += b.increase
 
@@ -159,7 +182,7 @@ class MainCharacter(Character):
                 return False
             i += 1
         return True
-    
+
     def isSpeedEmpty(self):
         i = 0
         for i in range(len(self.speedStack)):
@@ -167,7 +190,7 @@ class MainCharacter(Character):
                 return False
             i += 1
         return True
-    
+
     def isAttackFull(self):
         i = 0
         for i in range(len(self.attackStack)):
@@ -175,7 +198,7 @@ class MainCharacter(Character):
                 return False
             i += 1
         return True
-    
+
     def isAttackEmpty(self):
         i = 0
         for i in range(len(self.attackStack)):
@@ -316,14 +339,16 @@ class MainCharacter(Character):
                 MainCharacter.ATTACK_COUNT = 0
                 game.GameEnvironment.state = game.GameEnvironment.DEATH_STATE
 
+
 class Enemy(Character):
-    # constants for the direction the enemy is facing for use in "seeing" the player
+
     LEFT = 0
     RIGHT = 1
-    enemy_walk_frames = []
-    enemy_walk_frames_left = []
-    enemy_attack_frames = []
-    enemy_attack_frames_left = []
+
+    ATTACK_LEFT_FRAMES = []
+    ATTACK_RIGHT_FRAMES = []
+    WALK_LEFT_FRAMES = []
+    WALK_RIGHT_FRAMES = []
     loaded_frames = False
 
     def __init__(self, damage, game_env):
@@ -333,22 +358,12 @@ class Enemy(Character):
         self.is_player_in_view = False
         self.player_in_combat_range = False
         self.weapon = weapon.Sword()
-        self.width = 180
-        self.height = 123
+        self.width = 133
+        self.height = 118
         self.collision_padding = 8
-        self.image = pygame.image.load("src/sprites/Enemies/Minotaur_01_Idle_000.png")
-        self.image = pygame.transform.scale(self.image, (self.width, self.height))
-        self.image2 = (pygame.transform.flip(self.image, True, False))
+        self.image = pygame.image.load("src/sprites/Enemies/idle.png")
+        self.image2 = pygame.transform.flip(self.image, True, False)
 
-        self.sprite = [self.image]
-        self.sprite_counter = 0
-        self.sprites_right_walk = []
-        self.sprites_left_walk = []
-        self.sprites_right_attack = []
-        self.sprites_left_attack = []
-        self.sprite_modes = [self.sprite, self.sprites_right_walk, self.sprites_right_attack]
-        self.sprite_mode = 0
-        self.attack_animation = 0
         self.damage = damage
         self.health_bar_surface = pygame.Surface((self.width / 2, 8))
         self.health_bar_surface.convert()
@@ -356,12 +371,6 @@ class Enemy(Character):
         self.health_bar_color_foreground = (255, 0, 0)
         self.health_bar_color_outline = (255, 255, 255)
         self.max_health = 100
-
-        if not Enemy.loaded_frames:
-            self.right_walk_animation()
-            self.right_attack_animation()
-            Enemy.loaded_frames = True
-        self.self_load_animations()
 
         self.rect = self.image.get_rect()
         self.direction = Enemy.LEFT
@@ -374,12 +383,18 @@ class Enemy(Character):
         self.blocked = ()
         self.collision_rect = pygame.Rect(0, 0, 0, 0)
 
-        r = random.Random()
-        x = r.randint(1000, 9999)
-        while x in MazeEnvironment.ENEMY_IDS:
-            x = r.randint(1000, 9999)
-        self.unique_id = x + pygame.USEREVENT
-        MazeEnvironment.ENEMY_IDS.append(self.unique_id)
+        self.unique_id = get_event_id()
+
+        if not Enemy.loaded_frames:
+            build_animations()
+            Enemy.loaded_frames = True
+        delay = 40
+        self.walk_animation = [Animation(Enemy.WALK_LEFT_FRAMES, delay, True, get_event_id()),
+                               Animation(Enemy.WALK_RIGHT_FRAMES, delay, True, get_event_id())]
+        self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, True, get_event_id()),
+                                 Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, True, get_event_id())]
+        self.start_attack_animation = False
+        self.current_animation = None
 
     def chase_player(self):
         # move in the direction of the player if not already next to them
@@ -423,11 +438,11 @@ class Enemy(Character):
         if player_to_left and not self.blocked[2] and not pr.colliderect(next_move[2]):
             if not self.would_collide_with_other_enemy(next_move[2]):
                 self.x -= self.speed
-                self.direction = False
+                self.direction = Enemy.LEFT
         if player_to_right and not self.blocked[3] and not pr.colliderect(next_move[3]):
             if not self.would_collide_with_other_enemy(next_move[3]):
                 self.x += self.speed
-                self.direction = True
+                self.direction = Enemy.RIGHT
 
     def would_collide_with_other_enemy(self, r):
         would = False
@@ -444,7 +459,7 @@ class Enemy(Character):
         lineofsight = self.y < py + game.GameEnvironment.PLAYER.height < self.y + self.height or self.y < py < self.y + self.height
         player_to_left = px < self.x
         player_to_right = px > self.x + self.width
-        in_range_x = (max(self.x, px) - min(self.x, px) - self.width  * 2) < MazeEnvironment.TILE_SIZE
+        in_range_x = (max(self.x, px) - min(self.x, px) - self.width * 2) < MazeEnvironment.TILE_SIZE
         in_range_y = (max(self.y, py) - min(self.y, py) - self.height * 2) < MazeEnvironment.TILE_SIZE
         self.relative_x = self.x - MazeEnvironment.MAP_X
         self.relative_y = self.y - MazeEnvironment.MAP_Y
@@ -454,7 +469,7 @@ class Enemy(Character):
             self.chasing = True
 
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.collision_rect = pygame.Rect(self.x + 56, self.y + 10, 70, 104)
+        self.collision_rect = pygame.Rect(self.x + 12, self.y + 10, 70, 104)
 
         if self.chasing:
             self.chase_player()
@@ -462,42 +477,31 @@ class Enemy(Character):
         if self.player_in_combat_range:
             self.attack()
 
-    def change_sprite(self):
-        if self.sprite_counter >= len(self.sprite_modes[int(self.sprite_mode)]) - 2:
-            self.sprite_counter = 0
-        else:
-            self.sprite_counter += 0.5       
-
     def render(self, surface):
         if self.chasing:
-            if self.attack_animation == 1:
-                self.sprite_mode = 2
-                self.change_sprite()
-                if self.direction:
-                    surface.blit(self.sprites_right_attack[int(self.sprite_counter)], (self.x, self.y))
-                else:
-                    surface.blit(self.sprites_left_attack[int(self.sprite_counter)], (self.x, self.y))
-                if self.sprite_counter == len(self.sprites_right_attack) - 2:
-                    self.attack_animation = 0
-
+            if self.weapon.in_cooldown:
+                if self.start_attack_animation:
+                    self.current_animation = self.attack_animation[0 if self.direction == Enemy.LEFT else 1]
+                    self.current_animation.restart()
+                    self.start_attack_animation = False
+                surface.blit(self.current_animation.frame, (self.x, self.y))
             elif self.player_in_combat_range:
-                if self.direction:
-                    surface.blit(self.image, (self.x, self.y))
-                else:
-                    surface.blit(self.image2, (self.x, self.y))
-                
+                surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
             else:
-                self.sprite_mode = 1
-                self.change_sprite()
-                if self.direction:
-                    surface.blit(self.sprites_right_walk[int(self.sprite_counter)], (self.x, self.y))
+                i = 0 if self.direction == Enemy.LEFT else 1
+                if self.current_animation is None:
+                    self.current_animation = self.walk_animation[i]
+                    self.current_animation.restart()
                 else:
-                    surface.blit(self.sprites_left_walk[int(self.sprite_counter)], (self.x, self.y))
+                    current = self.current_animation.event_id
+                    desired = self.walk_animation[i].event_id
+                    if not current == desired:
+                        self.current_animation = self.walk_animation[i]
+                        self.current_animation.restart()
+                surface.blit(self.current_animation.frame, (self.x, self.y))
         else:
-            if self.direction:
-                surface.blit(self.image, (self.x, self.y))
-            else:
-                surface.blit(self.image2, (self.x, self.y))
+            surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
+        pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
 
         # render health bar
         o = 1
@@ -519,39 +523,15 @@ class Enemy(Character):
         foreground.fill(self.health_bar_color_foreground)
         self.health_bar_surface.blit(foreground, (o, o))
 
-    def self_load_animations(self):
-        for i in range(len(Enemy.enemy_walk_frames)):
-            self.sprites_right_walk.append(Enemy.enemy_walk_frames[i])
-        for i in range(len(Enemy.enemy_attack_frames)):
-            self.sprites_right_attack.append(Enemy.enemy_attack_frames[i])
-        for i in range(len(Enemy.enemy_walk_frames_left)):
-            self.sprites_left_walk.append(Enemy.enemy_walk_frames_left[i])
-        for i in range(len(Enemy.enemy_attack_frames_left)):
-            self.sprites_left_attack.append(Enemy.enemy_attack_frames_left[i])
-
-    def right_walk_animation(self):
-        for i in range(0, 18):
-            s = str(i)
-            if i < 10:
-                s = "0" + s
-            img = pygame.image.load("src/sprites/Enemies/Walking/Minotaur_01_Walking_0" + s + ".png")
-            Enemy.enemy_walk_frames.append(img)
-            Enemy.enemy_walk_frames_left.append(pygame.transform.flip(img, True, False))
-
-    def right_attack_animation(self):
-        for i in range(0, 12):
-            s = str(i)
-            if i < 10:
-                s = "0" + s
-            img = pygame.image.load("src/sprites/Enemies/Attacking/Minotaur_01_Attacking_0" + s + ".png")
-            Enemy.enemy_attack_frames.append(img)
-            Enemy.enemy_attack_frames_left.append(pygame.transform.flip(img, True, False))
-
     def attack(self):
         if not self.weapon.in_cooldown:
-            self.attack_animation = 1
-            # start cooldown timer
-            pygame.time.set_timer(self.unique_id, self.weapon.cooldown * 1000)
             self.weapon.in_cooldown = True
-            # do the actual damage to all enemies in range
+            self.start_attack_animation = True
+            pygame.time.set_timer(self.unique_id, self.weapon.cooldown * 1000)
             game.GameEnvironment.PLAYER.take_damage(self.damage)
+
+    def on_death(self):
+        self.walk_animation[0].stop()
+        self.walk_animation[1].stop()
+        self.attack_animation[0].stop()
+        self.attack_animation[1].stop()

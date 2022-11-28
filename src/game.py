@@ -5,9 +5,11 @@ from character import *
 from screen import Screen
 #from scores import Score
 
+
 def get_player_pos(r, c):
-    return MazeEnvironment.TILE_SIZE * r + (MazeEnvironment.TILE_SIZE / 2 - game.GameEnvironment.PLAYER.width / 2), \
-           MazeEnvironment.TILE_SIZE * c + (MazeEnvironment.TILE_SIZE / 2 - game.GameEnvironment.PLAYER.height / 2)
+    return MazeEnvironment.TILE_SIZE * r + (MazeEnvironment.TILE_SIZE / 2 - GameEnvironment.PLAYER.width / 2), \
+           MazeEnvironment.TILE_SIZE * c + (MazeEnvironment.TILE_SIZE / 2 - GameEnvironment.PLAYER.height / 2)
+
 
 class GameEnvironment:
     # constants for keeping track of the game state
@@ -74,6 +76,10 @@ class GameEnvironment:
 
     def start_ingame(self):
         # reset variables for when restarting from win/death
+        if len(self.enemies) > 0:
+            # ensure animation timers for left over enemies are stopped
+            for e in self.enemies:
+                e[0].on_death()
         self.boosters = []
         self.booster_collisions = []
         self.enemies = []
@@ -108,6 +114,7 @@ class GameEnvironment:
         GameEnvironment.PLAYER.y = GameEnvironment.PLAYER.relative_y + MazeEnvironment.MAP_Y
 
     def on_enemy_death(self, enemy):
+        enemy[0].on_death()
         # when an enemy is killed, remove them and their collision(s)
         remove = None
         for c in self.active_combat_collisions:
@@ -127,7 +134,7 @@ class GameEnvironment:
                 remove = e
         if remove is not None:
             self.enemies.remove(remove)
-        MazeEnvironment.ENEMY_IDS.remove(enemy[0].unique_id)
+        MazeEnvironment.ENEMY_EVENT_IDS.remove(enemy[0].unique_id)
         self.screen.score.update_kill()
 
     def check_wall(self, x, y):
@@ -313,16 +320,38 @@ class GameEnvironment:
                     sys.exit()
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
             if event.type == booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen):
-                GameEnvironment.PLAYER.cancel_active_booster( booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen))
+                GameEnvironment.PLAYER.cancel_active_booster(booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen))
             if event.type == booster.SpeedBooster.BOOSTERID + (GameEnvironment.PLAYER.speedStackLast % GameEnvironment.PLAYER.speedStackLen):
-                GameEnvironment.PLAYER.cancel_active_booster( booster.SpeedBooster.BOOSTERID + (GameEnvironment.PLAYER.speedStackLast % GameEnvironment.PLAYER.speedStackLen)) 
+                GameEnvironment.PLAYER.cancel_active_booster(booster.SpeedBooster.BOOSTERID + (GameEnvironment.PLAYER.speedStackLast % GameEnvironment.PLAYER.speedStackLen))
             if event.type == MainCharacter.ATTACK_EVENT_ID:
                 GameEnvironment.PLAYER.weapon.in_cooldown = False
                 pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, 0)
             if event.type == MainCharacter.SWORD_SWING_EVENT_ID:
                 GameEnvironment.PLAYER.swinging_sword = False
                 pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 0)
-            if event.type in MazeEnvironment.ENEMY_IDS:
+            if event.type in MazeEnvironment.ENEMY_EVENT_IDS:
+                is_animation = False
+                for e in self.enemies:
+                    enemy = e[0]
+                    a = None
+                    if event.type == enemy.walk_animation[0].event_id:
+                        a = enemy.walk_animation[0]
+                    elif event.type == enemy.walk_animation[1].event_id:
+                        a = enemy.walk_animation[1]
+                    elif event.type == enemy.attack_animation[0].event_id:
+                        a = enemy.attack_animation[0]
+                    elif event.type == enemy.attack_animation[1].event_id:
+                        a = enemy.attack_animation[1]
+                    if a is None:
+                        continue
+                    else:
+                        is_animation = True
+                        a.next_frame()
+                        break
+                if is_animation:
+                    # don't set timer to 0 since animation class will handle that if needed
+                    return
+                # not an animation, assume attack cooldown
                 for enemy in self.enemies:
                     if event.type == enemy[0].unique_id:
                         enemy[0].weapon.in_cooldown = False

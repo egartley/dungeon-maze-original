@@ -60,7 +60,8 @@ class MazeEnvironment:
     CHUNKS = []
     TRACKED_CHUNKS = []
 
-    ENEMY_IDS = []
+    ENEMY_EVENT_IDS = []
+    ANIMATION_TIMERS = []
 
     CAN_MOVE_UP = False
     CAN_MOVE_DOWN = False
