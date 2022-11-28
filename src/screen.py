@@ -164,7 +164,6 @@ class Screen:
             self.score.start_time()
         surface = pygame.display.get_surface() 
         self.maze_environment.render(surface)
-        game.GameEnvironment.PLAYER.render(surface)
         self.draw_minimap(surface)
         surface.blit(self.font.render("Shield, Health, Speed, Attack", True, Screen.TEXT_COLOR), (12, 8))
         # back fill of health bar plus health bar

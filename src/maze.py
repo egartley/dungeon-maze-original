@@ -60,7 +60,8 @@ class MazeEnvironment:
     CHUNKS = []
     TRACKED_CHUNKS = []
 
-    ENEMY_IDS = []
+    ENEMY_EVENT_IDS = []
+    ANIMATION_TIMERS = []
 
     CAN_MOVE_UP = False
     CAN_MOVE_DOWN = False
@@ -93,6 +94,7 @@ class MazeEnvironment:
         MazeEnvironment.CHUNKS = []
         self.enemy_spawns = []
         self.booster_spawns = []
+        self.start_direction = -1
 
     def reset(self):
         self.up = False
@@ -107,6 +109,7 @@ class MazeEnvironment:
         MazeEnvironment.TRACKED_CHUNKS = []
         self.enemy_spawns = []
         self.booster_spawns = []
+        self.start_direction = -1
 
     def generate_maze_difficulty(self):
         if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
@@ -201,12 +204,16 @@ class MazeEnvironment:
             if MazeEnvironment.START == grid[i][j] or MazeEnvironment.END == grid[i][j]:
                 surface.blit(self.floor_surface, position)
                 if j == 0:
+                    self.start_direction = 1
                     surface.blit(self.start_end_walls[0], position)
                 elif i == 0:
+                    self.start_direction = 2
                     surface.blit(self.start_end_walls[1], position)
                 elif j == len(grid[i]) - 1:
+                    self.start_direction = 3
                     surface.blit(self.start_end_walls[2], (s - self.start_end_walls[2].get_width(), 0))
                 else:
+                    self.start_direction = 4
                     surface.blit(self.start_end_walls[3], (0, s - self.start_end_walls[3].get_height()))
             elif MazeEnvironment.WALL == grid[i][j]:
                 edgewall = False
@@ -475,7 +482,7 @@ class MazeEnvironment:
             if MazeEnvironment.MAP_X < cw:
                 MazeEnvironment.MAP_X = cw
 
-        cur_pos = self.game_environment.PLAYER.tile_pos
+        cur_pos = game.GameEnvironment.PLAYER.tile_pos
         if not self.last_player_pos == cur_pos and not cur_pos == ():
             self.last_player_pos = cur_pos
             self.set_chunks()
@@ -495,12 +502,14 @@ class MazeEnvironment:
         for b in self.game_environment.boosters:
             if -300 < b[0].x < surface.get_width():
                 b[0].render(surface)
+        game.GameEnvironment.PLAYER.render(surface)
         for e in self.game_environment.enemies:
             if -300 < e[0].x < surface.get_width():
                 e[0].render(surface)
         for e in self.game_environment.enemies:
-            surface.blit(e[0].health_bar_surface, (e[0].x + int(e[0].health_bar_surface.get_width() / 2),
-                                                   e[0].y - e[0].health_bar_surface.get_height() - 4))
+            if e[0].alive:
+                surface.blit(e[0].health_bar_surface, (e[0].collision_rect.x + 4,
+                                                   e[0].collision_rect.y - e[0].health_bar_surface.get_height() - 10))
 
 
 class Tile:
