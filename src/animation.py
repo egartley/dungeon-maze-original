@@ -58,5 +58,5 @@ class Animation:
                 self.frame_index = 0
             else:
                 self.frame_index = len(self.frames) - 1
-                self.stop()
+                self.running = False
         self.frame = self.frames[self.frame_index]

@@ -33,10 +33,13 @@ def build_animations():
     attacksheet.convert_alpha()
     walksheet = pygame.image.load("src/sprites/Enemies/Walking/walking.png")
     walksheet.convert_alpha()
+    deathsheet = pygame.image.load("src/sprites/Enemies/Death/death.png")
+    deathsheet.convert_alpha()
     Enemy.ATTACK_RIGHT_FRAMES = build_frames(attacksheet, 12)
     Enemy.WALK_RIGHT_FRAMES = build_frames(walksheet, 18)
     Enemy.ATTACK_LEFT_FRAMES = build_frames(pygame.transform.flip(attacksheet, True, False), 12)
     Enemy.WALK_LEFT_FRAMES = build_frames(pygame.transform.flip(walksheet, True, False), 18)
+    Enemy.DEATH_FRAMES = build_frames(deathsheet, 15)
 
 
 class Character(pygame.sprite.Sprite):
@@ -349,6 +352,7 @@ class Enemy(Character):
     ATTACK_RIGHT_FRAMES = []
     WALK_LEFT_FRAMES = []
     WALK_RIGHT_FRAMES = []
+    DEATH_FRAMES = []
     loaded_frames = False
 
     def __init__(self, damage, game_env):
@@ -394,8 +398,15 @@ class Enemy(Character):
                                Animation(Enemy.WALK_RIGHT_FRAMES, delay, True, get_event_id())]
         self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, True, get_event_id()),
                                  Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, True, get_event_id())]
+        self.death_animation = Animation(Enemy.DEATH_FRAMES, delay, False, get_event_id())
         self.start_attack_animation = False
         self.current_animation = None
+        self.alive = True
+
+    def die(self):
+        self.current_animation = self.death_animation
+        self.current_animation.restart()
+        self.alive = False
 
     def chase_player(self):
         # move in the direction of the player if not already next to them
@@ -473,6 +484,10 @@ class Enemy(Character):
         return would
 
     def tick(self):
+        if not self.alive:
+            if not self.current_animation.running:
+                self.game_environment.on_enemy_death(self)
+            return
         # calculate if player is visible
         px = game.GameEnvironment.PLAYER.x
         py = game.GameEnvironment.PLAYER.y
@@ -503,6 +518,9 @@ class Enemy(Character):
             self.attack()
 
     def render(self, surface):
+        if not self.alive:
+            surface.blit(self.current_animation.frame, (self.x, self.y))
+            return
         if self.chasing:
             if self.weapon.in_cooldown:
                 if self.start_attack_animation:
@@ -565,3 +583,4 @@ class Enemy(Character):
         self.walk_animation[1].stop()
         self.attack_animation[0].stop()
         self.attack_animation[1].stop()
+        self.death_animation.stop()

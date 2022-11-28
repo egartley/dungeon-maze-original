@@ -114,27 +114,26 @@ class GameEnvironment:
         GameEnvironment.PLAYER.y = GameEnvironment.PLAYER.relative_y + MazeEnvironment.MAP_Y
 
     def on_enemy_death(self, enemy):
-        enemy[0].on_death()
-        # when an enemy is killed, remove them and their collision(s)
+        enemy.on_death()
         remove = None
         for c in self.active_combat_collisions:
-            if c.enemy == enemy:
+            if c.enemy[0] == enemy:
                 remove = c
         if remove is not None:
             self.active_combat_collisions.remove(remove)
         remove = None
         for c in self.enemy_collisions:
-            if c.enemy == enemy:
+            if c.enemy[0] == enemy:
                 remove = c
         if remove is not None:
             self.enemy_collisions.remove(remove)
         remove = None
         for e in self.enemies:
-            if e == enemy:
+            if e[0] == enemy:
                 remove = e
         if remove is not None:
             self.enemies.remove(remove)
-        MazeEnvironment.ENEMY_EVENT_IDS.remove(enemy[0].unique_id)
+        MazeEnvironment.ENEMY_EVENT_IDS.remove(enemy.unique_id)
         self.screen.score.update_kill()
 
     def check_wall(self, x, y):
@@ -246,7 +245,7 @@ class GameEnvironment:
             # dirty way to check for enemy death
             for e in self.enemies:
                 if e[0].health <= 0:
-                    self.on_enemy_death(e)
+                    e[0].die()
             self.set_arrow_collisions()
 
             if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and MazeEnvironment.MAZE.end[1] == \
