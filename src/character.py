@@ -580,7 +580,8 @@ class Enemy(Character):
 
     def attack(self):
         if not self.weapon.in_cooldown:
-            self.attack_animation = 1
+            self.weapon.in_cooldown = True
+            self.start_attack_animation = True
             # start cooldown timer
             if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_HARD:
                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (1000 + self.seed))
