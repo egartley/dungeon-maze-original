@@ -1,10 +1,14 @@
 import sys
-
-import pygame.mouse
-
 import collision
+import pygame.mouse
 from character import *
 from screen import Screen
+#from scores import Score
+
+
+def get_player_pos(r, c):
+    return MazeEnvironment.TILE_SIZE * r + (MazeEnvironment.TILE_SIZE / 2 - GameEnvironment.PLAYER.width / 2), \
+           MazeEnvironment.TILE_SIZE * c + (MazeEnvironment.TILE_SIZE / 2 - GameEnvironment.PLAYER.height / 2)
 
 
 class GameEnvironment:
@@ -23,18 +27,15 @@ class GameEnvironment:
     DIFFICULTY_EASY = 0
     DIFFICULTY_MEDIUM = 1
     DIFFICULTY_HARD = 2
+    DIFFICULTY_TRACKER = -1
 
     # assuming only one booster with a timer is active at a time, unique event id for it
     BOOSTER_EVENT_ID = pygame.USEREVENT + 9
 
-    def __init__(self, screen_width, screen_height, ):
-        # set to easy (currently no effect) for now since there's no selection yet
-        self.maze_difficulty = GameEnvironment.DIFFICULTY_EASY
-        self.enemy_difficulty = GameEnvironment.DIFFICULTY_EASY
+    def __init__(self, screen_width, screen_height):
         self.maze_environment = MazeEnvironment(self)
         # set default player values for testing, since no selection yet
         self.player_gender = GameEnvironment.BOY
-        self.player_name = ""
         GameEnvironment.state = GameEnvironment.START_STATE
         self.screen = Screen(self.maze_environment, screen_width, screen_height)
         self.display_surface = pygame.display.set_mode((self.screen.width, self.screen.height))
@@ -43,57 +44,58 @@ class GameEnvironment:
         self.enemies = []
         self.enemy_collisions = []
         self.active_combat_collisions = []
+        self.player_name = self.screen.CHARONE + self.screen.CHARTWO + self.screen.CHARTHREE
+        #self.score = Score(self.player_name)
 
     def set_arrow_collisions(self):
         for a in self.PLAYER.arrow_group:
             for e in range(len(self.enemies)):
-                arrow_collision = collision.ArrowCollision(a.rect, self.enemies[e][0].rect)
+                arrow_collision = collision.ArrowCollision(a, self.enemies[e][0])
                 arrow_collision.check()
                 if arrow_collision.is_collided:
                     self.enemies[e][0].health -= GameEnvironment.PLAYER.bow.damage
+                    self.enemies[e][0].force_chase = True
                     a.self_destruct()
 
     def set_booster_collisions(self):
         for b in self.boosters:
             booster = b[0]
+            if booster.collision_set:
+                continue
+            booster.collision_set = True
             c = collision.BoosterCollision(booster, GameEnvironment.PLAYER.rect)
             self.booster_collisions.append(c)
 
     def set_enemy_collisions(self):
         for e in self.enemies:
-            c = collision.EnemyCollision(e[0], GameEnvironment.PLAYER.combat_rect)
+            enemy = e[0]
+            if enemy.collision_set:
+                continue
+            enemy.collision_set = True
+            c = collision.EnemyCollision(e[0], GameEnvironment.PLAYER.rect)
             self.enemy_collisions.append(c)
 
     def start_ingame(self):
         # reset variables for when restarting from win/death
+        if len(self.enemies) > 0:
+            # ensure animation timers for left over enemies are stopped
+            for e in self.enemies:
+                e[0].on_death()
         self.boosters = []
         self.booster_collisions = []
         self.enemies = []
         self.enemy_collisions = []
         self.active_combat_collisions = []
         MazeEnvironment.SPEED = 4
-        self.maze_environment.up = False
-        self.maze_environment.down = False
-        self.maze_environment.left = False
-        self.maze_environment.right = False
-        self.maze_environment.calculated_walls = []
-        self.maze_environment.corners = []
-        self.maze_environment.last_player_pos = (0, 0)
-        self.maze_environment.tiles = []
-        self.maze_environment.chunks = []
-        # default values for testing
-        self.maze_difficulty = GameEnvironment.DIFFICULTY_MEDIUM
-        self.enemy_difficulty = GameEnvironment.DIFFICULTY_MEDIUM
-        self.player_name = "Player"
-        self.player_gender = GameEnvironment.BOY
-        GameEnvironment.PLAYER = MainCharacter(self.player_name, self.player_gender)
-        self.maze_environment.generate_maze(4, 8, self.maze_difficulty)
-        self.maze_environment.generate_boosters()
-        self.maze_environment.generate_enemies()
+        self.maze_environment.reset()
+        
+        self.player_name = self.screen.CHARONE + self.screen.CHARTWO + self.screen.CHARTHREE
+        GameEnvironment.PLAYER = MainCharacter(self.player_name)
+        self.maze_environment.generate_maze_difficulty()
         # put player at maze start, calculate all coords
         # relative = absolute - maze
         start = MazeEnvironment.MAZE.start
-        pos = self.maze_environment.get_player_pos(start[1], start[0])
+        pos = get_player_pos(start[1], start[0])
         GameEnvironment.PLAYER.relative_x = pos[0]
         GameEnvironment.PLAYER.relative_y = pos[1]
         if start[0] == 0:
@@ -110,15 +112,9 @@ class GameEnvironment:
             MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.TILE_SIZE * start[0]) + ((pygame.display.get_window_size()[1] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         GameEnvironment.PLAYER.x = GameEnvironment.PLAYER.relative_x + MazeEnvironment.MAP_X
         GameEnvironment.PLAYER.y = GameEnvironment.PLAYER.relative_y + MazeEnvironment.MAP_Y
-        # set boosters
-        self.maze_environment.place_boosters()
-        self.set_booster_collisions()
-        # set enemies
-        self.maze_environment.place_enemies()
-        self.set_enemy_collisions()
 
     def on_enemy_death(self, enemy):
-        # when an enemy is killed, remove them and their collision(s)
+        enemy.on_death()
         remove = None
         for c in self.active_combat_collisions:
             if c.enemy == enemy:
@@ -133,10 +129,12 @@ class GameEnvironment:
             self.enemy_collisions.remove(remove)
         remove = None
         for e in self.enemies:
-            if e == enemy:
+            if e[0] == enemy:
                 remove = e
         if remove is not None:
             self.enemies.remove(remove)
+        MazeEnvironment.ENEMY_EVENT_IDS.remove(enemy.unique_id)
+        self.screen.score.update_kill()
 
     def check_wall(self, x, y):
         # check if there is a wall at the given x/y
@@ -149,49 +147,72 @@ class GameEnvironment:
     def camera_tick(self):
         # all the yucky math for controlling the "camera"
         s = pygame.display.get_window_size()
-        px = GameEnvironment.PLAYER.x
-        py = GameEnvironment.PLAYER.y
-        ps = GameEnvironment.PLAYER.speed
-        pw = GameEnvironment.PLAYER.width
-        ph = GameEnvironment.PLAYER.height
-        GameEnvironment.PLAYER.at_center_x = abs(px - ((s[0] / 2) - (pw / 2))) <= ps
-        GameEnvironment.PLAYER.at_center_y = abs(py - ((s[1] / 2) - (ph / 2))) <= ps
-        GameEnvironment.PLAYER.relative_x = GameEnvironment.PLAYER.x - MazeEnvironment.MAP_X
-        GameEnvironment.PLAYER.relative_y = GameEnvironment.PLAYER.y - MazeEnvironment.MAP_Y
-
         p = GameEnvironment.PLAYER
+        px = p.x
+        py = p.y
+        ps = p.speed
+        pw = p.width
+        ph = p.height
+        pr = p.rect
+        p.at_center_x = abs(px - ((s[0] / 2) - (pw / 2))) <= ps
+        p.at_center_y = abs(py - ((s[1] / 2) - (ph / 2))) <= ps
+        p.relative_x = px - MazeEnvironment.MAP_X
+        p.relative_y = py - MazeEnvironment.MAP_Y
+
+        pnm = (pr.move(0, -1 * ps * 2), pr.move(0, ps * 2), pr.move(-1 * ps * 2, 0), pr.move(ps * 2, 0))
+        enemy_block = [False, False, False, False]
+        for e in self.enemies:
+            for i in range(4):
+                if enemy_block[i]:
+                    continue
+                enemy_block[i] = pnm[i].colliderect(e[0].collision_rect)
+
         MazeEnvironment.CAN_MOVE_UP = MazeEnvironment.MAP_Y < 0 and p.at_center_y and \
                                       not self.check_wall(p.relative_x,
                                                           p.relative_y - MazeEnvironment.SPEED) and \
                                       not self.check_wall(p.relative_x + p.width,
-                                                          p.relative_y - MazeEnvironment.SPEED)
+                                                          p.relative_y - MazeEnvironment.SPEED) and not enemy_block[0]
         MazeEnvironment.CAN_MOVE_DOWN = MazeEnvironment.MAP_Y > (-1 * MazeEnvironment.PIXEL_HEIGHT) + s[1] and \
                                         p.at_center_y and \
                                         not self.check_wall(p.relative_x,
                                                             p.relative_y + p.height + MazeEnvironment.SPEED) and \
                                         not self.check_wall(p.relative_x + p.width,
-                                                            p.relative_y + p.height + MazeEnvironment.SPEED)
+                                                            p.relative_y + p.height + MazeEnvironment.SPEED) and \
+                                        not enemy_block[1]
         MazeEnvironment.CAN_MOVE_LEFT = MazeEnvironment.MAP_X < 0 and p.at_center_x and \
                                         not self.check_wall(p.relative_x - MazeEnvironment.SPEED,
                                                             p.relative_y) and \
                                         not self.check_wall(p.relative_x - MazeEnvironment.SPEED,
-                                                            p.relative_y + p.height)
+                                                            p.relative_y + p.height) and not enemy_block[2]
         MazeEnvironment.CAN_MOVE_RIGHT = MazeEnvironment.MAP_X > (-1 * MazeEnvironment.PIXEL_WIDTH) + s[0] and \
                                          p.at_center_x and \
                                          not self.check_wall(p.relative_x + p.width + MazeEnvironment.SPEED,
                                                              p.relative_y) and \
                                          not self.check_wall(p.relative_x + p.width + MazeEnvironment.SPEED,
-                                                             p.relative_y + p.height)
+                                                             p.relative_y + p.height) and not enemy_block[3]
 
-        blocked_up = self.check_wall(p.relative_x, p.relative_y - p.speed) or \
-                     self.check_wall(p.relative_x + p.width, p.relative_y - p.speed)
-        blocked_down = self.check_wall(p.relative_x, p.relative_y + p.height + p.speed) or \
-                       self.check_wall(p.relative_x + p.width, p.relative_y + p.height + p.speed)
-        blocked_left = self.check_wall(p.relative_x - p.speed, p.relative_y) or \
-                       self.check_wall(p.relative_x - p.speed, p.relative_y + p.height)
-        blocked_right = self.check_wall(p.relative_x + p.width + p.speed, p.relative_y) or \
-                        self.check_wall(p.relative_x + p.width + p.speed, p.relative_y + p.height)
-        GameEnvironment.PLAYER.blocked = (blocked_up, blocked_down, blocked_left, blocked_right)
+        blocked_up = self.check_wall(p.relative_x, p.relative_y - ps) or \
+                     self.check_wall(p.relative_x + pw, p.relative_y - ps) or enemy_block[0]
+        blocked_down = self.check_wall(p.relative_x, p.relative_y + ph + ps) or \
+                       self.check_wall(p.relative_x + pw, p.relative_y + ph + ps) or enemy_block[1]
+        blocked_left = self.check_wall(p.relative_x - ps, p.relative_y) or \
+                       self.check_wall(p.relative_x - ps, p.relative_y + ph) or enemy_block[2]
+        blocked_right = self.check_wall(p.relative_x + pw + ps, p.relative_y) or \
+                        self.check_wall(p.relative_x + pw + ps, p.relative_y + ph) or enemy_block[3]
+
+        # edge case for when in the start tile (ignore end tile for now)
+        tp = p.tile_pos
+        if len(tp) > 0 and MazeEnvironment.MAZE.grid[tp[0]][tp[1]] == MazeEnvironment.START:
+            if self.maze_environment.start_direction == 1:
+                blocked_left = blocked_left or px - ps < self.maze_environment.start_end_walls[0].get_width()
+            elif self.maze_environment.start_direction == 2:
+                blocked_up = blocked_up or py - ps < self.maze_environment.start_end_walls[1].get_height()
+            elif self.maze_environment.start_direction == 3:
+                blocked_right = blocked_right or px + pw + ps > s[0] - self.maze_environment.start_end_walls[2].get_width()
+            elif self.maze_environment.start_direction == 4:
+                blocked_down = blocked_down or py + ph + ps > s[1] - self.maze_environment.start_end_walls[3].get_height()
+
+        p.blocked = (blocked_up, blocked_down, blocked_left, blocked_right)
 
     def tick(self):
         if GameEnvironment.state == GameEnvironment.INGAME_STATE:
@@ -213,7 +234,7 @@ class GameEnvironment:
                 self.booster_collisions.remove(r)
 
             for c in self.enemy_collisions:
-                c.tick(c.enemy.rect, GameEnvironment.PLAYER.combat_rect)
+                c.tick(c.enemy.rect, GameEnvironment.PLAYER.rect)
                 c.check()
                 if c.is_collided and c not in self.active_combat_collisions:
                     c.collision_occurrence()
@@ -221,15 +242,14 @@ class GameEnvironment:
                 if not c.is_collided and c in self.active_combat_collisions:
                     c.collision_end()
                     self.active_combat_collisions.remove(c)
-
             # dirty way to check for enemy death
             for e in self.enemies:
-                if e[0].health <= 0:
-                    self.on_enemy_death(e)
-
+                if e[0].health <= 0 and e[0].alive:
+                    e[0].die()
             self.set_arrow_collisions()
 
-            if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and GameEnvironment.PLAYER.tile_pos[1] == MazeEnvironment.MAZE.end[1]:
+            if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and MazeEnvironment.MAZE.end[1] == \
+                    GameEnvironment.PLAYER.tile_pos[1]:
                 GameEnvironment.state = GameEnvironment.VICTORY_STATE
 
     def render(self, surface):
@@ -241,12 +261,15 @@ class GameEnvironment:
         if GameEnvironment.state == GameEnvironment.START_STATE:
             self.screen.startView()
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
+            #self.score.start_time()
             self.screen.activeGameView()
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             self.screen.pauseView()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
+            #self.score.end_time()
             self.screen.victory()
         elif GameEnvironment.state == GameEnvironment.DEATH_STATE:
+            #self.score.end_time()
             self.screen.death()
 
     def switch_to_ingame(self):
@@ -256,39 +279,103 @@ class GameEnvironment:
     def event_handler(self, event):
         # this handles all keyboard and mouse input, as well as timers
         if GameEnvironment.state == GameEnvironment.START_STATE:
+            GameEnvironment.PLAYER.METH_COUNT = 0
+            GameEnvironment.PLAYER.ATTACK_COUNT = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
                 easyButton = pygame.Rect(100, 350, 200, 60)
                 mediumButton = pygame.Rect(375, 350, 200, 60)
-                hardButton = pygame.Rect(675,350,200,60)
-                quitButton = pygame.Rect(100, 550, 200, 60)
+                hardButton = pygame.Rect(675, 350, 200, 60)
+                quitButton = pygame.Rect(375, 550, 200, 60)
+                
+                char_one = pygame.Rect(355, 160, 60, 60)
+                char_two = pygame.Rect(435, 160, 60, 60)
+                char_three = pygame.Rect(510.5, 160, 60, 60)
+                if char_one.collidepoint(event.pos) and self.screen.CHARONE != chr(ord('Z')):
+                    self.screen.CHARONE = chr(ord(self.screen.CHARONE)+1)
+                elif char_one.collidepoint(event.pos) and self.screen.CHARONE == chr(ord('Z')):
+                    self.screen.CHARONE = chr(ord(self.screen.CHARONE)-25)
+                
+                elif char_two.collidepoint(event.pos) and self.screen.CHARTWO != chr(ord('Z')):
+                    self.screen.CHARTWO = chr(ord(self.screen.CHARTWO)+1)
+                elif char_two.collidepoint(event.pos) and self.screen.CHARTWO == chr(ord('Z')):
+                    self.screen.CHARTWO =  chr(ord(self.screen.CHARTWO)-25)
+                    
+                if char_three.collidepoint(event.pos) and self.screen.CHARTHREE != chr(ord('Z')):
+                    self.screen.CHARTHREE = chr(ord(self.screen.CHARTHREE)+1)
+                elif char_three.collidepoint(event.pos) and self.screen.CHARTHREE == chr(ord('Z')):
+                    self.screen.CHARTHREE = chr(ord(self.screen.CHARTHREE)-25)
+                
                 if easyButton.collidepoint(event.pos):
+                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
                     self.switch_to_ingame()
                 elif mediumButton.collidepoint(event.pos):
+                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_MEDIUM
                     self.switch_to_ingame()
                 elif hardButton.collidepoint(event.pos):
+                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_HARD
                     self.switch_to_ingame()
                 elif quitButton.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
             if event.type == booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen):
-                GameEnvironment.PLAYER.cancel_active_booster( booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen))
+                GameEnvironment.PLAYER.cancel_active_booster(booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen))
             if event.type == booster.SpeedBooster.BOOSTERID + (GameEnvironment.PLAYER.speedStackLast % GameEnvironment.PLAYER.speedStackLen):
-                GameEnvironment.PLAYER.cancel_active_booster( booster.SpeedBooster.BOOSTERID + (GameEnvironment.PLAYER.speedStackLast % GameEnvironment.PLAYER.speedStackLen)) 
+                GameEnvironment.PLAYER.cancel_active_booster(booster.SpeedBooster.BOOSTERID + (GameEnvironment.PLAYER.speedStackLast % GameEnvironment.PLAYER.speedStackLen))
             if event.type == MainCharacter.ATTACK_EVENT_ID:
                 GameEnvironment.PLAYER.weapon.in_cooldown = False
                 pygame.time.set_timer(MainCharacter.ATTACK_EVENT_ID, 0)
             if event.type == MainCharacter.SWORD_SWING_EVENT_ID:
                 GameEnvironment.PLAYER.swinging_sword = False
                 pygame.time.set_timer(MainCharacter.SWORD_SWING_EVENT_ID, 0)
+            if event.type in MazeEnvironment.ENEMY_EVENT_IDS:
+                is_animation = False
+                for e in self.enemies:
+                    enemy = e[0]
+                    a = None
+                    if event.type == enemy.walk_animation[0].event_id:
+                        a = enemy.walk_animation[0]
+                    elif event.type == enemy.walk_animation[1].event_id:
+                        a = enemy.walk_animation[1]
+                    elif event.type == enemy.attack_animation[0].event_id:
+                        a = enemy.attack_animation[0]
+                    elif event.type == enemy.attack_animation[1].event_id:
+                        a = enemy.attack_animation[1]
+                    elif event.type == enemy.death_animation[0].event_id:
+                        a = enemy.death_animation[0]
+                    elif event.type == enemy.death_animation[1].event_id:
+                        a = enemy.death_animation[1]
+                    if a is None:
+                        continue
+                    else:
+                        is_animation = True
+                        a.next_frame()
+                        break
+                if is_animation:
+                    # don't set timer to 0 since animation class will handle that if needed
+                    return
+                # not an animation, assume attack cooldown
+                for enemy in self.enemies:
+                    if event.type == enemy[0].unique_id:
+                        enemy[0].weapon.in_cooldown = False
+                        break
+                pygame.time.set_timer(event.type, 0)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
                     GameEnvironment.PLAYER.attack_motion()
+                if event.button == 1:
+                    GameEnvironment.PLAYER.is_using_sword = True
+                    GameEnvironment.PLAYER.is_using_bow = False
                 if event.button == 3:
                     GameEnvironment.PLAYER.shoot(pygame.mouse.get_pos())
                     GameEnvironment.PLAYER.is_using_bow = True
+                    GameEnvironment.PLAYER.is_using_sword = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_m and Screen.SHOW_MAP == True:
+                    Screen.SHOW_MAP = False
+                elif event.key == pygame.K_m and Screen.SHOW_MAP == False:
+                    Screen.SHOW_MAP = True
+                elif event.key == pygame.K_w:
                     self.maze_environment.up = True
                     GameEnvironment.PLAYER.up = True
                 elif event.key == pygame.K_a:
@@ -321,29 +408,33 @@ class GameEnvironment:
                     GameEnvironment.state = GameEnvironment.DEATH_STATE
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(250,350,200,60)
-                quitButton = pygame.Rect(600,350,200,60)
+                startButton = pygame.Rect(150, 550, 200, 60)
+                quitButton = pygame.Rect(700, 550, 200, 60)
                 # goes in if clicked = buttonrect.collidepoint(event.pos)
                 if startButton.collidepoint(event.pos):
-                    self.switch_to_ingame()
+                    GameEnvironment.state = GameEnvironment.INGAME_STATE
                 elif quitButton.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(200,350,200,60)
-                quitButton = pygame.Rect(575,350,200,60)
+                startButton = pygame.Rect(200,600,200,60)
+                quitButton = pygame.Rect(575,600,200,60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
                     pygame.quit()
                     sys.exit()
                 elif startButton.collidepoint(event.pos): # checck if click was restart
+                    GameEnvironment.PLAYER.METH_COUNT = 0
+                    GameEnvironment.PLAYER.ATTACK_COUNT = 0
                     self.switch_to_ingame()
         elif  GameEnvironment.state == GameEnvironment.DEATH_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(250,350,200,60)
-                quitButton = pygame.Rect(575,350,200,60)
+                startButton = pygame.Rect(200, 550, 200, 60)
+                quitButton = pygame.Rect(605, 550, 200, 60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
                     pygame.quit()
                     sys.exit()
                 elif startButton.collidepoint(event.pos): # checck if click was restart
+                    GameEnvironment.PLAYER.METH_COUNT = 0
+                    GameEnvironment.PLAYER.ATTACK_COUNT = 0
                     self.switch_to_ingame()
