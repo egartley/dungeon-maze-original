@@ -534,7 +534,7 @@ class Enemy(Character):
             s = str(i)
             if i < 10:
                 s = "0" + s
-            img = pygame.image.load("src/sprites/Enemies/Walking/Minotaur_01_Walking_0" + s + ".png")
+            img = pygame.image.load("src/sprites/Enemies/Walking/Minotaur_01_Walking_" + s + ".png")
             Enemy.enemy_walk_frames.append(img)
             Enemy.enemy_walk_frames_left.append(pygame.transform.flip(img, True, False))
 
