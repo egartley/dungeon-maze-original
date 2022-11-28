@@ -147,42 +147,52 @@ class GameEnvironment:
         ps = p.speed
         pw = p.width
         ph = p.height
+        pr = p.rect
         p.at_center_x = abs(px - ((s[0] / 2) - (pw / 2))) <= ps
         p.at_center_y = abs(py - ((s[1] / 2) - (ph / 2))) <= ps
         p.relative_x = px - MazeEnvironment.MAP_X
         p.relative_y = py - MazeEnvironment.MAP_Y
 
+        pnm = (pr.move(0, -1 * ps * 2), pr.move(0, ps * 2), pr.move(-1 * ps * 2, 0), pr.move(ps * 2, 0))
+        enemy_block = [False, False, False, False]
+        for e in self.enemies:
+            for i in range(4):
+                if enemy_block[i]:
+                    continue
+                enemy_block[i] = pnm[i].colliderect(e[0].collision_rect)
+
         MazeEnvironment.CAN_MOVE_UP = MazeEnvironment.MAP_Y < 0 and p.at_center_y and \
                                       not self.check_wall(p.relative_x,
                                                           p.relative_y - MazeEnvironment.SPEED) and \
                                       not self.check_wall(p.relative_x + p.width,
-                                                          p.relative_y - MazeEnvironment.SPEED)
+                                                          p.relative_y - MazeEnvironment.SPEED) and not enemy_block[0]
         MazeEnvironment.CAN_MOVE_DOWN = MazeEnvironment.MAP_Y > (-1 * MazeEnvironment.PIXEL_HEIGHT) + s[1] and \
                                         p.at_center_y and \
                                         not self.check_wall(p.relative_x,
                                                             p.relative_y + p.height + MazeEnvironment.SPEED) and \
                                         not self.check_wall(p.relative_x + p.width,
-                                                            p.relative_y + p.height + MazeEnvironment.SPEED)
+                                                            p.relative_y + p.height + MazeEnvironment.SPEED) and \
+                                        not enemy_block[1]
         MazeEnvironment.CAN_MOVE_LEFT = MazeEnvironment.MAP_X < 0 and p.at_center_x and \
                                         not self.check_wall(p.relative_x - MazeEnvironment.SPEED,
                                                             p.relative_y) and \
                                         not self.check_wall(p.relative_x - MazeEnvironment.SPEED,
-                                                            p.relative_y + p.height)
+                                                            p.relative_y + p.height) and not enemy_block[2]
         MazeEnvironment.CAN_MOVE_RIGHT = MazeEnvironment.MAP_X > (-1 * MazeEnvironment.PIXEL_WIDTH) + s[0] and \
                                          p.at_center_x and \
                                          not self.check_wall(p.relative_x + p.width + MazeEnvironment.SPEED,
                                                              p.relative_y) and \
                                          not self.check_wall(p.relative_x + p.width + MazeEnvironment.SPEED,
-                                                             p.relative_y + p.height)
+                                                             p.relative_y + p.height) and not enemy_block[3]
 
         blocked_up = self.check_wall(p.relative_x, p.relative_y - ps) or \
-                     self.check_wall(p.relative_x + pw, p.relative_y - ps)
+                     self.check_wall(p.relative_x + pw, p.relative_y - ps) or enemy_block[0]
         blocked_down = self.check_wall(p.relative_x, p.relative_y + ph + ps) or \
-                       self.check_wall(p.relative_x + pw, p.relative_y + ph + ps)
+                       self.check_wall(p.relative_x + pw, p.relative_y + ph + ps) or enemy_block[1]
         blocked_left = self.check_wall(p.relative_x - ps, p.relative_y) or \
-                       self.check_wall(p.relative_x - ps, p.relative_y + ph)
+                       self.check_wall(p.relative_x - ps, p.relative_y + ph) or enemy_block[2]
         blocked_right = self.check_wall(p.relative_x + pw + ps, p.relative_y) or \
-                        self.check_wall(p.relative_x + pw + ps, p.relative_y + ph)
+                        self.check_wall(p.relative_x + pw + ps, p.relative_y + ph) or enemy_block[3]
 
         # edge case for when in the start tile (ignore end tile for now)
         tp = p.tile_pos

@@ -478,7 +478,7 @@ class MazeEnvironment:
             if MazeEnvironment.MAP_X < cw:
                 MazeEnvironment.MAP_X = cw
 
-        cur_pos = self.game_environment.PLAYER.tile_pos
+        cur_pos = game.GameEnvironment.PLAYER.tile_pos
         if not self.last_player_pos == cur_pos and not cur_pos == ():
             self.last_player_pos = cur_pos
             self.set_chunks()
@@ -498,6 +498,7 @@ class MazeEnvironment:
         for b in self.game_environment.boosters:
             if -300 < b[0].x < surface.get_width():
                 b[0].render(surface)
+        game.GameEnvironment.PLAYER.render(surface)
         for e in self.game_environment.enemies:
             if -300 < e[0].x < surface.get_width():
                 e[0].render(surface)
