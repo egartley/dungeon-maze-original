@@ -76,6 +76,7 @@ class MazeEnvironment:
         self.down = False
         self.left = False
         self.right = False
+        self.treasure_surface = pygame.image.load("src/sprites/maze/chest.png")
         self.floor_surface = pygame.image.load("src/sprites/maze/floor.png")
         self.corner_surface = pygame.image.load("src/sprites/maze/corner.png")
         self.start_end_walls = [pygame.image.load("src/sprites/maze/wall_1.png"),
@@ -95,6 +96,8 @@ class MazeEnvironment:
         self.enemy_spawns = []
         self.booster_spawns = []
         self.start_direction = -1
+        self.end_x = 0
+        self.end_y = 0
 
     def reset(self):
         self.up = False
@@ -110,6 +113,8 @@ class MazeEnvironment:
         self.enemy_spawns = []
         self.booster_spawns = []
         self.start_direction = -1
+        self.end_x = 0
+        self.end_y = 0
 
     def generate_maze_difficulty(self):
         if game.GameEnvironment.DIFFICULTY_TRACKER == 2:
@@ -215,6 +220,10 @@ class MazeEnvironment:
                 else:
                     self.start_direction = 4
                     surface.blit(self.start_end_walls[3], (0, s - self.start_end_walls[3].get_height()))
+                if MazeEnvironment.END == grid[i][j]:
+                    self.end_x = (s // 2) - (self.treasure_surface.get_width() // 2)
+                    self.end_y = (s // 2) - (self.treasure_surface.get_height() // 2)
+                    surface.blit(self.treasure_surface, (self.end_x, self.end_y))
             elif MazeEnvironment.WALL == grid[i][j]:
                 edgewall = False
                 for w in range(0, len(self.calculated_walls)):
@@ -498,6 +507,9 @@ class MazeEnvironment:
         s = MazeEnvironment.TILE_SIZE
         for chunk in MazeEnvironment.CHUNKS:
             chunk.render(surface, MazeEnvironment.MAP_X + (chunk.c * s), MazeEnvironment.MAP_Y + (chunk.r * s))
+            if chunk.r == MazeEnvironment.MAZE.end[0] and chunk.c == MazeEnvironment.MAZE.end[1]:
+                self.end_x = MazeEnvironment.MAP_X + (chunk.c * s)
+                self.end_y = MazeEnvironment.MAP_Y + (chunk.r * s)
 
         for b in self.game_environment.boosters:
             if -300 < b[0].x < surface.get_width():
