@@ -41,7 +41,8 @@ class Screen:
         self.CHARTHREE = chr(ord('A'))
         self.name = self.CHARONE + self.CHARTWO + self.CHARTHREE
         self.score = Score(self.name,game.GameEnvironment.DIFFICULTY_TRACKER)
-        self.timeGlitch = 0
+        self.victory_time_glitch = 0
+        self.start_time_glitch = 0
         self.display_score = True
         self.arrow_sprite = pygame.image.load('src/sprites/Boosters/arrow.png')
         self.arrow_sprite = pygame.transform.scale(self.arrow_sprite, (50, 30))
@@ -55,9 +56,10 @@ class Screen:
         self.death_bg_img = pygame.transform.scale(self.death_bg_img, (frame_size_x, frame_size_y))
         
     def pauseView(self):
-        if self.timeGlitch == 0:
+        if self.victory_time_glitch == 0:
             self.score.end_time()
-            self.timeGlitch +=1
+            self.victory_time_glitch = 0
+            self.start_time_glitch = 0
         surface = pygame.display.get_surface()
         surface.blit(self.bg_img, (0,0))
         pygame.mouse.set_cursor(self.cursor)
@@ -156,8 +158,10 @@ class Screen:
             surface.blit(background, (pygame.display.get_surface().get_width() - 20 - len(grid[0]) * s, 12))
 
     def activeGameView(self):
-        self.timeGlitch = 0
-        self.score.start_time()
+        if self.start_time_glitch == 0:
+            self.victory_time_glitch = 0
+            self.start_time_glitch = 1
+            self.score.start_time()
         surface = pygame.display.get_surface() 
         self.maze_environment.render(surface)
         game.GameEnvironment.PLAYER.render(surface)
@@ -230,9 +234,10 @@ class Screen:
         
     def victory(self):
         
-        if self.timeGlitch == 0:
+        if self.victory_time_glitch == 0:
             self.score.end_time()
-            self.timeGlitch +=1
+            self.victory_time_glitch = 1
+            self.start_time_glitch = 0
         surface = pygame.display.get_surface()
         surface.blit(self.victory_bg_img, (0,0))
         surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (270, 8))
@@ -263,9 +268,10 @@ class Screen:
     def death(self):
         
         surface = pygame.display.get_surface()
-        if self.timeGlitch == 0:
+        if self.victory_time_glitch == 0:
             self.score.end_time()
-            self.timeGlitch +=1
+            self.victory_time_glitch = 1
+            self.start_time_glitch = 1
         pygame.mouse.set_cursor(self.cursor)
         surface.blit(self.death_bg_img, (0,0))
         surface.blit(self.victory_font.render("DEATH", True, red), (400, 8))

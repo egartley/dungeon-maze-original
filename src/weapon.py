@@ -15,7 +15,7 @@ class Weapon(pygame.sprite.Sprite):
 class Sword(Weapon):
     def __init__(self):
         super().__init__()
-        self.damage = 25
+        self.damage = 10
         self.cooldown = 1
         self.range = 8
         self.is_animating = False
