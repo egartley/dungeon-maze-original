@@ -374,6 +374,7 @@ class Enemy(Character):
 
         self.rect = self.image.get_rect()
         self.direction = Enemy.LEFT
+        self.last_direction = Enemy.LEFT
         self.speed = 3
         self.chasing = False
         self.damage = damage
@@ -430,25 +431,44 @@ class Enemy(Character):
         next_move = (self.collision_rect.move(0, -1 * self.speed * 2), self.collision_rect.move(0, self.speed * 2),
                      self.collision_rect.move(-1 * self.speed * 2, 0), self.collision_rect.move(self.speed * 2, 0))
         if player_above and not self.blocked[0] and not pr.colliderect(next_move[0]):
-            if not self.would_collide_with_other_enemy(next_move[0]):
+            if not self.would_collide_with_other_enemy(next_move[0], 0):
                 self.y -= self.speed
         if player_below and not self.blocked[1] and not pr.colliderect(next_move[1]):
-            if not self.would_collide_with_other_enemy(next_move[1]):
+            if not self.would_collide_with_other_enemy(next_move[1], 1):
                 self.y += self.speed
         if player_to_left and not self.blocked[2] and not pr.colliderect(next_move[2]):
-            if not self.would_collide_with_other_enemy(next_move[2]):
+            if not self.would_collide_with_other_enemy(next_move[2], 2):
                 self.x -= self.speed
-                self.direction = Enemy.LEFT
         if player_to_right and not self.blocked[3] and not pr.colliderect(next_move[3]):
-            if not self.would_collide_with_other_enemy(next_move[3]):
+            if not self.would_collide_with_other_enemy(next_move[3], 3):
                 self.x += self.speed
-                self.direction = Enemy.RIGHT
 
-    def would_collide_with_other_enemy(self, r):
+        if player_to_left:
+            self.direction = Enemy.LEFT
+        elif player_to_right:
+            self.direction = Enemy.RIGHT
+
+    def would_collide_with_other_enemy(self, r, d):
         would = False
         for e in self.game_environment.enemies:
-            if not e[0].unique_id == self.unique_id and e[0].collision_rect.colliderect(r):
-                would = True
+            if not e[0].unique_id == self.unique_id:
+                dirblock = False
+                if d == 0:
+                    dirblock = e[0].collision_rect.collidepoint((r.x, r.y)) or \
+                               e[0].collision_rect.collidepoint((r.x + r.width, r.y))
+                elif d == 1:
+                    dirblock = e[0].collision_rect.collidepoint((r.x, r.y + r.height)) or \
+                               e[0].collision_rect.collidepoint((r.x + r.width, r.y + r.height))
+                elif d == 2:
+                    dirblock = e[0].collision_rect.collidepoint((r.x, r.y)) or \
+                               e[0].collision_rect.collidepoint((r.x, r.y + r.height))
+                elif d == 3:
+                    dirblock = e[0].collision_rect.collidepoint((r.x + r.width, r.y)) or \
+                               e[0].collision_rect.collidepoint((r.x + r.width, r.y + r.height))
+                if dirblock:
+                    would = True
+                else:
+                    continue
                 break
         return would
 
@@ -469,7 +489,12 @@ class Enemy(Character):
             self.chasing = True
 
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.collision_rect = pygame.Rect(self.x + 12, self.y + 10, 70, 104)
+        # idle
+        xoffset = 10 if self.direction == Enemy.RIGHT else 52
+        if self.weapon.in_cooldown:
+            # attack
+            xoffset = 52 if self.direction == Enemy.LEFT else 12
+        self.collision_rect = pygame.Rect(self.x + xoffset, self.y + 22, 70, 94)
 
         if self.chasing:
             self.chase_player()
@@ -481,9 +506,14 @@ class Enemy(Character):
         if self.chasing:
             if self.weapon.in_cooldown:
                 if self.start_attack_animation:
+                    self.last_direction = self.direction
                     self.current_animation = self.attack_animation[0 if self.direction == Enemy.LEFT else 1]
                     self.current_animation.restart()
                     self.start_attack_animation = False
+                if not self.direction == self.last_direction:
+                    self.current_animation = self.attack_animation[0 if self.direction == Enemy.LEFT else 1]
+                    self.current_animation.restart()
+                    self.last_direction = self.direction
                 surface.blit(self.current_animation.frame, (self.x, self.y))
             elif self.player_in_combat_range:
                 surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
@@ -500,7 +530,7 @@ class Enemy(Character):
                         self.current_animation.restart()
                 surface.blit(self.current_animation.frame, (self.x, self.y))
         else:
-            surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
+            surface.blit(self.image if self.direction == Enemy.RIGHT else self.image2, (self.x, self.y))
         pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
 
         # render health bar
