@@ -402,10 +402,6 @@ class GameEnvironment:
                     GameEnvironment.PLAYER.right = False
                 elif event.key == pygame.K_ESCAPE:
                     GameEnvironment.state = GameEnvironment.PAUSE_STATE
-                elif event.key == pygame.K_v:
-                    GameEnvironment.state = GameEnvironment.VICTORY_STATE
-                elif event.key == pygame.K_k:
-                    GameEnvironment.state = GameEnvironment.DEATH_STATE
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startButton = pygame.Rect(150, 550, 200, 60)
