@@ -33,6 +33,7 @@ class Screen:
         self.height = height
         self.font = pygame.font.SysFont("Arial", 18)
         self.secondary_font = pygame.font.SysFont("Arial", 50)
+        self.third_font = pygame.font.SysFont("Arial", 30)
 
     def pauseView(self):
         surface = pygame.display.get_surface() 
@@ -50,6 +51,11 @@ class Screen:
         startSurface.fill(red)
         surface.blit(startSurface,(600,350))
         surface.blit(self.secondary_font.render("QUIT",True, black), (650,350))
+        #instructions button
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(675,550))
+        surface.blit(self.secondary_font.render("MANUAL",True, black), (690,550))
         
     def startView(self):
         pygame.mouse.set_cursor(self.cursor)
@@ -83,12 +89,16 @@ class Screen:
         startSurface.fill(red)
         surface.blit(startSurface,(675,350))
         surface.blit(self.secondary_font.render("HARD",True, black), (720,350))
+        #instructions button
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(675,550))
+        surface.blit(self.secondary_font.render("MANUAL",True, black), (690,550))
         ## check if when mouse clicks on button it changes game state 
         startSurface.convert()
         startSurface.fill(orange)
         surface.blit(startSurface,(375,550)) 
         surface.blit(self.secondary_font.render("QUIT",True, black), (430,550))
-        
         
     def draw_minimap(self, surface):
         s = 4
@@ -229,6 +239,29 @@ class Screen:
         show_score(0, red, 'Times New Roman', 20)
         #check for position 
         
+    def manual(self):
+        pygame.display.get_surface().blit(
+            self.third_font.render("                                                 Instructions Manual", True, Screen.TEXT_COLOR), (30, 8))
+        pygame.display.get_surface().blit(
+            self.font.render("WASD keyboard keys for moving. The W key represents up. The A key represents left. The D key represents right. The S key represents down.", True, Screen.TEXT_COLOR), (30, 52))
+        pygame.display.get_surface().blit(
+            self.font.render("                                                                              ESC key can be presssed for pause menu.", True, Screen.TEXT_COLOR), (30, 140))
+        pygame.display.get_surface().blit(
+            self.font.render("                                                      You can Left-Click to switch to the Sword. You can Right-Click to switch to the Bow.", True, Screen.TEXT_COLOR), (30, 96))
+        #BACK BUTTON
+        surface = pygame.display.get_surface() 
+        startSurface = pygame.Surface((200,60))
+        startSurface.convert()
+        startSurface.fill(green)
+        surface.blit(startSurface,(200,350))
+        surface.blit(self.secondary_font.render("   BACK", True, black), (210, 350))
+        #QUIT BUTTON
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(575,350))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (627,350))
+    
+        
 def show_score(choice, color, font, size):
     score_font = pygame.font.SysFont(font, size)
     score_surface = score_font.render('Score : ' + str(score), True, color)
@@ -239,5 +272,8 @@ def show_score(choice, color, font, size):
         score_rect.midtop = (frame_size_x/2, frame_size_y/1.25)
     pygame.display.get_surface().blit(score_surface, score_rect)
 
-    def quit(self):
-        pass
+
+
+    
+def quit(self):
+    pass
