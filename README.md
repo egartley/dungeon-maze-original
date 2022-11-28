@@ -1,12 +1,15 @@
 # Maze Game Project
 
 # Authors
+        # Team Leads
+        Cameron Gower Computer Science/Information Technology
+        Brian Hinger Computer Engineering
 
-Brian Hinger Computer Engineering
-Tan Tran Computer Science
-Evan Gartley Computer Science
-Zanieb Radi Computer Science
-Cameron Gower Computer Science Information Technology
+        # General Members
+        Tan Tran Computer Science
+        Evan Gartley Computer Science
+        Zanieb Radi Computer Science
+
 
 # Course Information
 
@@ -32,16 +35,26 @@ Script for installing dependencies
         https://numpy.org/
 
 
-## Art work
+## Art work and Sound
+        pause screen: https://www.shutterstock.com/video/clip-1008683782-retro-videogame-pause-text-computer-old-tv
+        minotaurs: https://craftpix.net/freebies/free-minotaur-tiny-style-2d-sprites/
+        wraith: https://craftpix.net/freebies/free-wraith-tiny-style-2d-sprites/?num=1&count=3&sq=wraith&pos=2
+        victory screen:https://www.freepik.com/vectors/dungeon-background 
+        pause screen: https://www.shutterstock.com/video/clip-1008683782-retro-videogame-pause-text-computer-old-tv
+        death screen: https://www.pinterest.com/pin/677651075162388819/
+        floor and wall textures: https://www.davidepesce.com/dungeon-and-dragons-resources/
+        weapons: 
+                bow:   https://craftpix.net/freebies/free-bow-and-crossbow-pixel-art-icons/?num=1&count=33&sq=bow&pos=10
+                arrow: https://minecraft-max.net/craft/bows-and-arrows/17763-arrow/
+                sword: https://guntex17.itch.io/sword-slash
 
-## Defining wthe game world environment 
-        Height of walls?
-        width of passages?
+        Booster Artwork:
+                Cameron Gower
         
 
 ## Developer Installation Tools Before running
 
-run the script environment.sh by git bash terminal and enter bash environment.txt
+run the script environment.sh by using the git bash terminal and enter bash environment.txt
 
 
 
@@ -73,33 +86,3 @@ Open
                 difficulty selector how many diffiulties?
                 day and night feature
                                          
-
-## TimeCard and Card Format
-
-Timecards are to be recorded by the individual please write in the specified format below 
-
-Code or Documentation or Testing some verbage action  as many categories as needed be broad in verbage choice. Convention can be talked about
-0...N  entries [Date and time information]
-
-##      Brian Hinger  Team Leader
-
-##      Cam Gower
-
-Docker Environment Configuring
-9/10 3 hours
-9/11 4 hours
-9/12 2 hours
-
-Documentation 
-
-9/11 40 mins
-
-##      Evan Gartley
-
-Add keyboard input, animation, collision and map examples
-9/30 2 hours
-
-##      Tan Tran
- 
-##      Zanieb Radi
-

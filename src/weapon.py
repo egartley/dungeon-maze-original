@@ -1,8 +1,5 @@
-from turtle import Screen
-import py
 import pygame
 import math
-from os import *
 
 
 class Weapon(pygame.sprite.Sprite):
@@ -18,7 +15,7 @@ class Weapon(pygame.sprite.Sprite):
 class Sword(Weapon):
     def __init__(self):
         super().__init__()
-        self.damage = 25
+        self.damage = 10
         self.cooldown = 1
         self.range = 8
         self.is_animating = False
@@ -30,7 +27,6 @@ class Sword(Weapon):
         self.image = self.sprites_right_swing[self.current_sprite]
         self.rect = self.image.get_rect()
         self.direction = None
-
 
     def directionSprite(self, x, y, direction):
         if direction == "right":
@@ -48,11 +44,11 @@ class Sword(Weapon):
         self.sprites_right_swing.append(pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_right2.png'))
         self.sprites_right_swing.append(pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_right3.png'))
         self.sprites_right_swing.append(pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_right4.png'))
-        self.sprites_right_swing[0] = pygame.transform.scale(self.sprites_right_swing[0], (100,100))
-        self.sprites_right_swing[1] = pygame.transform.scale(self.sprites_right_swing[1], (100,100))
-        self.sprites_right_swing[2] = pygame.transform.scale(self.sprites_right_swing[2], (100,100))
-        self.sprites_right_swing[3] = pygame.transform.scale(self.sprites_right_swing[3], (100,100))
-        self.sprites_right_swing[4] = pygame.transform.scale(self.sprites_right_swing[4], (100,100))
+        self.sprites_right_swing[0] = pygame.transform.scale(self.sprites_right_swing[0], (100, 100))
+        self.sprites_right_swing[1] = pygame.transform.scale(self.sprites_right_swing[1], (100, 100))
+        self.sprites_right_swing[2] = pygame.transform.scale(self.sprites_right_swing[2], (100, 100))
+        self.sprites_right_swing[3] = pygame.transform.scale(self.sprites_right_swing[3], (100, 100))
+        self.sprites_right_swing[4] = pygame.transform.scale(self.sprites_right_swing[4], (100, 100))
 
     def left_animation(self):
         self.sprites_left_swing.append(pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_left0.png'))
@@ -60,14 +56,14 @@ class Sword(Weapon):
         self.sprites_left_swing.append(pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_left2.png'))
         self.sprites_left_swing.append(pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_left3.png'))
         self.sprites_left_swing.append(pygame.image.load('src/sprites/Weapons/Sword/sprite_swing_sword_left4.png'))
-        self.sprites_left_swing[0] = pygame.transform.scale(self.sprites_left_swing[0], (100,100))
-        self.sprites_left_swing[1] = pygame.transform.scale(self.sprites_left_swing[1], (100,100))
-        self.sprites_left_swing[2] = pygame.transform.scale(self.sprites_left_swing[2], (100,100))
-        self.sprites_left_swing[3] = pygame.transform.scale(self.sprites_left_swing[3], (100,100))
-        self.sprites_left_swing[4] = pygame.transform.scale(self.sprites_left_swing[4], (100,100))
+        self.sprites_left_swing[0] = pygame.transform.scale(self.sprites_left_swing[0], (100, 100))
+        self.sprites_left_swing[1] = pygame.transform.scale(self.sprites_left_swing[1], (100, 100))
+        self.sprites_left_swing[2] = pygame.transform.scale(self.sprites_left_swing[2], (100, 100))
+        self.sprites_left_swing[3] = pygame.transform.scale(self.sprites_left_swing[3], (100, 100))
+        self.sprites_left_swing[4] = pygame.transform.scale(self.sprites_left_swing[4], (100, 100))
 
     def render(self, x, y, direction):
-        if self.in_cooldown == True and self.is_animating == True:
+        if self.in_cooldown and self.is_animating:
             if self.current_sprite >= len(self.sprites_right_swing):
                 self.current_sprite = 0
                 self.is_animating = False
@@ -105,7 +101,7 @@ class Bow(Weapon):
 
     def move(self, surface):
         self.picture = pygame.transform.rotate(self.image, 360-self.angle*57.29)
-        character_position = (self.x - self.picture.get_rect().width/2, \
+        character_position = (self.x - self.picture.get_rect().width/2,
                             self.y - self.picture.get_rect().height/2)
         surface.blit(self.picture, character_position)
         self.rect.topright = [self.x, self.y]
