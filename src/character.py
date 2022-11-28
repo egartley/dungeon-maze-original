@@ -326,7 +326,7 @@ class Enemy(Character):
     enemy_attack_frames_left = []
     loaded_frames = False
 
-    def __init__(self, damage, game_env):
+    def __init__(self, damage, game_env, seed):
         super().__init__()
         self.game_environment = game_env
         self.weapon_type = None
@@ -356,6 +356,7 @@ class Enemy(Character):
         self.health_bar_color_foreground = (255, 0, 0)
         self.health_bar_color_outline = (255, 255, 255)
         self.max_health = 100
+        self.seed = seed
 
         if not Enemy.loaded_frames:
             self.right_walk_animation()
@@ -551,7 +552,12 @@ class Enemy(Character):
         if not self.weapon.in_cooldown:
             self.attack_animation = 1
             # start cooldown timer
-            pygame.time.set_timer(self.unique_id, self.weapon.cooldown * 1000)
+            if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_HARD:
+                pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (1000 + self.seed))
+            elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_MEDIUM:
+                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (2000 + self.seed))
+            else:
+                pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (3000 + self.seed))
             self.weapon.in_cooldown = True
             # do the actual damage to all enemies in range
             game.GameEnvironment.PLAYER.take_damage(self.damage)
