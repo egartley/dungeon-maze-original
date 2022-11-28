@@ -90,6 +90,7 @@ class Bow(Weapon):
         self.x = 0
         self.y = 0
         self.angle = 0
+        self.cooldown = 1
 
     def character_position(self, x, y):
         self.x = x

@@ -356,18 +356,30 @@ class Enemy(Character):
     DEATH_RIGHT_FRAMES = []
     loaded_frames = False
 
-    def __init__(self, damage, game_env, seed):
+    def __init__(self, damage, game_env, seed, enemy_type):
         super().__init__()
         self.game_environment = game_env
         self.weapon_type = None
         self.is_player_in_view = False
         self.player_in_combat_range = False
-        self.weapon = weapon.Sword()
         self.width = 133
         self.height = 118
-        self.collision_padding = 8
-        self.image = pygame.image.load("src/sprites/Enemies/idle.png")
-        self.image2 = pygame.transform.flip(self.image, True, False)
+        self.enemy_type = enemy_type
+
+        if(self.enemy_type == 0):
+            self.weapon = weapon.Sword()
+            self.image = pygame.image.load("src/sprites/Enemies/idle.png")
+            self.image2 = pygame.transform.flip(self.image, True, False)
+            self.collision_padding = 8
+        
+        else:
+            self.weapon = weapon.Bow()
+            self.image = pygame.image.load("src/sprites/Bow_Enemies/1/Elf_01__IDLE_000.png")
+            self.image = pygame.transform.scale(self.image, (self.width, self.height))
+            self.image2 = pygame.transform.flip(self.image, True, False)
+            self.arrow_group = pygame.sprite.Group()
+            self.collision_padding = 32
+
 
         self.damage = damage
         self.health_bar_surface = pygame.Surface((self.width / 2, 8))
@@ -521,8 +533,12 @@ class Enemy(Character):
                 self.chasing = True
             self.chase_player()
 
-        if self.player_in_combat_range:
-            self.attack()
+        if self.enemy_type == 0:
+            if self.player_in_combat_range:
+                self.attack()
+        else:
+            if self.chasing:
+                self.attack()
 
     def render(self, surface):
         if not self.alive:
@@ -558,6 +574,10 @@ class Enemy(Character):
             surface.blit(self.image if self.direction == Enemy.RIGHT else self.image2, (self.x, self.y))
         # pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
 
+        if(self.enemy_type == 1):
+            self.arrow_group.update()
+            self.arrow_group.draw(surface)
+
         # render health bar
         o = 1
         w = self.health_bar_surface.get_width()
@@ -586,13 +606,26 @@ class Enemy(Character):
             if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_HARD:
                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (1000 + self.seed))
             elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_MEDIUM:
-                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (2000 + self.seed))
+                pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (2000 + self.seed))
             else:
                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (3000 + self.seed))
-            self.weapon.in_cooldown = True
-            self.start_attack_animation = True
             pygame.time.set_timer(self.unique_id, self.weapon.cooldown * 1000)
-            game.GameEnvironment.PLAYER.take_damage(self.damage)
+            if(self.enemy_type == 1):
+                self.bow_attack()
+            else:
+                game.GameEnvironment.PLAYER.take_damage(self.damage)
+
+    def create_arrow(self, target_pos):
+        return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1])
+
+    def shoot(self, target_pos):
+        if self.arrow_count > 0:
+            self.arrow_group.add(self.create_arrow(target_pos))
+            self.arrow_count -= 1
+
+    def bow_attack(self):
+        target_pos = [game.GameEnvironment.PLAYER.x, game.GameEnvironment.PLAYER.y]
+        self.shoot(target_pos)
 
     def on_death(self):
         self.walk_animation[0].stop()

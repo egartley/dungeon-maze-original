@@ -56,6 +56,15 @@ class GameEnvironment:
                     self.enemies[e][0].health -= GameEnvironment.PLAYER.bow.damage
                     self.enemies[e][0].force_chase = True
                     a.self_destruct()
+        for e in self.enemies:
+            enemy = e[0]
+            if (enemy.enemy_type == 1):
+                for a in enemy.arrow_group:
+                    arrow_collision = collision.ArrowCollision(a, self.PLAYER)
+                    arrow_collision.check()
+                    if arrow_collision.is_collided:
+                        self.PLAYER.take_damage(enemy.damage)
+                        a.self_destruct()
 
     def set_booster_collisions(self):
         for b in self.boosters:
