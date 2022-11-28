@@ -356,7 +356,7 @@ class Enemy(Character):
     DEATH_RIGHT_FRAMES = []
     loaded_frames = False
 
-    def __init__(self, damage, game_env):
+    def __init__(self, damage, game_env, seed):
         super().__init__()
         self.game_environment = game_env
         self.weapon_type = None
@@ -376,6 +376,7 @@ class Enemy(Character):
         self.health_bar_color_foreground = (255, 0, 0)
         self.health_bar_color_outline = (255, 255, 255)
         self.max_health = 100
+        self.seed = seed
 
         self.rect = self.image.get_rect()
         self.direction = Enemy.LEFT
@@ -579,6 +580,14 @@ class Enemy(Character):
 
     def attack(self):
         if not self.weapon.in_cooldown:
+            self.attack_animation = 1
+            # start cooldown timer
+            if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_HARD:
+                pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (1000 + self.seed))
+            elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_MEDIUM:
+                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (2000 + self.seed))
+            else:
+                pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (3000 + self.seed))
             self.weapon.in_cooldown = True
             self.start_attack_animation = True
             pygame.time.set_timer(self.unique_id, self.weapon.cooldown * 1000)

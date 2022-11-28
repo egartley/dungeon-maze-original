@@ -404,7 +404,7 @@ class MazeEnvironment:
                     spawn = True
                     break
             if spawn:
-                e = character.Enemy(damage, self.game_environment)
+                e = character.Enemy(damage, self.game_environment, self.generate_seed())
                 if r.randint(1, 2) == 1:
                     e.direction = character.Enemy.RIGHT
                 else:
@@ -415,6 +415,9 @@ class MazeEnvironment:
             self.enemy_spawns.remove(r)
         self.place_enemies()
         self.game_environment.set_enemy_collisions()
+    
+    def generate_seed(self):
+        return random.randint(0,1000)
 
     def place_enemies(self):
         # do all the yucky math for determining where to actually render the enemies based on their generation
