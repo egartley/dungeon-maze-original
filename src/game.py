@@ -274,6 +274,8 @@ class GameEnvironment:
             self.screen.death()
         elif GameEnvironment.state == GameEnvironment.MANUAL_STATE:
             self.screen.manual()
+        elif GameEnvironment.state == GameEnvironment.PAUSE_MANUAL_STATE:
+            self.screen.manual()
 
 
     def switch_to_ingame(self):
