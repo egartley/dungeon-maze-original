@@ -244,7 +244,6 @@ class Screen:
             x += 40
         
     def victory(self):
-        
         if self.victory_time_glitch == 0:
             self.score.end_time()
             self.victory_time_glitch = 1
@@ -262,7 +261,6 @@ class Screen:
         s.set_alpha(150)
         s.fill(black)
         surface.blit(s, (200,90))
-        
         #RESTART BUTTON
         startSurface = pygame.Surface((250,60))
         startSurface.convert()
@@ -277,7 +275,6 @@ class Screen:
         self.display_top_scores()
         
     def death(self):
-        
         surface = pygame.display.get_surface()
         if self.victory_time_glitch == 0:
             self.score.end_time()

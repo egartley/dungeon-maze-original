@@ -295,6 +295,7 @@ class GameEnvironment:
                 char_one = pygame.Rect(355, 160, 60, 60)
                 char_two = pygame.Rect(435, 160, 60, 60)
                 char_three = pygame.Rect(510.5, 160, 60, 60)
+                
                 if char_one.collidepoint(event.pos) and self.screen.CHARONE != chr(ord('Z')):
                     self.screen.CHARONE = chr(ord(self.screen.CHARONE)+1)
                 elif char_one.collidepoint(event.pos) and self.screen.CHARONE == chr(ord('Z')):
@@ -319,12 +320,13 @@ class GameEnvironment:
                 elif hard_button.collidepoint(event.pos):
                     GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_HARD
                     self.switch_to_ingame()
+                elif manual_button.collidepoint(event.pos):
+                    GameEnvironment.state = GameEnvironment.MANUAL_STATE
+                    self.screen.manual()
                 elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
-                elif manual_button.collidepoint(event.pos):
-                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.MANUAL_STATE
-                    self.screen.manual()
+
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
             if event.type == booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen):
                 GameEnvironment.PLAYER.cancel_active_booster(booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen))
@@ -410,24 +412,20 @@ class GameEnvironment:
                     GameEnvironment.PLAYER.right = False
                 elif event.key == pygame.K_ESCAPE:
                     GameEnvironment.state = GameEnvironment.PAUSE_STATE
-                elif event.key == pygame.K_v:
-                    GameEnvironment.state = GameEnvironment.VICTORY_STATE
-                elif event.key == pygame.K_k:
-                    GameEnvironment.state = GameEnvironment.DEATH_STATE
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                startButton = pygame.Rect(150, 550, 200, 60)
-                quitButton = pygame.Rect(700, 550, 200, 60)
-                manual = pygame.Rect(425, 550, 200, 60)
+                start_button = pygame.Rect(150, 550, 200, 60)
+                quit_button = pygame.Rect(700, 550, 200, 60)
+                manual_button = pygame.Rect(425, 550, 200, 60)
                 # goes in if clicked = buttonrect.collidepoint(event.pos)
-                if startButton.collidepoint(event.pos):
+                if start_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.INGAME_STATE
-                elif quitButton.collidepoint(event.pos):
-                    pygame.quit()
-                    sys.exit()
-                elif manual.collidepoint(event.pos):
+                elif manual_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.PAUSE_MANUAL_STATE
                     self.screen.pause_manual()
+                elif quit_button.collidepoint(event.pos):
+                    pygame.quit()
+                    sys.exit()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startButton = pygame.Rect(200,600,200,60)
@@ -438,6 +436,7 @@ class GameEnvironment:
                 elif startButton.collidepoint(event.pos): # checck if click was restart
                     GameEnvironment.PLAYER.METH_COUNT = 0
                     GameEnvironment.PLAYER.ATTACK_COUNT = 0
+                    GameEnvironment.state = GameEnvironment.START_STATE
                     self.switch_to_ingame()
         elif  GameEnvironment.state == GameEnvironment.DEATH_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -449,14 +448,13 @@ class GameEnvironment:
                 elif startButton.collidepoint(event.pos): # checck if click was restart
                     GameEnvironment.PLAYER.METH_COUNT = 0
                     GameEnvironment.PLAYER.ATTACK_COUNT = 0
-                    self.switch_to_ingame()
+                    GameEnvironment.state = GameEnvironment.START_STATE
         elif  GameEnvironment.state == GameEnvironment.MANUAL_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 back_button = pygame.Rect(250,350,200,60)
                 quit_button = pygame.Rect(575,350,200,60)
                 if back_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.START_STATE
-                    self.screen.pauseView()
                 elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
@@ -466,7 +464,7 @@ class GameEnvironment:
                 quit_button = pygame.Rect(575,350,200,60)
                 if back_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.PAUSE_STATE
-                    self.screen.pauseView()
+                    self.screen.pause_manual()
                 elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
