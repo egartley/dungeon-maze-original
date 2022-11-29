@@ -97,6 +97,7 @@ class MainCharacter(Character):
         # map x/y are the top left of the map itself, changing when moving the map
         # "absolute" x/y or just x/y by itself, is where the thing is actually rendered
         # to in the display window (where all the surface.blit calls are)
+        self.arrow_count = 10
         self.name = name
         self.health = 100
         self.shield = 100

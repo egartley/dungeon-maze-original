@@ -75,6 +75,12 @@ class Screen:
         startSurface.fill(red)
         surface.blit(startSurface, (700, 550))
         surface.blit(self.secondary_font.render("QUIT", True, black), (750, 550))
+        #instructions button
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(425,550))
+        surface.blit(self.secondary_font.render("MANUAL",True, black), (450,550))
+
 
     def startView(self):
         pygame.mouse.set_cursor(self.cursor)
@@ -114,6 +120,12 @@ class Screen:
         startSurface.fill(orange)
         surface.blit(startSurface, (375, 550))
         surface.blit(self.secondary_font.render("QUIT", True, black), (430, 550))
+        #instructions button
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(675,550))
+        surface.blit(self.secondary_font.render("MANUAL",True, black), (680,550))
+
 
     def draw_minimap(self, surface):
         s = 4
@@ -232,7 +244,6 @@ class Screen:
             x += 40
         
     def victory(self):
-        
         if self.victory_time_glitch == 0:
             self.score.end_time()
             self.victory_time_glitch = 1
@@ -250,7 +261,6 @@ class Screen:
         s.set_alpha(150)
         s.fill(black)
         surface.blit(s, (200,90))
-        
         #RESTART BUTTON
         startSurface = pygame.Surface((250,60))
         startSurface.convert()
@@ -265,7 +275,6 @@ class Screen:
         self.display_top_scores()
         
     def death(self):
-        
         surface = pygame.display.get_surface()
         if self.victory_time_glitch == 0:
             self.score.end_time()
@@ -301,3 +310,47 @@ class Screen:
 
     def quit(self):
         pass
+    
+    def manual(self):
+        surface = pygame.display.get_surface() 
+        surface.blit(
+            self.third_font.render("                                                 Instructions Manual", True, Screen.TEXT_COLOR), (30, 8))
+        surface.blit(
+            self.font.render("WASD keyboard keys for moving. The W key represents up. The A key represents left. The D key represents right. The S key represents down.", True, Screen.TEXT_COLOR), (30, 52))
+        surface.blit(
+            self.font.render("                                                                              ESC key can be presssed for pause menu.", True, Screen.TEXT_COLOR), (30, 140))
+        surface.blit(
+            self.font.render("                                                      You can Left-Click to switch to the Sword. You can Right-Click to switch to the Bow.", True, Screen.TEXT_COLOR), (30, 96))
+        #BACK BUTTON
+        startSurface = pygame.Surface((200,60))
+        startSurface.convert()
+        startSurface.fill(green)
+        surface.blit(startSurface,(200,350))
+        surface.blit(self.secondary_font.render("   BACK", True, black), (210, 350))
+        #QUIT BUTTON
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(575,350))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (627,350))
+        
+    def pause_manual(self):
+        surface = pygame.display.get_surface() 
+        surface.blit(
+            self.victory_font.render("Instructions Manual", True, Screen.TEXT_COLOR), (400, 8))
+        surface.blit(self.font.render("WASD keyboard keys for moving. The W key represents up. The A key represents left. The D key represents right. The S key represents down.", 
+                                      True, Screen.TEXT_COLOR), (30, 52))
+        surface.blit(self.font.render("ESC key can be presssed for pause menu.", True, Screen.TEXT_COLOR), (30, 140))
+        surface.blit(self.font.render("You can Left-Click to switch to the Sword. You can Right-Click to switch to the Bow.",
+                                      True, Screen.TEXT_COLOR), (30, 96))
+        #BACK BUTTON
+        startSurface = pygame.Surface((200,60))
+        startSurface.convert()
+        startSurface.fill(green)
+        surface.blit(startSurface,(200,350))
+        surface.blit(self.secondary_font.render("   BACK", True, black), (210, 350))
+        #QUIT BUTTON
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(575,350))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (627,350))
+
