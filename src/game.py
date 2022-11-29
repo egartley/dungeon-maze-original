@@ -3,7 +3,7 @@ import collision
 import pygame.mouse
 from character import *
 from screen import Screen
-#from scores import Score
+from scores import Score
 
 
 def get_player_pos(r, c):
@@ -18,7 +18,8 @@ class GameEnvironment:
     PAUSE_STATE = 2
     VICTORY_STATE = 3
     DEATH_STATE = 4
-
+    MANUAL_STATE = 5
+    PAUSE_MANUAL_STATE = 6
     PLAYER = MainCharacter()
     BOY = 0
     GIRL = 1
@@ -45,7 +46,7 @@ class GameEnvironment:
         self.enemy_collisions = []
         self.active_combat_collisions = []
         self.player_name = self.screen.CHARONE + self.screen.CHARTWO + self.screen.CHARTHREE
-        #self.score = Score(self.player_name)
+        self.score = Score(self.player_name, GameEnvironment.DIFFICULTY_TRACKER)
 
     def set_arrow_collisions(self):
         for a in self.PLAYER.arrow_group:
@@ -261,16 +262,19 @@ class GameEnvironment:
         if GameEnvironment.state == GameEnvironment.START_STATE:
             self.screen.startView()
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
-            #self.score.start_time()
+            self.score.start_time()
             self.screen.activeGameView()
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             self.screen.pauseView()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
-            #self.score.end_time()
+            self.score.end_time()
             self.screen.victory()
         elif GameEnvironment.state == GameEnvironment.DEATH_STATE:
-            #self.score.end_time()
+            self.score.end_time()
             self.screen.death()
+        elif GameEnvironment.state == GameEnvironment.MANUAL_STATE:
+            self.screen.manual()
+
 
     def switch_to_ingame(self):
         GameEnvironment.state = GameEnvironment.INGAME_STATE
@@ -282,10 +286,11 @@ class GameEnvironment:
             GameEnvironment.PLAYER.METH_COUNT = 0
             GameEnvironment.PLAYER.ATTACK_COUNT = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
-                easyButton = pygame.Rect(100, 350, 200, 60)
-                mediumButton = pygame.Rect(375, 350, 200, 60)
-                hardButton = pygame.Rect(675, 350, 200, 60)
-                quitButton = pygame.Rect(375, 550, 200, 60)
+                easy_button = pygame.Rect(100, 350, 200, 60)
+                medium_button = pygame.Rect(375, 350, 200, 60)
+                hard_button = pygame.Rect(675, 350, 200, 60)
+                quit_button = pygame.Rect(375, 550, 200, 60)
+                manual_button = pygame.Rect(675, 550, 200, 60)
                 
                 char_one = pygame.Rect(355, 160, 60, 60)
                 char_two = pygame.Rect(435, 160, 60, 60)
@@ -305,18 +310,21 @@ class GameEnvironment:
                 elif char_three.collidepoint(event.pos) and self.screen.CHARTHREE == chr(ord('Z')):
                     self.screen.CHARTHREE = chr(ord(self.screen.CHARTHREE)-25)
                 
-                if easyButton.collidepoint(event.pos):
+                if easy_button.collidepoint(event.pos):
                     GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_EASY
                     self.switch_to_ingame()
-                elif mediumButton.collidepoint(event.pos):
+                elif medium_button.collidepoint(event.pos):
                     GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_MEDIUM
                     self.switch_to_ingame()
-                elif hardButton.collidepoint(event.pos):
+                elif hard_button.collidepoint(event.pos):
                     GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.DIFFICULTY_HARD
                     self.switch_to_ingame()
-                elif quitButton.collidepoint(event.pos):
+                elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
+                elif manual_button.collidepoint(event.pos):
+                    GameEnvironment.DIFFICULTY_TRACKER = GameEnvironment.MANUAL_STATE
+                    self.screen.manual()
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
             if event.type == booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen):
                 GameEnvironment.PLAYER.cancel_active_booster(booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen))
@@ -410,12 +418,16 @@ class GameEnvironment:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startButton = pygame.Rect(150, 550, 200, 60)
                 quitButton = pygame.Rect(700, 550, 200, 60)
+                manual = pygame.Rect(425, 550, 200, 60)
                 # goes in if clicked = buttonrect.collidepoint(event.pos)
                 if startButton.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.INGAME_STATE
                 elif quitButton.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
+                elif manual.collidepoint(event.pos):
+                    GameEnvironment.state = GameEnvironment.PAUSE_MANUAL_STATE
+                    self.screen.pause_manual()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startButton = pygame.Rect(200,600,200,60)
@@ -438,3 +450,26 @@ class GameEnvironment:
                     GameEnvironment.PLAYER.METH_COUNT = 0
                     GameEnvironment.PLAYER.ATTACK_COUNT = 0
                     self.switch_to_ingame()
+        elif  GameEnvironment.state == GameEnvironment.MANUAL_STATE:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                back_button = pygame.Rect(250,350,200,60)
+                quit_button = pygame.Rect(575,350,200,60)
+                if back_button.collidepoint(event.pos):
+                    GameEnvironment.state = GameEnvironment.START_STATE
+                    self.screen.pauseView()
+                elif quit_button.collidepoint(event.pos):
+                    pygame.quit()
+                    sys.exit()
+        elif  GameEnvironment.state == GameEnvironment.PAUSE_MANUAL_STATE:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                back_button = pygame.Rect(250,350,200,60)
+                quit_button = pygame.Rect(575,350,200,60)
+                if back_button.collidepoint(event.pos):
+                    GameEnvironment.state = GameEnvironment.PAUSE_STATE
+                    self.screen.pauseView()
+                elif quit_button.collidepoint(event.pos):
+                    pygame.quit()
+                    sys.exit()
+                    
+
+
