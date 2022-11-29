@@ -540,7 +540,11 @@ class Enemy(Character):
                     self.current_animation = self.attack_animation[0 if self.direction == Enemy.LEFT else 1]
                     self.current_animation.restart()
                     self.last_direction = self.direction
-                surface.blit(self.current_animation.frame, (self.x, self.y))
+                surface.blit(self.current_animation.frame
+                             if self.current_animation.frame_index < len(self.current_animation.frames) - 1
+                             else (self.idle_left if self.direction == Enemy.LEFT else self.idle_right),
+                             (self.x if self.current_animation.frame_index < len(self.current_animation.frames) - 1
+                              else self.x + 4, self.y))
             elif self.player_in_combat_range:
                 surface.blit(self.idle_right if self.direction == Enemy.LEFT else self.idle_left, (self.x, self.y))
             else:
