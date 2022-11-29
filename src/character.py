@@ -400,8 +400,8 @@ class Enemy(Character):
         delay = 40
         self.walk_animation = [Animation(Enemy.WALK_LEFT_FRAMES, delay, True, get_event_id()),
                                Animation(Enemy.WALK_RIGHT_FRAMES, delay, True, get_event_id())]
-        self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, True, get_event_id()),
-                                 Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, True, get_event_id())]
+        self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, False, get_event_id()),
+                                 Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, False, get_event_id())]
         self.death_animation = [Animation(Enemy.DEATH_LEFT_FRAMES, delay, False, get_event_id()),
                                 Animation(Enemy.DEATH_RIGHT_FRAMES, delay, False, get_event_id())]
         self.start_attack_animation = False

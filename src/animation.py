@@ -38,9 +38,9 @@ class Animation:
     def restart(self):
         if not self.running:
             self.start()
-        else:
-            self.frame = self.frames[0]
-            self.running = True
+        self.frame_index = 0
+        self.frame = self.frames[self.frame_index]
+        self.running = True
 
     def stop(self):
         if self.event_id in MazeEnvironment.ANIMATION_TIMERS:
@@ -57,6 +57,8 @@ class Animation:
 
     def next_frame(self):
         if self.paused:
+            return
+        if not self.running:
             return
         self.frame_index += 1
         if self.frame_index == len(self.frames):
