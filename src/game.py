@@ -251,7 +251,14 @@ class GameEnvironment:
 
             if GameEnvironment.PLAYER.tile_pos[0] == MazeEnvironment.MAZE.end[0] and MazeEnvironment.MAZE.end[1] == \
                     GameEnvironment.PLAYER.tile_pos[1]:
-                GameEnvironment.state = GameEnvironment.VICTORY_STATE
+                tx = self.maze_environment.end_x + (MazeEnvironment.TILE_SIZE // 2) - \
+                     (self.maze_environment.treasure_surface.get_width() // 2)
+                ty = self.maze_environment.end_y + (MazeEnvironment.TILE_SIZE // 2) - \
+                     (self.maze_environment.treasure_surface.get_height() // 2)
+                tr = pygame.Rect(tx, ty, self.maze_environment.treasure_surface.get_width(),
+                                 self.maze_environment.treasure_surface.get_height())
+                if GameEnvironment.PLAYER.rect.colliderect(tr):
+                    GameEnvironment.state = GameEnvironment.VICTORY_STATE
 
     def render(self, surface):
         background = pygame.Surface((self.screen.width, self.screen.height))

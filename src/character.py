@@ -367,19 +367,20 @@ class Enemy(Character):
         self.width = 133
         self.height = 118
         self.collision_padding = 8
-        self.image = pygame.image.load("src/sprites/Enemies/idle.png")
-        self.image2 = pygame.transform.flip(self.image, True, False)
+        self.idle_right = pygame.image.load("src/sprites/Enemies/idle.png")
+        self.idle_left = pygame.transform.flip(self.idle_right, True, False)
+        self.image = self.idle_right
 
         self.damage = damage
         self.health_bar_surface = pygame.Surface((self.width / 2, 8))
         self.health_bar_surface.convert()
-        self.health_bar_color_background = (0, 0, 0)
-        self.health_bar_color_foreground = (255, 0, 0)
-        self.health_bar_color_outline = (255, 255, 255)
+        self.hbc_background = (0, 0, 0)
+        self.hbc_foreground = (255, 0, 0)
+        self.hbc_outline = (255, 255, 255)
         self.max_health = 100
         self.seed = seed
 
-        self.rect = self.image.get_rect()
+        self.rect = self.idle_right.get_rect()
         self.direction = Enemy.LEFT
         self.last_direction = Enemy.LEFT
         self.speed = 3
@@ -400,8 +401,8 @@ class Enemy(Character):
         delay = 40
         self.walk_animation = [Animation(Enemy.WALK_LEFT_FRAMES, delay, True, get_event_id()),
                                Animation(Enemy.WALK_RIGHT_FRAMES, delay, True, get_event_id())]
-        self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, True, get_event_id()),
-                                 Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, True, get_event_id())]
+        self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, False, get_event_id()),
+                                 Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, False, get_event_id())]
         self.death_animation = [Animation(Enemy.DEATH_LEFT_FRAMES, delay, False, get_event_id()),
                                 Animation(Enemy.DEATH_RIGHT_FRAMES, delay, False, get_event_id())]
         self.start_attack_animation = False
@@ -409,7 +410,7 @@ class Enemy(Character):
         self.alive = True
 
     def die(self):
-        self.x -= 20
+        self.x += 14 if self.direction == Enemy.LEFT else -20
         self.current_animation = self.death_animation[0 if self.direction == Enemy.LEFT else 1]
         self.current_animation.restart()
         self.alive = False
@@ -540,9 +541,13 @@ class Enemy(Character):
                     self.current_animation = self.attack_animation[0 if self.direction == Enemy.LEFT else 1]
                     self.current_animation.restart()
                     self.last_direction = self.direction
-                surface.blit(self.current_animation.frame, (self.x, self.y))
+                surface.blit(self.current_animation.frame
+                             if self.current_animation.frame_index < len(self.current_animation.frames) - 1
+                             else (self.idle_left if self.direction == Enemy.LEFT else self.idle_right),
+                             (self.x if self.current_animation.frame_index < len(self.current_animation.frames) - 1
+                              else self.x + 4, self.y))
             elif self.player_in_combat_range:
-                surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
+                surface.blit(self.idle_right if self.direction == Enemy.LEFT else self.idle_left, (self.x, self.y))
             else:
                 i = 0 if self.direction == Enemy.LEFT else 1
                 if self.current_animation is None:
@@ -556,7 +561,7 @@ class Enemy(Character):
                         self.current_animation.restart()
                 surface.blit(self.current_animation.frame, (self.x, self.y))
         else:
-            surface.blit(self.image if self.direction == Enemy.RIGHT else self.image2, (self.x, self.y))
+            surface.blit(self.idle_right if self.direction == Enemy.RIGHT else self.idle_left, (self.x, self.y))
         # pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
 
         # render health bar
@@ -565,18 +570,18 @@ class Enemy(Character):
         h = self.health_bar_surface.get_height()
         outline = pygame.Surface((w, h))
         outline.convert()
-        outline.fill(self.health_bar_color_outline)
+        outline.fill(self.hbc_outline)
         self.health_bar_surface.blit(outline, (0, 0))
         background = pygame.Surface((w - (o * 2), h - (o * 2)))
         background.convert()
-        background.fill(self.health_bar_color_background)
+        background.fill(self.hbc_background)
         self.health_bar_surface.blit(background, (o, o))
         fw = int((self.health / self.max_health) * w) - (o * 2)
         if fw < 0:
             fw = 0
         foreground = pygame.Surface((fw, h - (o * 2)))
         foreground.convert()
-        foreground.fill(self.health_bar_color_foreground)
+        foreground.fill(self.hbc_foreground)
         self.health_bar_surface.blit(foreground, (o, o))
 
     def attack(self):
