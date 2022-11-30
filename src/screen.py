@@ -101,7 +101,7 @@ class Screen:
         surface.blit(self.secondary_font.render(self.CHARTHREE, True,black),(525.5,160))
         #easy buttons
         startSurface = pygame.Surface((200, 60))
-        startSurface.convert()  # 100, 350, 200, 60
+        startSurface.convert()  
         startSurface.fill(green)
         surface.blit(startSurface, (100, 350))
         surface.blit(self.secondary_font.render("EASY", True, black), (150, 350))
@@ -314,13 +314,13 @@ class Screen:
     def manual(self):
         surface = pygame.display.get_surface() 
         surface.blit(
-            self.third_font.render("                                                 Instructions Manual", True, Screen.TEXT_COLOR), (30, 8))
+            self.secondary_font.render("Instructions Manual", True, white), (300, 8))
         surface.blit(
-            self.font.render("WASD keyboard keys for moving. The W key represents up. The A key represents left. The D key represents right. The S key represents down.", True, Screen.TEXT_COLOR), (30, 52))
+            self.font.render("WASD keyboard keys for moving. The W key represents up. The A key represents left. The D key represents right. The S key represents down.", True, Screen.TEXT_COLOR), (30, 70))
         surface.blit(
-            self.font.render("                                                                              ESC key can be presssed for pause menu.", True, Screen.TEXT_COLOR), (30, 140))
+            self.font.render("ESC key can be presssed for pause menu.", True, Screen.TEXT_COLOR), (350, 120))
         surface.blit(
-            self.font.render("                                                      You can Left-Click to switch to the Sword. You can Right-Click to switch to the Bow.", True, Screen.TEXT_COLOR), (30, 96))
+            self.font.render("You can Left-Click to switch to the Sword. You can Right-Click to switch to the Bow.", True, Screen.TEXT_COLOR), (200, 96))
         #BACK BUTTON
         startSurface = pygame.Surface((200,60))
         startSurface.convert()
@@ -336,12 +336,13 @@ class Screen:
     def pause_manual(self):
         surface = pygame.display.get_surface() 
         surface.blit(
-            self.victory_font.render("Instructions Manual", True, Screen.TEXT_COLOR), (400, 8))
-        surface.blit(self.font.render("WASD keyboard keys for moving. The W key represents up. The A key represents left. The D key represents right. The S key represents down.", 
-                                      True, Screen.TEXT_COLOR), (30, 52))
-        surface.blit(self.font.render("ESC key can be presssed for pause menu.", True, Screen.TEXT_COLOR), (30, 140))
-        surface.blit(self.font.render("You can Left-Click to switch to the Sword. You can Right-Click to switch to the Bow.",
-                                      True, Screen.TEXT_COLOR), (30, 96))
+            self.secondary_font.render("Instructions Manual", True, white), (300, 8))
+        surface.blit(
+            self.font.render("WASD keyboard keys for moving. The W key represents up. The A key represents left. The D key represents right. The S key represents down.", True, Screen.TEXT_COLOR), (30, 70))
+        surface.blit(
+            self.font.render("ESC key can be presssed for pause menu.", True, Screen.TEXT_COLOR), (350, 120))
+        surface.blit(
+            self.font.render("You can Left-Click to switch to the Sword. You can Right-Click to switch to the Bow.", True, Screen.TEXT_COLOR), (200, 96))
         #BACK BUTTON
         startSurface = pygame.Surface((200,60))
         startSurface.convert()
