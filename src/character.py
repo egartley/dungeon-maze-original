@@ -29,6 +29,7 @@ def get_event_id():
 
 
 def build_animations():
+    #Melee Enemy Animations
     attacksheet = pygame.image.load("src/sprites/Enemies/Attacking/attacking.png")
     attacksheet.convert_alpha()
     walksheet = pygame.image.load("src/sprites/Enemies/Walking/walking.png")
@@ -41,6 +42,20 @@ def build_animations():
     Enemy.WALK_LEFT_FRAMES = build_frames(pygame.transform.flip(walksheet, True, False), 18, True)
     Enemy.DEATH_RIGHT_FRAMES = build_frames(deathsheet, 15)
     Enemy.DEATH_LEFT_FRAMES = build_frames(pygame.transform.flip(deathsheet, True, False), 15, True)
+
+    #Bow Enemy Animations
+    attacksheet = pygame.image.load("src/sprites/Bow_Enemies/bow_attack.png")
+    attacksheet.convert_alpha()
+    walksheet = pygame.image.load("src/sprites/Bow_Enemies/bow_walk.png")
+    walksheet.convert_alpha()
+    deathsheet = pygame.image.load("src/sprites/Bow_Enemies/bow_die.png")
+    deathsheet.convert_alpha()
+    Enemy.BOW_ATTACK_RIGHT_FRAMES = build_frames(attacksheet, 10)
+    Enemy.BOW_ATTACK_LEFT_FRAMES = build_frames(pygame.transform.flip(attacksheet, True, False), 10, True)
+    Enemy.BOW_WALK_RIGHT_FRAMES = build_frames(walksheet, 10)
+    Enemy.BOW_WALK_LEFT_FRAMES = build_frames(pygame.transform.flip(walksheet, True, False), 10, True)
+    Enemy.BOW_DEATH_RIGHT_FRAMES = build_frames(deathsheet, 10)
+    Enemy.BOW_DEATH_LEFT_FRAMES = build_frames(pygame.transform.flip(deathsheet, True, False), 10, True)
 
 
 class Character(pygame.sprite.Sprite):
@@ -354,6 +369,12 @@ class Enemy(Character):
     WALK_RIGHT_FRAMES = []
     DEATH_LEFT_FRAMES = []
     DEATH_RIGHT_FRAMES = []
+    BOW_ATTACK_LEFT_FRAMES = []
+    BOW_ATTACK_RIGHT_FRAMES = []
+    BOW_WALK_LEFT_FRAMES = []
+    BOW_WALK_RIGHT_FRAMES = []
+    BOW_DEATH_LEFT_FRAMES = []
+    BOW_DEATH_RIGHT_FRAMES = []
     loaded_frames = False
 
     def __init__(self, damage, game_env, seed, enemy_type):
@@ -362,23 +383,25 @@ class Enemy(Character):
         self.weapon_type = None
         self.is_player_in_view = False
         self.player_in_combat_range = False
-        self.width = 133
-        self.height = 118
         self.enemy_type = enemy_type
 
         if(self.enemy_type == 0):
+            self.width = 133
+            self.height = 118
             self.weapon = weapon.Sword()
             self.image = pygame.image.load("src/sprites/Enemies/idle.png")
             self.image2 = pygame.transform.flip(self.image, True, False)
             self.collision_padding = 8
         
         else:
+            self.width = 95
+            self.height = 108
             self.weapon = weapon.Bow()
-            self.image = pygame.image.load("src/sprites/Bow_Enemies/1/Elf_01__IDLE_000.png")
+            self.image = pygame.image.load("src/sprites/Bow_Enemies/Elf_01__IDLE_000.png")
             self.image = pygame.transform.scale(self.image, (self.width, self.height))
             self.image2 = pygame.transform.flip(self.image, True, False)
             self.arrow_group = pygame.sprite.Group()
-            self.collision_padding = 32
+            self.collision_padding = 200
 
 
         self.damage = damage
@@ -409,12 +432,20 @@ class Enemy(Character):
             build_animations()
             Enemy.loaded_frames = True
         delay = 40
-        self.walk_animation = [Animation(Enemy.WALK_LEFT_FRAMES, delay, True, get_event_id()),
+        if(self.enemy_type == 0):
+            self.walk_animation = [Animation(Enemy.WALK_LEFT_FRAMES, delay, True, get_event_id()),
                                Animation(Enemy.WALK_RIGHT_FRAMES, delay, True, get_event_id())]
-        self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, True, get_event_id()),
-                                 Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, True, get_event_id())]
-        self.death_animation = [Animation(Enemy.DEATH_LEFT_FRAMES, delay, False, get_event_id()),
+            self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, False, get_event_id()),
+                                 Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, False, get_event_id())]
+            self.death_animation = [Animation(Enemy.DEATH_LEFT_FRAMES, delay, False, get_event_id()),
                                 Animation(Enemy.DEATH_RIGHT_FRAMES, delay, False, get_event_id())]
+        else:
+            self.walk_animation = [Animation(Enemy.BOW_WALK_LEFT_FRAMES, delay, True, get_event_id()),
+                               Animation(Enemy.BOW_WALK_RIGHT_FRAMES, delay, True, get_event_id())]
+            self.attack_animation = [Animation(Enemy.BOW_ATTACK_LEFT_FRAMES, delay, False, get_event_id()),
+                                 Animation(Enemy.BOW_ATTACK_RIGHT_FRAMES, delay, False, get_event_id())]
+            self.death_animation = [Animation(Enemy.BOW_DEATH_LEFT_FRAMES, delay, False, get_event_id()),
+                                Animation(Enemy.BOW_DEATH_RIGHT_FRAMES, delay, False, get_event_id())]
         self.start_attack_animation = False
         self.current_animation = None
         self.alive = True
@@ -556,8 +587,8 @@ class Enemy(Character):
                     self.current_animation.restart()
                     self.last_direction = self.direction
                 surface.blit(self.current_animation.frame, (self.x, self.y))
-            elif self.player_in_combat_range:
-                surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
+            #elif self.player_in_combat_range:
+               #surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
             else:
                 i = 0 if self.direction == Enemy.LEFT else 1
                 if self.current_animation is None:
