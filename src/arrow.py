@@ -12,8 +12,8 @@ class Arrow(pygame.sprite.Sprite):
         self.picture = pygame.transform.rotate(self.picture, 225)
         self.rect = self.picture.get_rect(topleft=(pos_x, pos_y))
         self.angle = math.atan2(target_y - pos_y, target_x - pos_x)
-        self.velx = math.cos(self.angle) * 5
-        self.vely = math.sin(self.angle) * 5
+        self.velx = math.cos(self.angle) * 15
+        self.vely = math.sin(self.angle) * 15
         self.x = pos_x
         self.y = pos_y
         self.relative_x = 0

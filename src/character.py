@@ -398,7 +398,6 @@ class Enemy(Character):
             self.height = 108
             self.weapon = weapon.Bow()
             self.image = pygame.image.load("src/sprites/Bow_Enemies/Elf_01__IDLE_000.png")
-            self.image = pygame.transform.scale(self.image, (self.width, self.height))
             self.image2 = pygame.transform.flip(self.image, True, False)
             self.arrow_group = pygame.sprite.Group()
             self.collision_padding = 200
