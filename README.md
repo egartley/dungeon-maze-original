@@ -50,6 +50,13 @@ Script for installing dependencies
 
         Booster Artwork:
                 Cameron Gower
+
+        background music - https://www.chosic.com/download-audio/28027/
+        shoot arrow sound - https://www.zapsplat.com/?s=shoot+arrow&post_type=music&sound-effect-category-id=
+        get hit by arrow sound - https://www.zapsplat.com/?s=arrow+hit+blood&post_type=music&sound-effect-category-id=
+        sword swing sound- https://mixkit.co/free-sound-effects/sword/
+        victory sound - https://pixabay.com/sound-effects/search/victory/
+        defeat sound - https://pixabay.com/sound-effects/search/death/
         
 
 ## Developer Installation Tools Before running

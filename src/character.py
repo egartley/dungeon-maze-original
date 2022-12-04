@@ -1,4 +1,6 @@
 import pygame
+import os
+import collision
 import booster
 import game
 import weapon
@@ -112,6 +114,7 @@ class MainCharacter(Character):
         # map x/y are the top left of the map itself, changing when moving the map
         # "absolute" x/y or just x/y by itself, is where the thing is actually rendered
         # to in the display window (where all the surface.blit calls are)
+        self.arrow_count = 10
         self.name = name
         self.health = 100
         self.shield = 100
@@ -134,6 +137,8 @@ class MainCharacter(Character):
 
         self.width = 192 / 4
         self.height = 285 / 4
+        self.hover_height = 0
+        self.hover_dir = MainCharacter.UP
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
         self.active_booster = [False] * 2  # 0 for attack 1 for speed
         self.direction = None
@@ -146,7 +151,7 @@ class MainCharacter(Character):
         # whether the player is blocked from going in a direction
         self.blocked = (False, False, False, False)
         # the player's tile position within the map
-        self.tile_pos = ()
+        self.tile_pos = (0, 0)
         self.attack_multiplier = 1
         # enemies that are currently within melee range
         self.enemies_in_range = []
@@ -197,34 +202,37 @@ class MainCharacter(Character):
     def isSpeedFull(self):
         i = 0
         for i in range(len(self.speedStack)):
-            if not self.speedStack[i]:
+            if self.speedStack[i] != True:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
     def isSpeedEmpty(self):
         i = 0
         for i in range(len(self.speedStack)):
-            if not self.speedStack[i]:
+            if self.speedStack[i] != False:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
+    
     def isAttackFull(self):
         i = 0
         for i in range(len(self.attackStack)):
-            if not self.attackStack[i]:
+            if self.attackStack[i] != True:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
     def isAttackEmpty(self):
         i = 0
         for i in range(len(self.attackStack)):
-            if not self.attackStack[i]:
+            if self.attackStack[i] != False:
                 return False
-            i += 1
+            i+=1
         return True
+
+
 
     def cancel_active_booster(self, boosterID):
         if self.active_booster[0] and boosterID == booster.AttackBooster.BOOSTERID + (game.GameEnvironment.PLAYER.attackStackLast % game.GameEnvironment.PLAYER.attackStackLen):
@@ -272,7 +280,17 @@ class MainCharacter(Character):
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def render(self, surface):
-        surface.blit(self.sprite, (self.x, self.y))
+        if self.hover_dir == MainCharacter.DOWN:
+            self.hover_height += 0.1
+        else:
+            self.hover_height -= 0.1
+        
+        if self.hover_height > 4:
+            self.hover_dir = MainCharacter.UP
+        elif self.hover_height < -4:
+            self.hover_dir = MainCharacter.DOWN
+        
+        surface.blit(self.sprite, (self.x, self.y + math.floor(self.hover_height)))
         self.arrow_group.update()
         self.arrow_group.draw(surface)
         if (self.is_using_sword == False):
@@ -312,6 +330,8 @@ class MainCharacter(Character):
 
     def shoot(self, target_pos):
         if self.arrow_count > 0:
+            arrow_whoosh = pygame.mixer.Sound(os.path.join('src', 'sounds', 'shoot_arrow.mp3'))
+            pygame.mixer.Sound.play(arrow_whoosh)
             self.arrow_group.add(self.create_arrow(target_pos))
             self.arrow_count -= 1
 
@@ -406,13 +426,13 @@ class Enemy(Character):
         self.damage = damage
         self.health_bar_surface = pygame.Surface((self.width / 2, 8))
         self.health_bar_surface.convert()
-        self.health_bar_color_background = (0, 0, 0)
-        self.health_bar_color_foreground = (255, 0, 0)
-        self.health_bar_color_outline = (255, 255, 255)
+        self.hbc_background = (0, 0, 0)
+        self.hbc_foreground = (255, 0, 0)
+        self.hbc_outline = (255, 255, 255)
         self.max_health = 100
         self.seed = seed
 
-        self.rect = self.image.get_rect()
+        self.rect = self.idle_right.get_rect()
         self.direction = Enemy.LEFT
         self.last_direction = Enemy.LEFT
         self.speed = 3
@@ -450,7 +470,7 @@ class Enemy(Character):
         self.alive = True
 
     def die(self):
-        self.x -= 20
+        self.x += 14 if self.direction == Enemy.LEFT else -20
         self.current_animation = self.death_animation[0 if self.direction == Enemy.LEFT else 1]
         self.current_animation.restart()
         self.alive = False
@@ -559,6 +579,7 @@ class Enemy(Character):
             self.chasing = True
 
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
         # idle
         xoffset = 10 if self.direction == Enemy.RIGHT else 52
         if self.weapon.in_cooldown:
@@ -597,7 +618,11 @@ class Enemy(Character):
                     self.current_animation = self.attack_animation[0 if self.direction == Enemy.LEFT else 1]
                     self.current_animation.restart()
                     self.last_direction = self.direction
-                surface.blit(self.current_animation.frame, (self.x, self.y))
+                surface.blit(self.current_animation.frame
+                             if self.current_animation.frame_index < len(self.current_animation.frames) - 1
+                             else (self.idle_left if self.direction == Enemy.LEFT else self.idle_right),
+                             (self.x if self.current_animation.frame_index < len(self.current_animation.frames) - 1
+                              else self.x + 4, self.y))
             elif self.player_in_combat_range:
                surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
             else:
@@ -626,11 +651,11 @@ class Enemy(Character):
         h = self.health_bar_surface.get_height()
         outline = pygame.Surface((w, h))
         outline.convert()
-        outline.fill(self.health_bar_color_outline)
+        outline.fill(self.hbc_outline)
         self.health_bar_surface.blit(outline, (0, 0))
         background = pygame.Surface((w - (o * 2), h - (o * 2)))
         background.convert()
-        background.fill(self.health_bar_color_background)
+        background.fill(self.hbc_background)
         self.health_bar_surface.blit(background, (o, o))
         fw = int((self.health / self.max_health) * w) - (o * 2)
         if fw < 0:
