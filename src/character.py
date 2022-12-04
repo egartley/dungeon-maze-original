@@ -183,34 +183,37 @@ class MainCharacter(Character):
     def isSpeedFull(self):
         i = 0
         for i in range(len(self.speedStack)):
-            if not self.speedStack[i]:
+            if self.speedStack[i] != True:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
     def isSpeedEmpty(self):
         i = 0
         for i in range(len(self.speedStack)):
-            if not self.speedStack[i]:
+            if self.speedStack[i] != False:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
+    
     def isAttackFull(self):
         i = 0
         for i in range(len(self.attackStack)):
-            if not self.attackStack[i]:
+            if self.attackStack[i] != True:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
     def isAttackEmpty(self):
         i = 0
         for i in range(len(self.attackStack)):
-            if not self.attackStack[i]:
+            if self.attackStack[i] != False:
                 return False
-            i += 1
+            i+=1
         return True
+
+
 
     def cancel_active_booster(self, boosterID):
         if self.active_booster[0] and boosterID == booster.AttackBooster.BOOSTERID + (game.GameEnvironment.PLAYER.attackStackLast % game.GameEnvironment.PLAYER.attackStackLen):
@@ -511,13 +514,13 @@ class Enemy(Character):
             self.chasing = True
 
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
         # idle
         xoffset = 10 if self.direction == Enemy.RIGHT else 52
         if self.weapon.in_cooldown:
             # attack
             xoffset = 52 if self.direction == Enemy.LEFT else 12
         self.collision_rect = pygame.Rect(self.x + xoffset, self.y + 22, 70, 94)
-
         if self.chasing or self.force_chase:
             if not self.chasing:
                 self.chasing = True
@@ -562,7 +565,7 @@ class Enemy(Character):
                 surface.blit(self.current_animation.frame, (self.x, self.y))
         else:
             surface.blit(self.idle_right if self.direction == Enemy.RIGHT else self.idle_left, (self.x, self.y))
-        # pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
+        #pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
 
         # render health bar
         o = 1
