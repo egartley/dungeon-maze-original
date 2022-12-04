@@ -163,6 +163,7 @@ class MainCharacter(Character):
         self.bow_group = pygame.sprite.Group()
         self.is_using_bow = False
         self.is_using_sword = True
+        self.sword_direction = -1
 
     def apply_booster(self, b):
         if isinstance(b, booster.HealthBooster):
@@ -297,6 +298,7 @@ class MainCharacter(Character):
             self.sprite_bow(surface)
             self.is_using_bow = True
         elif pygame.mouse.get_pos()[0] >= (self.x + (self.width/2)):
+            self.sword_direction = MainCharacter.RIGHT
             self.is_using_sword = True
             self.weapon.directionSprite(self.x + 30, self.y + 15, "right")
             self.weapon_group.add(self.weapon)
@@ -309,6 +311,7 @@ class MainCharacter(Character):
                 self.weapon_group.draw(surface)
 
         elif pygame.mouse.get_pos()[0] < (self.x + (self.width/2)):
+            self.sword_direction = MainCharacter.LEFT
             self.is_using_sword = True
             self.weapon.directionSprite(self.x - 82, self.y + 15, "left")
             self.weapon_group.add(self.weapon)
@@ -357,6 +360,12 @@ class MainCharacter(Character):
             self.swinging_sword = True
             # do the actual damage to all enemies in range
             for e in self.enemies_in_range:
+                if self.sword_direction == MainCharacter.RIGHT and e.x + e.width < self.x:
+                    print("cant attack left")
+                    continue
+                elif self.sword_direction == MainCharacter.LEFT and e.x > self.x:
+                    print("cant attack right")
+                    continue
                 e.health -= self.weapon.damage * self.attack_multiplier
                 e.force_chase = True
 
@@ -611,13 +620,8 @@ class Enemy(Character):
                     self.current_animation = self.attack_animation[0 if self.direction == Enemy.LEFT else 1]
                     self.current_animation.restart()
                     self.last_direction = self.direction
-                surface.blit(self.current_animation.frame
-                             if self.current_animation.frame_index < len(self.current_animation.frames) - 1
-                             else (self.image if self.direction == Enemy.LEFT else self.image2),
-                             (self.x if self.current_animation.frame_index < len(self.current_animation.frames) - 1
+                surface.blit(self.current_animation.frame, (self.x if self.current_animation.frame_index < len(self.current_animation.frames) - 1
                               else self.x + 4, self.y))
-            elif self.player_in_combat_range:
-               surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
             else:
                 i = 0 if self.direction == Enemy.LEFT else 1
                 if self.current_animation is None:
@@ -634,7 +638,7 @@ class Enemy(Character):
             surface.blit(self.image if self.direction == Enemy.RIGHT else self.image2, (self.x, self.y))
         #pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
 
-        if(self.enemy_type == 1):
+        if self.enemy_type == 1:
             self.arrow_group.update()
             self.arrow_group.draw(surface)
 

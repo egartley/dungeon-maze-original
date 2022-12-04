@@ -423,9 +423,10 @@ class MazeEnvironment:
         for s in self.enemy_spawns:
             spawn = False
             for chunk in MazeEnvironment.CHUNKS:
-                if s[0] == chunk.r and s[1] == chunk.c:
-                    spawn = True
-                    break
+                if hasattr(chunk, "r") and hasattr(chunk, "c"):
+                    if s[0] == chunk.r and s[1] == chunk.c:
+                        spawn = True
+                        break
             if spawn:
                 e = character.Enemy(damage, self.game_environment, self.generate_seed(), self.generate_enemy_type())
                 if r.randint(1, 2) == 1:

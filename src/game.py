@@ -136,6 +136,7 @@ class GameEnvironment:
             MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.TILE_SIZE * start[0]) + ((pygame.display.get_window_size()[1] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         GameEnvironment.PLAYER.x = GameEnvironment.PLAYER.relative_x + MazeEnvironment.MAP_X
         GameEnvironment.PLAYER.y = GameEnvironment.PLAYER.relative_y + MazeEnvironment.MAP_Y
+        Screen.SHOW_MAP = False
 
     def on_enemy_death(self, enemy):
         enemy.on_death()
