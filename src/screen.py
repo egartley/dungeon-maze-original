@@ -57,6 +57,16 @@ class Screen:
         self.death_bg_img = pygame.transform.scale(self.death_bg_img, (frame_size_x, frame_size_y))
         self.music_count = 0.0
         self.start_music = False
+        self.shield =  pygame.image.load('src/sprites/Boosters/Shields.png')
+        self.shield = pygame.transform.scale(self.shield, (20,20))
+        self.health =  pygame.image.load("src/sprites/Boosters/health-booster.png")
+        self.health = pygame.transform.scale(self.health, (20,20))
+        self.speed = pygame.image.load('src/sprites/Boosters/speed.png')
+        self.speed = pygame.transform.scale(self.speed, (20,20))
+        self.attack = pygame.image.load('src/sprites/Boosters/attack.png')
+        self.attack =  pygame.transform.scale(self.attack, (20,20))
+
+        
 
     def pauseView(self):
         pygame.mixer.music.stop()
