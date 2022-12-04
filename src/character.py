@@ -432,7 +432,7 @@ class Enemy(Character):
         self.max_health = 100
         self.seed = seed
 
-        self.rect = self.idle_right.get_rect()
+        self.rect = self.image.get_rect()
         self.direction = Enemy.LEFT
         self.last_direction = Enemy.LEFT
         self.speed = 3
@@ -520,10 +520,6 @@ class Enemy(Character):
         if player_to_right and not self.blocked[3] and not pr.colliderect(next_move[3]):
             if not self.would_collide_with_other_enemy(next_move[3], 3):
                 self.x += self.speed
-
-        print(self.direction)
-        print(player_to_right)
-
         if player_to_left:
             #if self.direction == Enemy.RIGHT:
             self.direction = Enemy.LEFT
@@ -531,9 +527,6 @@ class Enemy(Character):
             #if self.direction == Enemy.LEFT:
             self.direction = Enemy.RIGHT
         
-        
-
-
     def would_collide_with_other_enemy(self, r, d):
         would = False
         for e in self.game_environment.enemies:
@@ -620,7 +613,7 @@ class Enemy(Character):
                     self.last_direction = self.direction
                 surface.blit(self.current_animation.frame
                              if self.current_animation.frame_index < len(self.current_animation.frames) - 1
-                             else (self.idle_left if self.direction == Enemy.LEFT else self.idle_right),
+                             else (self.image if self.direction == Enemy.LEFT else self.image2),
                              (self.x if self.current_animation.frame_index < len(self.current_animation.frames) - 1
                               else self.x + 4, self.y))
             elif self.player_in_combat_range:
