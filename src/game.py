@@ -66,6 +66,8 @@ class GameEnvironment:
                     arrow_collision = collision.ArrowCollision(a, self.PLAYER)
                     arrow_collision.check()
                     if arrow_collision.is_collided:
+                        arrow_hit = pygame.mixer.Sound(os.path.join('src', 'sounds', 'arrow_incoming_whoosh.mp3'))
+                        pygame.mixer.Sound.play(arrow_hit)
                         self.PLAYER.take_damage(enemy.damage)
                         a.self_destruct()
 
