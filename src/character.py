@@ -590,7 +590,7 @@ class Enemy(Character):
             self.chase_player()
 
         if self.enemy_type == 0:
-            if self.player_in_combat_range:
+            if self.player_in_combat_range and self.chasing:
                 self.attack()
         else:
             if self.chasing:
@@ -681,6 +681,8 @@ class Enemy(Character):
         if not self.weapon.in_cooldown:
             self.weapon.in_cooldown = True
             self.start_attack_animation = True
+            splash = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-sword-slash-swoosh.mp3'))
+            pygame.mixer.Sound.play(splash)
             # start cooldown timer
             if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_HARD:
                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (1000 + self.seed))
@@ -699,6 +701,8 @@ class Enemy(Character):
 
     def shoot(self, target_pos):
         if self.arrow_count > 0:
+            arrow_whoosh = pygame.mixer.Sound(os.path.join('src', 'sounds', 'shoot_arrow.mp3'))
+            pygame.mixer.Sound.play(arrow_whoosh)
             self.arrow_group.add(self.create_arrow(target_pos))
             self.arrow_count -= 1
 
