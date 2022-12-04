@@ -213,16 +213,18 @@ class GameEnvironment:
         blocked_right = self.check_wall(p.relative_x + pw + ps, p.relative_y) or \
                         self.check_wall(p.relative_x + pw + ps, p.relative_y + ph) or enemy_block[3]
 
-        # edge case for when in the start tile (ignore end tile for now)
+        # edge case for when in the start tile or end tile
         tp = p.tile_pos
-        if len(tp) > 0 and MazeEnvironment.MAZE.grid[tp[0]][tp[1]] == MazeEnvironment.START:
-            if self.maze_environment.start_direction == 1:
+        check = self.maze_environment.start_direction if MazeEnvironment.MAZE.grid[tp[0]][tp[1]] == MazeEnvironment.START \
+                else (self.maze_environment.end_direction if MazeEnvironment.MAZE.grid[tp[0]][tp[1]] == MazeEnvironment.END else -1)
+        if len(tp) > 0 and not check == -1:
+            if check == 1:
                 blocked_left = blocked_left or px - ps < self.maze_environment.start_end_walls[0].get_width()
-            elif self.maze_environment.start_direction == 2:
+            elif check == 2:
                 blocked_up = blocked_up or py - ps < self.maze_environment.start_end_walls[1].get_height()
-            elif self.maze_environment.start_direction == 3:
+            elif check == 3:
                 blocked_right = blocked_right or px + pw + ps > s[0] - self.maze_environment.start_end_walls[2].get_width()
-            elif self.maze_environment.start_direction == 4:
+            elif check == 4:
                 blocked_down = blocked_down or py + ph + ps > s[1] - self.maze_environment.start_end_walls[3].get_height()
 
         p.blocked = (blocked_up, blocked_down, blocked_left, blocked_right)

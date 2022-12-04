@@ -122,6 +122,8 @@ class MainCharacter(Character):
 
         self.width = 192 / 4
         self.height = 285 / 4
+        self.hover_height = 0
+        self.hover_dir = MainCharacter.UP
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
         self.active_booster = [False] * 2  # 0 for attack 1 for speed
         self.direction = None
@@ -134,7 +136,7 @@ class MainCharacter(Character):
         # whether the player is blocked from going in a direction
         self.blocked = (False, False, False, False)
         # the player's tile position within the map
-        self.tile_pos = ()
+        self.tile_pos = (0, 0)
         self.attack_multiplier = 1
         # enemies that are currently within melee range
         self.enemies_in_range = []
@@ -185,34 +187,37 @@ class MainCharacter(Character):
     def isSpeedFull(self):
         i = 0
         for i in range(len(self.speedStack)):
-            if not self.speedStack[i]:
+            if self.speedStack[i] != True:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
     def isSpeedEmpty(self):
         i = 0
         for i in range(len(self.speedStack)):
-            if not self.speedStack[i]:
+            if self.speedStack[i] != False:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
+    
     def isAttackFull(self):
         i = 0
         for i in range(len(self.attackStack)):
-            if not self.attackStack[i]:
+            if self.attackStack[i] != True:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
     def isAttackEmpty(self):
         i = 0
         for i in range(len(self.attackStack)):
-            if not self.attackStack[i]:
+            if self.attackStack[i] != False:
                 return False
-            i += 1
+            i+=1
         return True
+
+
 
     def cancel_active_booster(self, boosterID):
         if self.active_booster[0] and boosterID == booster.AttackBooster.BOOSTERID + (game.GameEnvironment.PLAYER.attackStackLast % game.GameEnvironment.PLAYER.attackStackLen):
@@ -260,7 +265,17 @@ class MainCharacter(Character):
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def render(self, surface):
-        surface.blit(self.sprite, (self.x, self.y))
+        if self.hover_dir == MainCharacter.DOWN:
+            self.hover_height += 0.1
+        else:
+            self.hover_height -= 0.1
+        
+        if self.hover_height > 4:
+            self.hover_dir = MainCharacter.UP
+        elif self.hover_height < -4:
+            self.hover_dir = MainCharacter.DOWN
+        
+        surface.blit(self.sprite, (self.x, self.y + math.floor(self.hover_height)))
         self.arrow_group.update()
         self.arrow_group.draw(surface)
         if (self.is_using_sword == False):
@@ -515,13 +530,13 @@ class Enemy(Character):
             self.chasing = True
 
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
         # idle
         xoffset = 10 if self.direction == Enemy.RIGHT else 52
         if self.weapon.in_cooldown:
             # attack
             xoffset = 52 if self.direction == Enemy.LEFT else 12
         self.collision_rect = pygame.Rect(self.x + xoffset, self.y + 22, 70, 94)
-
         if self.chasing or self.force_chase:
             if not self.chasing:
                 self.chasing = True
@@ -566,7 +581,7 @@ class Enemy(Character):
                 surface.blit(self.current_animation.frame, (self.x, self.y))
         else:
             surface.blit(self.idle_right if self.direction == Enemy.RIGHT else self.idle_left, (self.x, self.y))
-        # pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
+        #pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
 
         # render health bar
         o = 1

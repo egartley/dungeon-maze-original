@@ -96,6 +96,7 @@ class MazeEnvironment:
         self.enemy_spawns = []
         self.booster_spawns = []
         self.start_direction = -1
+        self.end_direction = -1
         self.end_x = 0
         self.end_y = 0
 
@@ -113,6 +114,7 @@ class MazeEnvironment:
         self.enemy_spawns = []
         self.booster_spawns = []
         self.start_direction = -1
+        self.end_direction = -1
         self.end_x = 0
         self.end_y = 0
 
@@ -209,16 +211,28 @@ class MazeEnvironment:
             if MazeEnvironment.START == grid[i][j] or MazeEnvironment.END == grid[i][j]:
                 surface.blit(self.floor_surface, position)
                 if j == 0:
-                    self.start_direction = 1
+                    if MazeEnvironment.START == grid[i][j]:
+                        self.start_direction = 1
+                    else:
+                        self.end_direction = 1
                     surface.blit(self.start_end_walls[0], position)
                 elif i == 0:
-                    self.start_direction = 2
+                    if MazeEnvironment.START == grid[i][j]:
+                        self.start_direction = 2
+                    else:
+                        self.end_direction = 2
                     surface.blit(self.start_end_walls[1], position)
                 elif j == len(grid[i]) - 1:
-                    self.start_direction = 3
+                    if MazeEnvironment.START == grid[i][j]:
+                        self.start_direction = 3
+                    else:
+                        self.end_direction = 3
                     surface.blit(self.start_end_walls[2], (s - self.start_end_walls[2].get_width(), 0))
                 else:
-                    self.start_direction = 4
+                    if MazeEnvironment.START == grid[i][j]:
+                        self.start_direction = 4
+                    else:
+                        self.end_direction = 4
                     surface.blit(self.start_end_walls[3], (0, s - self.start_end_walls[3].get_height()))
                 if MazeEnvironment.END == grid[i][j]:
                     self.end_x = (s // 2) - (self.treasure_surface.get_width() // 2)
