@@ -120,6 +120,8 @@ class MainCharacter(Character):
 
         self.width = 192 / 4
         self.height = 285 / 4
+        self.hover_height = 0
+        self.hover_dir = MainCharacter.UP
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
         self.active_booster = [False] * 2  # 0 for attack 1 for speed
         self.direction = None
@@ -132,7 +134,7 @@ class MainCharacter(Character):
         # whether the player is blocked from going in a direction
         self.blocked = (False, False, False, False)
         # the player's tile position within the map
-        self.tile_pos = ()
+        self.tile_pos = (0, 0)
         self.attack_multiplier = 1
         # enemies that are currently within melee range
         self.enemies_in_range = []
@@ -261,7 +263,17 @@ class MainCharacter(Character):
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def render(self, surface):
-        surface.blit(self.sprite, (self.x, self.y))
+        if self.hover_dir == MainCharacter.DOWN:
+            self.hover_height += 0.1
+        else:
+            self.hover_height -= 0.1
+        
+        if self.hover_height > 4:
+            self.hover_dir = MainCharacter.UP
+        elif self.hover_height < -4:
+            self.hover_dir = MainCharacter.DOWN
+        
+        surface.blit(self.sprite, (self.x, self.y + math.floor(self.hover_height)))
         self.arrow_group.update()
         self.arrow_group.draw(surface)
         if (self.is_using_sword == False):
