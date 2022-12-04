@@ -308,7 +308,7 @@ class MainCharacter(Character):
         self.bow.move(surface)
 
     def create_arrow(self, target_pos):
-        return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1])
+        return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1], MazeEnvironment.MAP_X, MazeEnvironment.MAP_Y)
 
     def shoot(self, target_pos):
         if self.arrow_count > 0:
@@ -466,9 +466,9 @@ class Enemy(Character):
         pc_y = py + (ph // 2)
         ec_x = self.x + (self.width // 2)
         ec_y = self.y + (self.height // 2)
-        player_to_left = pc_x < ec_x + self.collision_padding
-        player_to_right = pc_x > ec_x - self.collision_padding
-        player_above = pc_y < ec_y + self.collision_padding
+        player_to_left = pc_x < ec_x + self.collision_padding 
+        player_to_right = pc_x > ec_x - self.collision_padding 
+        player_above = pc_y < ec_y + self.collision_padding 
         player_below = pc_y > ec_y - self.collision_padding
 
         wall_check_rect = pygame.Rect(self.relative_x + 56, self.relative_y + 10, 70, 104)
@@ -501,10 +501,18 @@ class Enemy(Character):
             if not self.would_collide_with_other_enemy(next_move[3], 3):
                 self.x += self.speed
 
+        print(self.direction)
+        print(player_to_right)
+
         if player_to_left:
+            #if self.direction == Enemy.RIGHT:
             self.direction = Enemy.LEFT
         elif player_to_right:
+            #if self.direction == Enemy.LEFT:
             self.direction = Enemy.RIGHT
+        
+        
+
 
     def would_collide_with_other_enemy(self, r, d):
         would = False
@@ -556,7 +564,11 @@ class Enemy(Character):
         if self.weapon.in_cooldown:
             # attack
             xoffset = 52 if self.direction == Enemy.LEFT else 12
-        self.collision_rect = pygame.Rect(self.x + xoffset, self.y + 22, 70, 94)
+
+        if self.enemy_type == 0:
+            self.collision_rect = pygame.Rect(self.x + xoffset, self.y + 22, 70, 70)
+        else:
+            self.collision_rect = pygame.Rect(self.x + 30, self.y + 30, self.width - 50, self.height - 50)
 
         if self.chasing or self.force_chase:
             if not self.chasing:
@@ -586,8 +598,8 @@ class Enemy(Character):
                     self.current_animation.restart()
                     self.last_direction = self.direction
                 surface.blit(self.current_animation.frame, (self.x, self.y))
-            #elif self.player_in_combat_range:
-               #surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
+            elif self.player_in_combat_range:
+               surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
             else:
                 i = 0 if self.direction == Enemy.LEFT else 1
                 if self.current_animation is None:
@@ -602,7 +614,7 @@ class Enemy(Character):
                 surface.blit(self.current_animation.frame, (self.x, self.y))
         else:
             surface.blit(self.image if self.direction == Enemy.RIGHT else self.image2, (self.x, self.y))
-        # pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
+        #pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
 
         if(self.enemy_type == 1):
             self.arrow_group.update()
@@ -625,6 +637,25 @@ class Enemy(Character):
             fw = 0
         foreground = pygame.Surface((fw, h - (o * 2)))
         foreground.convert()
+        px = game.GameEnvironment.PLAYER.x
+        py = game.GameEnvironment.PLAYER.y
+        pw = game.GameEnvironment.PLAYER.width
+        ph = game.GameEnvironment.PLAYER.height
+        pr = game.GameEnvironment.PLAYER.rect
+        pc_x = px + (pw // 2)
+        pc_y = py + (ph // 2)
+        ec_x = self.x + (self.width // 2)
+        ec_y = self.y + (self.height // 2)
+        player_to_left = pc_x < ec_x + self.collision_padding
+        player_to_right = pc_x > ec_x - self.collision_padding
+        if player_to_left and player_to_right:
+            self.health_bar_color_foreground = (255, 255, 255)
+        elif player_to_right:
+            self.health_bar_color_foreground = (255, 0, 0)
+        elif player_to_left:
+            self.health_bar_color_foreground = (0, 255, 0)
+        else:
+            self.health_bar_color_foreground = (0, 0, 255)
         foreground.fill(self.health_bar_color_foreground)
         self.health_bar_surface.blit(foreground, (o, o))
 
@@ -646,7 +677,7 @@ class Enemy(Character):
                 game.GameEnvironment.PLAYER.take_damage(self.damage)
 
     def create_arrow(self, target_pos):
-        return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1])
+        return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1], MazeEnvironment.MAP_X, MazeEnvironment.MAP_Y)
 
     def shoot(self, target_pos):
         if self.arrow_count > 0:

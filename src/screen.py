@@ -26,7 +26,7 @@ class Screen:
     SHOW_MAP = False
 
     def __init__(self, maze_env, width, height):
-        self.cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_NO)
+        self.cursor = pygame.cursors.Cursor(pygame.cursors.arrow)
         self.maze_environment = maze_env
         self.title = "Dungeon Maze"
         pygame.display.set_caption(self.title)
