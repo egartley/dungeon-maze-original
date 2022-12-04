@@ -134,7 +134,7 @@ class MainCharacter(Character):
         # whether the player is blocked from going in a direction
         self.blocked = (False, False, False, False)
         # the player's tile position within the map
-        self.tile_pos = ()
+        self.tile_pos = (0, 0)
         self.attack_multiplier = 1
         # enemies that are currently within melee range
         self.enemies_in_range = []
