@@ -1,4 +1,6 @@
 import pygame
+import os
+import collision
 import booster
 import game
 import weapon
@@ -313,6 +315,8 @@ class MainCharacter(Character):
 
     def shoot(self, target_pos):
         if self.arrow_count > 0:
+            arrow_whoosh = pygame.mixer.Sound(os.path.join('src', 'sounds', 'shoot_arrow.mp3'))
+            pygame.mixer.Sound.play(arrow_whoosh)
             self.arrow_group.add(self.create_arrow(target_pos))
             self.arrow_count -= 1
 

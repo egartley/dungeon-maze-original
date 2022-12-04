@@ -5,6 +5,7 @@ TARGET_FPS = 60
 
 def main():
     pygame.init()
+    pygame.mixer.init()
     fps = pygame.time.Clock()
     game_env = GameEnvironment(1000, 700)
 

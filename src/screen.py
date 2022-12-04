@@ -1,5 +1,6 @@
 import pygame
 import game
+import os
 from scores import Score
 from maze import MazeEnvironment
 
@@ -54,16 +55,12 @@ class Screen:
         self.victory_bg_img = pygame.transform.scale(self.victory_bg_img, (frame_size_x, frame_size_y))
         self.death_bg_img = pygame.image.load('src/sprites/background/tombstone.png')  # https://www.pinterest.com/pin/677651075162388819/
         self.death_bg_img = pygame.transform.scale(self.death_bg_img, (frame_size_x, frame_size_y))
-        self.shield =  pygame.image.load('src/sprites/Boosters/Shields.png')
-        self.shield = pygame.transform.scale(self.shield, (20,20))
-        self.health =  pygame.image.load("src/sprites/Boosters/health-booster.png")
-        self.health = pygame.transform.scale(self.health, (20,20))
-        self.speed = pygame.image.load('src/sprites/Boosters/speed.png')
-        self.speed = pygame.transform.scale(self.speed, (20,20))
-        self.attack = pygame.image.load('src/sprites/Boosters/attack.png')
-        self.attack =  pygame.transform.scale(self.attack, (20,20))
-        
+        self.music_count = 0.0
+        self.start_music = False
+
     def pauseView(self):
+        pygame.mixer.music.stop()
+        self.start_music = False
         if self.victory_time_glitch == 0:
             self.score.end_time()
             self.victory_time_glitch = 0
@@ -177,7 +174,17 @@ class Screen:
         if self.SHOW_MAP:
             surface.blit(background, (pygame.display.get_surface().get_width() - 20 - len(grid[0]) * s, 12))
 
+    def reset_background_music(self):
+        if self.music_count > 277.00:
+            self.music_count = 0
+
     def activeGameView(self):
+        if not self.start_music:
+            self.start_music = True
+            pygame.mixer.music.load(os.path.join('src', 'sounds', 'Adventure-320bit.mp3'))
+            pygame.mixer.music.play(-1, self.music_count)
+        self.music_count += 0.016
+        self.reset_background_music()
         if self.start_time_glitch == 0:
             self.victory_time_glitch = 0
             self.start_time_glitch = 1
@@ -260,6 +267,9 @@ class Screen:
             self.score.end_time()
             self.victory_time_glitch = 1
             self.start_time_glitch = 0
+            pygame.mixer.music.stop()
+            victory_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-video-game-win-2016.wav'))
+            pygame.mixer.Sound.play(victory_sound)
         surface = pygame.display.get_surface()
         surface.blit(self.victory_bg_img, (0,0))
         surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (270, 8))
@@ -288,10 +298,13 @@ class Screen:
         
     def death(self):
         surface = pygame.display.get_surface()
+        pygame.mixer.music.stop()
         if self.victory_time_glitch == 0:
             self.score.end_time()
             self.victory_time_glitch = 1
             self.start_time_glitch = 1
+            failure_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'videogame-death-sound-43894.mp3'))
+            pygame.mixer.Sound.play(failure_sound)
         pygame.mouse.set_cursor(self.cursor)
         surface.blit(self.death_bg_img, (0,0))
         surface.blit(self.victory_font.render("DEATH", True, red), (400, 8))
