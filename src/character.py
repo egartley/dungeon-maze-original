@@ -183,34 +183,37 @@ class MainCharacter(Character):
     def isSpeedFull(self):
         i = 0
         for i in range(len(self.speedStack)):
-            if not self.speedStack[i]:
+            if self.speedStack[i] != True:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
     def isSpeedEmpty(self):
         i = 0
         for i in range(len(self.speedStack)):
-            if not self.speedStack[i]:
+            if self.speedStack[i] != False:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
+    
     def isAttackFull(self):
         i = 0
         for i in range(len(self.attackStack)):
-            if not self.attackStack[i]:
+            if self.attackStack[i] != True:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
     def isAttackEmpty(self):
         i = 0
         for i in range(len(self.attackStack)):
-            if not self.attackStack[i]:
+            if self.attackStack[i] != False:
                 return False
-            i += 1
+            i+=1
         return True
+
+
 
     def cancel_active_booster(self, boosterID):
         if self.active_booster[0] and boosterID == booster.AttackBooster.BOOSTERID + (game.GameEnvironment.PLAYER.attackStackLast % game.GameEnvironment.PLAYER.attackStackLen):
