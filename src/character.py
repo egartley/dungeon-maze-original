@@ -514,13 +514,13 @@ class Enemy(Character):
             self.chasing = True
 
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
         # idle
         xoffset = 10 if self.direction == Enemy.RIGHT else 52
         if self.weapon.in_cooldown:
             # attack
             xoffset = 52 if self.direction == Enemy.LEFT else 12
         self.collision_rect = pygame.Rect(self.x + xoffset, self.y + 22, 70, 94)
-
         if self.chasing or self.force_chase:
             if not self.chasing:
                 self.chasing = True
@@ -565,7 +565,7 @@ class Enemy(Character):
                 surface.blit(self.current_animation.frame, (self.x, self.y))
         else:
             surface.blit(self.idle_right if self.direction == Enemy.RIGHT else self.idle_left, (self.x, self.y))
-        # pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
+        #pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
 
         # render health bar
         o = 1
