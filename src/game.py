@@ -54,7 +54,9 @@ class GameEnvironment:
                 arrow_collision = collision.ArrowCollision(a, self.enemies[e][0])
                 arrow_collision.check()
                 if arrow_collision.is_collided:
-                    self.enemies[e][0].health -= GameEnvironment.PLAYER.bow.damage
+                    arrow_hit = pygame.mixer.Sound(os.path.join('src', 'sounds', 'arrow_incoming_whoosh.mp3'))
+                    pygame.mixer.Sound.play(arrow_hit)
+                    self.enemies[e][0].health -= GameEnvironment.PLAYER.bow.damage * GameEnvironment.PLAYER.attack_multiplier
                     self.enemies[e][0].force_chase = True
                     a.self_destruct()
 
@@ -76,6 +78,15 @@ class GameEnvironment:
             c = collision.EnemyCollision(e[0], GameEnvironment.PLAYER.rect)
             self.enemy_collisions.append(c)
 
+    def attack_sword_sound(self):
+        if not GameEnvironment.PLAYER.weapon.in_cooldown:
+            if len(self.active_combat_collisions) != 0:
+                splash = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-sword-slash-swoosh.mp3'))
+                pygame.mixer.Sound.play(splash)
+            else:
+                woosh = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-dagger-woosh.wav'))
+                pygame.mixer.Sound.play(woosh)
+
     def start_ingame(self):
         # reset variables for when restarting from win/death
         if len(self.enemies) > 0:
@@ -89,7 +100,8 @@ class GameEnvironment:
         self.active_combat_collisions = []
         MazeEnvironment.SPEED = 4
         self.maze_environment.reset()
-        
+        self.screen.start_music = False
+        self.screen.music_count = 0.0
         self.player_name = self.screen.CHARONE + self.screen.CHARTWO + self.screen.CHARTHREE
         GameEnvironment.PLAYER = MainCharacter(self.player_name)
         self.maze_environment.generate_maze_difficulty()
@@ -381,6 +393,7 @@ class GameEnvironment:
                 pygame.time.set_timer(event.type, 0)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[0]:
+                    self.attack_sword_sound()
                     GameEnvironment.PLAYER.attack_motion()
                 if event.button == 1:
                     GameEnvironment.PLAYER.is_using_sword = True
