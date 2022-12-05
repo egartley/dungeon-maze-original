@@ -167,12 +167,16 @@ class MainCharacter(Character):
 
     def apply_booster(self, b):
         if isinstance(b, booster.HealthBooster):
+            health_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-game-treasure-coin-2038.wav'))
+            pygame.mixer.Sound.play(health_sound)
             if self.health + b.increase >= 100:
                 self.health = 100
             else:
                 self.health += booster.HealthBooster.increase
 
         elif isinstance(b, booster.SpeedBooster) and not self.isSpeedFull():
+            speed_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-arcade-rising-231.wav'))
+            pygame.mixer.Sound.play(speed_sound)
             self.speed = int (math.ceil(self.speed * booster.SpeedBooster.increase))
             MazeEnvironment.SPEED = int(math.ceil(MazeEnvironment.SPEED * booster.SpeedBooster.increase))
             self.active_booster[1] = True
@@ -183,6 +187,8 @@ class MainCharacter(Character):
             pygame.time.set_timer( (b.BOOSTERID + (self.speedStackTop % self.speedStackLen)), b.time * 1000)
 
         elif isinstance(b, booster.AttackBooster) and not self.isAttackFull():
+            booster_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-boss-fight-arcade-232.wav'))
+            pygame.mixer.Sound.play(booster_sound)
             self.attack_multiplier += booster.AttackBooster.increase
             self.active_booster[0] = True
             self.attackStackTop += 1
@@ -192,12 +198,16 @@ class MainCharacter(Character):
             pygame.time.set_timer((b.BOOSTERID + (self.attackStackTop % self.attackStackLen)), b.time * 1000)
 
         elif isinstance(b, booster.ShieldBooster):
+            shield_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-game-treasure-coin-2038.wav'))
+            pygame.mixer.Sound.play(shield_sound)
             if self.shield + b.increase >= 100:
                 self.shield = 100
             else:
                 self.shield += booster.ShieldBooster.increase
 
         elif isinstance(b, booster.ArrowBooster):
+            bundle_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-achievement-completed-2068.wav'))
+            pygame.mixer.Sound.play(bundle_sound)
             self.arrow_count += b.increase
 
     def isSpeedFull(self):
@@ -482,6 +492,11 @@ class Enemy(Character):
         self.x += 14 if self.direction == Enemy.LEFT else -20
         self.current_animation = self.death_animation[0 if self.direction == Enemy.LEFT else 1]
         self.current_animation.restart()
+        if self.enemy_type == 0:
+            die_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-battle-man-scream-2175.wav'))
+        else:
+            die_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-human-fighter-pain-scream-2768.wav'))
+        pygame.mixer.Sound.play(die_sound)
         self.alive = False
 
     def chase_player(self):
@@ -529,7 +544,10 @@ class Enemy(Character):
         if player_to_right and not self.blocked[3] and not pr.colliderect(next_move[3]):
             if not self.would_collide_with_other_enemy(next_move[3], 3):
                 self.x += self.speed
-        if player_to_left:
+
+        if player_to_right and player_to_left:
+            return
+        elif player_to_left:
             #if self.direction == Enemy.RIGHT:
             self.direction = Enemy.LEFT
         elif player_to_right:
@@ -685,8 +703,6 @@ class Enemy(Character):
         if not self.weapon.in_cooldown:
             self.weapon.in_cooldown = True
             self.start_attack_animation = True
-            splash = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-sword-slash-swoosh.mp3'))
-            pygame.mixer.Sound.play(splash)
             # start cooldown timer
             if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_HARD:
                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (1000 + self.seed))
@@ -698,6 +714,8 @@ class Enemy(Character):
             if(self.enemy_type == 1):
                 self.bow_attack()
             else:
+                slash = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-swift-sword-strike-2166.wav'))
+                pygame.mixer.Sound.play(slash)
                 game.GameEnvironment.PLAYER.take_damage(self.damage)
 
     def create_arrow(self, target_pos):
