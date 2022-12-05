@@ -41,6 +41,7 @@ class GameEnvironment:
         GameEnvironment.state = GameEnvironment.START_STATE
         self.screen = Screen(self.maze_environment, screen_width, screen_height)
         self.display_surface = pygame.display.set_mode((self.screen.width, self.screen.height))
+        self.click_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-explainer-video-game-alert-sweep-236.wav'))
         self.boosters = []
         self.booster_collisions = []
         self.enemies = []
@@ -285,6 +286,8 @@ class GameEnvironment:
                 tr = pygame.Rect(tx, ty, self.maze_environment.treasure_surface.get_width(),
                                  self.maze_environment.treasure_surface.get_height())
                 if GameEnvironment.PLAYER.rect.colliderect(tr):
+                    victory_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-medieval-show-fanfare-announcement-226.wav'))
+                    pygame.mixer.Sound.play(victory_sound)
                     GameEnvironment.state = GameEnvironment.VICTORY_STATE
 
     def render(self, surface):
@@ -315,6 +318,8 @@ class GameEnvironment:
 
 
     def switch_to_ingame(self):
+        self.screen.start_music = False
+        self.screen.music_count = 0
         GameEnvironment.state = GameEnvironment.INGAME_STATE
         self.start_ingame()
 
@@ -324,6 +329,7 @@ class GameEnvironment:
             GameEnvironment.PLAYER.METH_COUNT = 0
             GameEnvironment.PLAYER.ATTACK_COUNT = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.mixer.Sound.play(self.click_sound)
                 easy_button = pygame.Rect(100, 350, 200, 60)
                 medium_button = pygame.Rect(375, 350, 200, 60)
                 hard_button = pygame.Rect(675, 350, 200, 60)
@@ -457,6 +463,7 @@ class GameEnvironment:
                     GameEnvironment.state = GameEnvironment.PAUSE_STATE
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.mixer.Sound.play(self.click_sound)
                 start_button = pygame.Rect(150, 550, 200, 60)
                 quit_button = pygame.Rect(700, 550, 200, 60)
                 manual_button = pygame.Rect(425, 550, 200, 60)
@@ -471,6 +478,7 @@ class GameEnvironment:
                     sys.exit()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.mixer.Sound.play(self.click_sound)
                 startButton = pygame.Rect(200,600,200,60)
                 quitButton = pygame.Rect(575,600,200,60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
@@ -483,6 +491,7 @@ class GameEnvironment:
                     self.switch_to_ingame()
         elif  GameEnvironment.state == GameEnvironment.DEATH_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.mixer.Sound.play(self.click_sound)
                 startButton = pygame.Rect(200, 550, 200, 60)
                 quitButton = pygame.Rect(605, 550, 200, 60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
@@ -494,6 +503,7 @@ class GameEnvironment:
                     GameEnvironment.state = GameEnvironment.START_STATE
         elif  GameEnvironment.state == GameEnvironment.MANUAL_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.mixer.Sound.play(self.click_sound)
                 back_button = pygame.Rect(250,350,200,60)
                 quit_button = pygame.Rect(575,350,200,60)
                 if back_button.collidepoint(event.pos):
