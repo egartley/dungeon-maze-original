@@ -20,6 +20,7 @@ class GameEnvironment:
     DEATH_STATE = 4
     MANUAL_STATE = 5
     PAUSE_MANUAL_STATE = 6
+    CONTRIBUTOR_STATE = 7
     PLAYER = MainCharacter()
     BOY = 0
     GIRL = 1
@@ -309,6 +310,8 @@ class GameEnvironment:
             self.screen.manual()
         elif GameEnvironment.state == GameEnvironment.PAUSE_MANUAL_STATE:
             self.screen.manual()
+        elif GameEnvironment.state == GameEnvironment.CONTRIBUTOR_STATE:
+            self.screen.contributor_screen()
 
 
     def switch_to_ingame(self):
@@ -326,6 +329,7 @@ class GameEnvironment:
                 hard_button = pygame.Rect(675, 350, 200, 60)
                 quit_button = pygame.Rect(375, 550, 200, 60)
                 manual_button = pygame.Rect(675, 550, 200, 60)
+                contributor_button = pygame.Rect(100,550,200,60)
                 
                 char_one = pygame.Rect(355, 160, 60, 60)
                 char_two = pygame.Rect(435, 160, 60, 60)
@@ -361,6 +365,9 @@ class GameEnvironment:
                 elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
+                elif contributor_button.collidepoint(event.pos):
+                    GameEnvironment.state = GameEnvironment.CONTRIBUTOR_STATE
+                    self.screen.contributor_screen()
 
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
             if event.type == booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen):
@@ -504,6 +511,17 @@ class GameEnvironment:
                 elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
+        elif  GameEnvironment.state == GameEnvironment.CONTRIBUTOR_STATE:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                back_button = pygame.Rect(250,350,200,60)
+                quit_button = pygame.Rect(575,350,200,60)
+                if back_button.collidepoint(event.pos):
+                    GameEnvironment.state = GameEnvironment.START_STATE
+                    self.screen.startView()
+                elif quit_button.collidepoint(event.pos):
+                    pygame.quit()
+                    sys.exit()
+        
                     
 
 

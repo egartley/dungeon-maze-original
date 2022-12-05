@@ -21,6 +21,5 @@ def main():
         pygame.display.flip()
         fps.tick(TARGET_FPS)
 
-
 if __name__ == "__main__":
     main()

@@ -95,6 +95,7 @@ class Screen:
         startSurface.fill(red)
         surface.blit(startSurface,(425,550))
         surface.blit(self.secondary_font.render("MANUAL",True, black), (450,550))
+        
 
 
     def startView(self):
@@ -106,12 +107,12 @@ class Screen:
         startSurface = pygame.Surface((60, 60))
         startSurface.convert()
         startSurface.fill(red)
-        surface.blit(startSurface, (355, 160))
-        surface.blit(self.secondary_font.render(self.CHARONE, True,black),(370.5,160))
-        startSurface.fill(green)
-        surface.blit(startSurface, (435, 160))
-        surface.blit(self.secondary_font.render(self.CHARTWO, True,black),(450.5,160))
-        startSurface.fill(blue)
+        surface.blit(startSurface, (375, 160))
+        surface.blit(self.secondary_font.render(self.CHARONE, True,black),(390.5,160))
+        startSurface.fill(red)
+        surface.blit(startSurface, (442, 160))
+        surface.blit(self.secondary_font.render(self.CHARTWO, True,black),(457.5,160))
+        startSurface.fill(red)
         surface.blit(startSurface, (510.5, 160))
         surface.blit(self.secondary_font.render(self.CHARTHREE, True,black),(525.5,160))
         #easy buttons
@@ -122,7 +123,7 @@ class Screen:
         surface.blit(self.secondary_font.render("EASY", True, black), (150, 350))
         #medium button
         startSurface.convert()
-        startSurface.fill(yellow)
+        startSurface.fill(orange)
         surface.blit(startSurface, (375, 350))  ## since hard coded if this change it changes in game.py event handler
         surface.blit(self.secondary_font.render("MEDIUM", True, black), (395, 350))
         #hard button
@@ -139,7 +140,12 @@ class Screen:
         startSurface.convert()
         startSurface.fill(red)
         surface.blit(startSurface,(675,550))
-        surface.blit(self.secondary_font.render("MANUAL",True, black), (680,550))
+        surface.blit(self.secondary_font.render("MANUAL",True, black), (690,550))
+        #instructions button
+        startSurface.convert()
+        startSurface.fill(green)
+        surface.blit(startSurface,(100,550))
+        surface.blit(self.secondary_font.render("AUTHORS",True, black), (100,550))
 
 
     def draw_minimap(self, surface):
@@ -383,7 +389,30 @@ class Screen:
         startSurface.convert()
         startSurface.fill(green)
         surface.blit(startSurface,(200,350))
-        surface.blit(self.secondary_font.render("   BACK", True, black), (210, 350))
+        surface.blit(self.secondary_font.render("BACK", True, black), (210, 350))
+        #QUIT BUTTON
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface,(575,350))
+        surface.blit(self.secondary_font.render("QUIT",True, black), (627,350))
+        
+    def contributor_screen(self):
+        surface = pygame.display.get_surface() 
+        surface.blit(
+            self.secondary_font.render("Special Thanks", True, white), (300, 8))
+        surface.blit(self.font.render("Team Leaders", True, Screen.TEXT_COLOR), (30, 70))
+        surface.blit(self.font.render("Cam Gower", True, Screen.TEXT_COLOR), (40, 90))
+        surface.blit(self.font.render("Brian Hinger", True, Screen.TEXT_COLOR), (50, 90))
+        surface.blit(self.font.render("Team Members", True, Screen.TEXT_COLOR), (60, 70))
+        surface.blit(self.font.render("Evan Gartley", True, Screen.TEXT_COLOR), (70, 90))
+        surface.blit(self.font.render("Tan Tran", True, Screen.TEXT_COLOR), (80, 90))
+        surface.blit(self.font.render("Zaineb Radi", True, Screen.TEXT_COLOR), (90, 90))
+        #BACK BUTTON
+        startSurface = pygame.Surface((200,60))
+        startSurface.convert()
+        startSurface.fill(green)
+        surface.blit(startSurface,(200,350))
+        surface.blit(self.secondary_font.render("BACK", True, black), (210, 350))
         #QUIT BUTTON
         startSurface.convert()
         startSurface.fill(red)
