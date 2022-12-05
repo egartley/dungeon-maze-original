@@ -115,6 +115,10 @@ class GameEnvironment:
         self.maze_environment.reset()
         self.screen.start_music = False
         self.screen.music_count = 0.0
+        self.screen.score.player_score = 0.0
+        self.screen.score.kill_count = 0
+        self.screen.score.total = 0
+        self.screen.score.total_multiplier = 0
         self.player_name = self.screen.CHARONE + self.screen.CHARTWO + self.screen.CHARTHREE
         GameEnvironment.PLAYER = MainCharacter(self.player_name)
         self.maze_environment.generate_maze_difficulty()
