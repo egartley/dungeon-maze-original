@@ -371,10 +371,8 @@ class MainCharacter(Character):
             # do the actual damage to all enemies in range
             for e in self.enemies_in_range:
                 if self.sword_direction == MainCharacter.RIGHT and e.x + e.width < self.x:
-                    print("cant attack left")
                     continue
                 elif self.sword_direction == MainCharacter.LEFT and e.x > self.x:
-                    print("cant attack right")
                     continue
                 e.health -= self.weapon.damage * self.attack_multiplier
                 e.force_chase = True

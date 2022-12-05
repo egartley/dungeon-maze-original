@@ -315,6 +315,8 @@ class GameEnvironment:
 
 
     def switch_to_ingame(self):
+        self.screen.start_music = False
+        self.screen.music_count = 0
         GameEnvironment.state = GameEnvironment.INGAME_STATE
         self.start_ingame()
 
