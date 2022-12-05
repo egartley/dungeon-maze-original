@@ -318,7 +318,7 @@ class Screen:
             self.score.end_time()
             self.victory_time_glitch = 1
             self.start_time_glitch = 1
-            failure_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'player-losing-or-failing-2042.wav'))
+            failure_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-player-losing-or-failing-2042.wav'))
             pygame.mixer.Sound.play(failure_sound)
         pygame.mouse.set_cursor(self.cursor)
         surface.blit(self.death_bg_img, (0,0))
