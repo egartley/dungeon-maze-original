@@ -213,7 +213,8 @@ class Screen:
         surface = pygame.display.get_surface() 
         self.maze_environment.render(surface)
         self.draw_minimap(surface)
-        s = self.score.cal_score()
+        self.score.cal_score()
+        s = self.score.player_score
         surface.blit(self.font.render("Score: " + str(s), True, red), (5,20))
         surface.blit(self.shield,(5,50))
         surface.blit(self.health,(5,70))
