@@ -54,9 +54,7 @@ class Screen:
         self.victory_bg_img = pygame.image.load('src/sprites/background/victorybg.jpg')
         self.death_bg_img = pygame.image.load('src/sprites/background/tombstone.png')  # https://www.pinterest.com/pin/677651075162388819/
         self.start_bg_img = pygame.image.load('src/sprites/background/start_screen.jpg')
-        self.start_bg_img = pygame.transform.scale(self.start_bg_img, (frame_size_x, frame_size_y))
         self.manual_bg_img = pygame.image.load('src/sprites/background/nuke.jpg')
-        self.manual_bg_img = pygame.transform.scale(self.manual_bg_img, (frame_size_x,frame_size_y))
         self.music_count = 0.0
         self.start_music = False
         self.shield =  pygame.image.load('src/sprites/Boosters/Shields.png')
@@ -72,6 +70,8 @@ class Screen:
         self.bg_img = pygame.transform.scale(self.bg_img, (width, height))
         self.victory_bg_img = pygame.transform.scale(self.victory_bg_img, (width, height))
         self.death_bg_img = pygame.transform.scale(self.death_bg_img, (width, height))
+        self.start_bg_img = pygame.transform.scale(self.start_bg_img, (width, height))
+        self.manual_bg_img = pygame.transform.scale(self.manual_bg_img, (width, height))
 
     def tick(self):
         s = pygame.display.get_surface()
@@ -81,6 +81,8 @@ class Screen:
             self.bg_img = pygame.transform.scale(self.bg_img, (frame_size_x, frame_size_y))
             self.victory_bg_img = pygame.transform.scale(self.victory_bg_img, (frame_size_x, frame_size_y))
             self.death_bg_img = pygame.transform.scale(self.death_bg_img, (frame_size_x, frame_size_y))
+            self.start_bg_img = pygame.transform.scale(self.start_bg_img, (frame_size_x, frame_size_y))
+            self.manual_bg_img = pygame.transform.scale(self.manual_bg_img, (frame_size_x, frame_size_y))
             self.prev_window_width = frame_size_x
             self.prev_window_height = frame_size_y
 
@@ -163,13 +165,11 @@ class Screen:
         startSurface.fill(red)
         surface.blit(startSurface, ((sw // 2) + 200, (sh // 2) + 200))
         surface.blit(self.secondary_font.render("MANUAL", True, black), ((sw // 2) + 215, (sh // 2) + 200))
-        
-        #instructions button
+        # authors button
         startSurface.convert()
         startSurface.fill(green)
-        surface.blit(startSurface,(100,550))
-        surface.blit(self.secondary_font.render("AUTHORS",True, black), (100,550))
-
+        surface.blit(startSurface, ((sw // 2) - 400, (sh // 2) + 200))
+        surface.blit(self.secondary_font.render("AUTHORS", True, black), ((sw // 2) - 400, (sh // 2) + 200))
 
     def draw_minimap(self, surface):
         s = 4
@@ -376,7 +376,7 @@ class Screen:
     def manual(self, surface):
         sw = surface.get_width()
         sh = surface.get_height()
-        surface.blit(self.manual_bg_img, (0,0))
+        #surface.blit(self.manual_bg_img, (0,0))
         s = self.secondary_font.render("Instruction Manual", True, white)
         surface.blit(s, ((sw // 2) - (s.get_width() // 2), (sh // 2) - 310))
         s = self.font.render("Move with the WASD keys. The W key represents up, A is left, S is down, and D is right.", True, Screen.TEXT_COLOR)
@@ -398,3 +398,28 @@ class Screen:
         startSurface.fill(red)
         surface.blit(startSurface, ((sw // 2) + 100, (sh // 2) + 100))
         surface.blit(self.secondary_font.render("QUIT", True, black), ((sw // 2) + 150, (sh // 2) + 100))
+
+    def contributor_screen(self, surface):
+        sw = surface.get_width()
+        sh = surface.get_height()
+        surface = pygame.display.get_surface() 
+        surface.blit(self.secondary_font.render("Special Thanks", True, white), ((sw // 2) - 130, 16))
+        surface.blit(self.font.render("Team Leaders", True, Screen.TEXT_COLOR), ((sw // 2) - 400, 70))
+        surface.blit(self.font.render("Cam Gower", True, Screen.TEXT_COLOR), ((sw // 2) - 380, 90))
+        surface.blit(self.font.render("Brian Hinger", True, Screen.TEXT_COLOR), ((sw // 2) - 380, 115))
+        surface.blit(self.font.render("Team Members", True, Screen.TEXT_COLOR), ((sw // 2) - 400, 150))
+        surface.blit(self.font.render("Evan Gartley", True, Screen.TEXT_COLOR), ((sw // 2) - 380, 170))
+        surface.blit(self.font.render("Tan Tran", True, Screen.TEXT_COLOR), ((sw // 2) - 380, 190))
+        surface.blit(self.font.render("Zaineb Radi", True, Screen.TEXT_COLOR), ((sw // 2) - 380, 210))
+        surface.blit(self.secondary_font.render("Thank you team leaders for supporting each team!!", True, Screen.TEXT_COLOR), ((sw // 2) - 450, 280))
+        #BACK BUTTON
+        startSurface = pygame.Surface((200,60))
+        startSurface.convert()
+        startSurface.fill(green)
+        surface.blit(startSurface, ((sw // 2) - 300, (sh // 2) + 100))
+        surface.blit(self.secondary_font.render("BACK", True, black), ((sw // 2) - 257, (sh // 2) + 100))
+        #QUIT BUTTON
+        startSurface.convert()
+        startSurface.fill(red)
+        surface.blit(startSurface, ((sw // 2) + 100, (sh // 2) + 100))
+        surface.blit(self.secondary_font.render("QUIT",True, black), ((sw // 2) + 150, (sh // 2) + 100))

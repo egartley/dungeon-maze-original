@@ -34,7 +34,7 @@ class GameEnvironment:
     # assuming only one booster with a timer is active at a time, unique event id for it
     BOOSTER_EVENT_ID = pygame.USEREVENT + 9
 
-    ALLOW_RESIZE = False
+    ALLOW_RESIZE = True
 
     def __init__(self, screen_width, screen_height):
         self.maze_environment = MazeEnvironment(self)
@@ -44,7 +44,6 @@ class GameEnvironment:
         self.display_surface = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE) if GameEnvironment.ALLOW_RESIZE \
             else pygame.display.set_mode((screen_width, screen_height))
         self.screen = Screen(self.maze_environment, screen_width, screen_height)
-        self.display_surface = pygame.display.set_mode((self.screen.width, self.screen.height))
         self.click_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-explainer-video-game-alert-sweep-236.wav'))
         self.boosters = []
         self.booster_collisions = []
@@ -319,7 +318,7 @@ class GameEnvironment:
         elif GameEnvironment.state == GameEnvironment.MANUAL_STATE or GameEnvironment.state == GameEnvironment.PAUSE_MANUAL_STATE:
             self.screen.manual(surface)
         elif GameEnvironment.state == GameEnvironment.CONTRIBUTOR_STATE:
-            self.screen.contributor_screen()
+            self.screen.contributor_screen(surface)
 
 
     def switch_to_ingame(self):
@@ -387,7 +386,7 @@ class GameEnvironment:
                 hard_button = pygame.Rect((sw // 2) + 200, (sh // 2) - 30, 200, 60)
                 quit_button = pygame.Rect((sw // 2) - 100, (sh // 2) + 200, 200, 60)
                 manual_button = pygame.Rect((sw // 2) + 200, (sh // 2) + 200, 200, 60)
-                contributor_button = pygame.Rect(100,550,200,60)
+                contributor_button = pygame.Rect((sw // 2) - 400, (sh // 2) + 200, 200, 60)
                 
                 char_one = pygame.Rect((sw // 2) - 110, 160, 60, 60)
                 char_two = pygame.Rect((sw // 2) - 30, 160, 60, 60)
@@ -424,8 +423,6 @@ class GameEnvironment:
                     sys.exit()
                 elif contributor_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.CONTRIBUTOR_STATE
-                    self.screen.contributor_screen()
-
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
             if event.type == booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen):
                 GameEnvironment.PLAYER.cancel_active_booster(booster.AttackBooster.BOOSTERID + (GameEnvironment.PLAYER.attackStackLast % GameEnvironment.PLAYER.attackStackLen))
@@ -546,7 +543,7 @@ class GameEnvironment:
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
                     pygame.quit()
                     sys.exit()
-                elif startButton.collidepoint(event.pos): # checck if click was restart
+                elif startButton.collidepoint(event.pos): # check if click was restart
                     GameEnvironment.PLAYER.METH_COUNT = 0
                     GameEnvironment.PLAYER.ATTACK_COUNT = 0
                     GameEnvironment.state = GameEnvironment.START_STATE
@@ -562,21 +559,21 @@ class GameEnvironment:
                     sys.exit()
         elif  GameEnvironment.state == GameEnvironment.PAUSE_MANUAL_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                back_button = pygame.Rect(250,350,200,60)
-                quit_button = pygame.Rect(575,350,200,60)
+                pygame.mixer.Sound.play(self.click_sound)
+                back_button = pygame.Rect((sw // 2) - 300, (sh // 2) + 100, 200, 60)
+                quit_button = pygame.Rect((sw // 2) + 100, (sh // 2) + 100, 200, 60)
                 if back_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.PAUSE_STATE
-                    self.screen.pause_manual()
                 elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
         elif  GameEnvironment.state == GameEnvironment.CONTRIBUTOR_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                back_button = pygame.Rect(250,350,200,60)
-                quit_button = pygame.Rect(575,350,200,60)
+                pygame.mixer.Sound.play(self.click_sound)
+                back_button = pygame.Rect((sw // 2) - 300, (sh // 2) + 100, 200, 60)
+                quit_button = pygame.Rect((sw // 2) + 100, (sh // 2) + 100, 200, 60)
                 if back_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.START_STATE
-                    self.screen.startView()
                 elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
