@@ -1,4 +1,3 @@
-import screen
 import pygame
 import math
 import maze
@@ -36,8 +35,9 @@ class Arrow(pygame.sprite.Sprite):
         self.y += int(self.vely) + y_dif
         self.rect.x = int(self.x - self.image.get_rect().width/2)
         self.rect.y = int(self.y - self.image.get_rect().height/2)
-        if self.rect.x >= screen.frame_size_x + 100 or self.rect.x <= -100 or \
-            self.rect.y >= screen.frame_size_y + 100 or self.rect.y <= -100:
+        s = pygame.display.get_surface()
+        if self.rect.x >= s.get_width() + 100 or self.rect.x <= -100 or \
+            self.rect.y >= s.get_height() + 100 or self.rect.y <= -100:
             self.kill()
 
         self.relative_x = self.x - maze.MazeEnvironment.MAP_X
