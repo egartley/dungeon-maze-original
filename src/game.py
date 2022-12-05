@@ -34,11 +34,15 @@ class GameEnvironment:
     # assuming only one booster with a timer is active at a time, unique event id for it
     BOOSTER_EVENT_ID = pygame.USEREVENT + 9
 
+    ALLOW_RESIZE = False
+
     def __init__(self, screen_width, screen_height):
         self.maze_environment = MazeEnvironment(self)
         # set default player values for testing, since no selection yet
         self.player_gender = GameEnvironment.BOY
         GameEnvironment.state = GameEnvironment.START_STATE
+        self.display_surface = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE) if GameEnvironment.ALLOW_RESIZE \
+            else pygame.display.set_mode((screen_width, screen_height))
         self.screen = Screen(self.maze_environment, screen_width, screen_height)
         self.display_surface = pygame.display.set_mode((self.screen.width, self.screen.height))
         self.click_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-explainer-video-game-alert-sweep-236.wav'))
@@ -49,6 +53,8 @@ class GameEnvironment:
         self.active_combat_collisions = []
         self.player_name = self.screen.CHARONE + self.screen.CHARTWO + self.screen.CHARTHREE
         self.score = Score(self.player_name, GameEnvironment.DIFFICULTY_TRACKER)
+        self.sw = 0
+        self.sh = 0
 
     def set_arrow_collisions(self):
         for a in self.PLAYER.arrow_group:
@@ -124,6 +130,7 @@ class GameEnvironment:
         pos = get_player_pos(start[1], start[0])
         GameEnvironment.PLAYER.relative_x = pos[0]
         GameEnvironment.PLAYER.relative_y = pos[1]
+        self.sw, self.sh = pygame.display.get_window_size()
         if start[0] == 0:
             MazeEnvironment.MAP_Y = 0
             MazeEnvironment.MAP_X = -1 * (MazeEnvironment.TILE_SIZE * start[1]) + ((pygame.display.get_window_size()[0] / 2) - (MazeEnvironment.TILE_SIZE / 2))
@@ -131,10 +138,10 @@ class GameEnvironment:
             MazeEnvironment.MAP_X = 0
             MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.TILE_SIZE * start[0]) + ((pygame.display.get_window_size()[1] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         elif start[0] == len(MazeEnvironment.MAZE.grid) - 1:
-            MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.PIXEL_HEIGHT - self.screen.height)
+            MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.PIXEL_HEIGHT - self.sh)
             MazeEnvironment.MAP_X = -1 * (MazeEnvironment.TILE_SIZE * start[1]) + ((pygame.display.get_window_size()[0] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         else:
-            MazeEnvironment.MAP_X = -1 * (MazeEnvironment.PIXEL_WIDTH - self.screen.width)
+            MazeEnvironment.MAP_X = -1 * (MazeEnvironment.PIXEL_WIDTH - self.sw)
             MazeEnvironment.MAP_Y = -1 * (MazeEnvironment.TILE_SIZE * start[0]) + ((pygame.display.get_window_size()[1] / 2) - (MazeEnvironment.TILE_SIZE / 2))
         GameEnvironment.PLAYER.x = GameEnvironment.PLAYER.relative_x + MazeEnvironment.MAP_X
         GameEnvironment.PLAYER.y = GameEnvironment.PLAYER.relative_y + MazeEnvironment.MAP_Y
@@ -291,28 +298,26 @@ class GameEnvironment:
                     GameEnvironment.state = GameEnvironment.VICTORY_STATE
 
     def render(self, surface):
-        background = pygame.Surface((self.screen.width, self.screen.height))
+        background = pygame.Surface((surface.get_width(), surface.get_height()))
         background.convert()
         background.fill((0, 0, 0))
         surface.blit(background, (0, 0))
         # based on the game state, call a different method from the screen
         if GameEnvironment.state == GameEnvironment.START_STATE:
-            self.screen.startView()
+            self.screen.startView(surface)
         elif GameEnvironment.state == GameEnvironment.INGAME_STATE:
             self.score.start_time()
             self.screen.activeGameView()
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
-            self.screen.pauseView()
+            self.screen.pauseView(surface)
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
             self.score.end_time()
-            self.screen.victory()
+            self.screen.victory(surface)
         elif GameEnvironment.state == GameEnvironment.DEATH_STATE:
             self.score.end_time()
-            self.screen.death()
-        elif GameEnvironment.state == GameEnvironment.MANUAL_STATE:
-            self.screen.manual()
-        elif GameEnvironment.state == GameEnvironment.PAUSE_MANUAL_STATE:
-            self.screen.manual()
+            self.screen.death(surface)
+        elif GameEnvironment.state == GameEnvironment.MANUAL_STATE or GameEnvironment.state == GameEnvironment.PAUSE_MANUAL_STATE:
+            self.screen.manual(surface)
         elif GameEnvironment.state == GameEnvironment.CONTRIBUTOR_STATE:
             self.screen.contributor_screen()
 
@@ -323,23 +328,80 @@ class GameEnvironment:
         GameEnvironment.state = GameEnvironment.INGAME_STATE
         self.start_ingame()
 
+    def adjust_maze_to_window(self, nw, nh):
+        # rel = abs - map
+        # rel - abs = -map
+        # -1 * (rel - abs) = map
+        # x = abs + 2 - map - 2
+        dw = self.sw - nw
+        dh = self.sh - nh
+        mc = 0
+        if not dw == 0:
+            if not GameEnvironment.PLAYER.at_center_x:
+                GameEnvironment.PLAYER.x -= dw
+                MazeEnvironment.MAP_X -= dw
+                mc = dw
+            else:
+                oldr = GameEnvironment.PLAYER.relative_x
+                GameEnvironment.PLAYER.x = (nw // 2) - (GameEnvironment.PLAYER.width // 2)
+                o = -1 * (oldr - GameEnvironment.PLAYER.x)
+                mc = MazeEnvironment.MAP_X - o
+                MazeEnvironment.MAP_X = o
+            for e in self.enemies:
+                e[0].x -= mc
+            for b in self.boosters:
+                b[0].x -= mc
+        if not dh == 0:
+            if not GameEnvironment.PLAYER.at_center_y:
+                GameEnvironment.PLAYER.y -= dh
+                MazeEnvironment.MAP_Y -= dh
+                mc = dh
+            else:
+                oldr = GameEnvironment.PLAYER.relative_y
+                GameEnvironment.PLAYER.y = (nh // 2) - (GameEnvironment.PLAYER.height // 2)
+                o = -1 * (oldr - GameEnvironment.PLAYER.y)
+                mc = MazeEnvironment.MAP_Y - o
+                MazeEnvironment.MAP_Y = o
+            for e in self.enemies:
+                e[0].y -= mc
+            for b in self.boosters:
+                b[0].y -= mc
+        self.sw = nw
+        self.sh = nh
+
     def event_handler(self, event):
+        s = pygame.display.get_surface()
+        sw = s.get_width()
+        sh = s.get_height()
+        if event.type == pygame.VIDEORESIZE:
+            w, h = event.size
+            mw = 1000
+            mh = 700
+            if w < mw and h >= mh:
+                pygame.display.set_mode((mw, sh), pygame.RESIZABLE)
+            elif h < mh and w >= mw:
+                pygame.display.set_mode((sw, mh), pygame.RESIZABLE)
+            elif w < mw and h < mh:
+                pygame.display.set_mode((mw, mh), pygame.RESIZABLE)
+            self.screen.tick()
+            self.adjust_maze_to_window(sw if sw > mw else mw, sh if sh > mh else mh)
+            return
         # this handles all keyboard and mouse input, as well as timers
         if GameEnvironment.state == GameEnvironment.START_STATE:
             GameEnvironment.PLAYER.METH_COUNT = 0
             GameEnvironment.PLAYER.ATTACK_COUNT = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.mixer.Sound.play(self.click_sound)
-                easy_button = pygame.Rect(100, 350, 200, 60)
-                medium_button = pygame.Rect(375, 350, 200, 60)
-                hard_button = pygame.Rect(675, 350, 200, 60)
-                quit_button = pygame.Rect(375, 550, 200, 60)
-                manual_button = pygame.Rect(675, 550, 200, 60)
+                easy_button = pygame.Rect((sw // 2) - 400, (sh // 2) - 30, 200, 60)
+                medium_button = pygame.Rect((sw // 2) - 100, (sh // 2) - 30, 200, 60)
+                hard_button = pygame.Rect((sw // 2) + 200, (sh // 2) - 30, 200, 60)
+                quit_button = pygame.Rect((sw // 2) - 100, (sh // 2) + 200, 200, 60)
+                manual_button = pygame.Rect((sw // 2) + 200, (sh // 2) + 200, 200, 60)
                 contributor_button = pygame.Rect(100,550,200,60)
                 
-                char_one = pygame.Rect(355, 160, 60, 60)
-                char_two = pygame.Rect(435, 160, 60, 60)
-                char_three = pygame.Rect(510.5, 160, 60, 60)
+                char_one = pygame.Rect((sw // 2) - 110, 160, 60, 60)
+                char_two = pygame.Rect((sw // 2) - 30, 160, 60, 60)
+                char_three = pygame.Rect((sw // 2) + 50, 160, 60, 60)
                 
                 if char_one.collidepoint(event.pos) and self.screen.CHARONE != chr(ord('Z')):
                     self.screen.CHARONE = chr(ord(self.screen.CHARONE)+1)
@@ -367,7 +429,6 @@ class GameEnvironment:
                     self.switch_to_ingame()
                 elif manual_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.MANUAL_STATE
-                    self.screen.manual()
                 elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
@@ -464,27 +525,25 @@ class GameEnvironment:
         elif GameEnvironment.state == GameEnvironment.PAUSE_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.mixer.Sound.play(self.click_sound)
-                start_button = pygame.Rect(150, 550, 200, 60)
-                quit_button = pygame.Rect(700, 550, 200, 60)
-                manual_button = pygame.Rect(425, 550, 200, 60)
-                # goes in if clicked = buttonrect.collidepoint(event.pos)
+                start_button = pygame.Rect((sw // 2) - 400, sh - 150, 200, 60)
+                quit_button = pygame.Rect((sw // 2) + 200, sh - 150, 200, 60)
+                manual_button = pygame.Rect((sw // 2) - 100, sh - 150, 200, 60)
                 if start_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.INGAME_STATE
                 elif manual_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.PAUSE_MANUAL_STATE
-                    self.screen.pause_manual()
                 elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
         elif GameEnvironment.state == GameEnvironment.VICTORY_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.mixer.Sound.play(self.click_sound)
-                startButton = pygame.Rect(200,600,200,60)
-                quitButton = pygame.Rect(575,600,200,60)
+                startButton = pygame.Rect((sw // 2) - 250, 600, 200, 60)
+                quitButton = pygame.Rect((sw // 2) + 50, 600, 200, 60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
                     pygame.quit()
                     sys.exit()
-                elif startButton.collidepoint(event.pos): # checck if click was restart
+                elif startButton.collidepoint(event.pos): # check if click was restart
                     GameEnvironment.PLAYER.METH_COUNT = 0
                     GameEnvironment.PLAYER.ATTACK_COUNT = 0
                     GameEnvironment.state = GameEnvironment.START_STATE
@@ -492,8 +551,8 @@ class GameEnvironment:
         elif  GameEnvironment.state == GameEnvironment.DEATH_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.mixer.Sound.play(self.click_sound)
-                startButton = pygame.Rect(200, 550, 200, 60)
-                quitButton = pygame.Rect(605, 550, 200, 60)
+                startButton = pygame.Rect((sw // 2) - 250, 600, 200, 60)
+                quitButton = pygame.Rect((sw // 2) + 50, 600, 200, 60)
                 if quitButton.collidepoint(event.pos): # check if button clicked quit
                     pygame.quit()
                     sys.exit()
@@ -504,8 +563,8 @@ class GameEnvironment:
         elif  GameEnvironment.state == GameEnvironment.MANUAL_STATE:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.mixer.Sound.play(self.click_sound)
-                back_button = pygame.Rect(250,350,200,60)
-                quit_button = pygame.Rect(575,350,200,60)
+                back_button = pygame.Rect((sw // 2) - 300, (sh // 2) + 100, 200, 60)
+                quit_button = pygame.Rect((sw // 2) + 100, (sh // 2) + 100, 200, 60)
                 if back_button.collidepoint(event.pos):
                     GameEnvironment.state = GameEnvironment.START_STATE
                 elif quit_button.collidepoint(event.pos):
@@ -531,7 +590,6 @@ class GameEnvironment:
                 elif quit_button.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
-        
                     
 
 
