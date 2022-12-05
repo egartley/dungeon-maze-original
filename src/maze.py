@@ -271,7 +271,7 @@ class MazeEnvironment:
         if self.last_player_pos == (0, 0):
             return
         MazeEnvironment.CHUNKS = []
-        to_add = get_chunks_around(self.last_player_pos, 3, 5)
+        to_add = get_chunks_around(self.last_player_pos, 5, 7)
         self.build_tiles(to_add)
         for i in range(0, len(self.tiles)):
             tile = self.tiles[i]
