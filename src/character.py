@@ -675,26 +675,7 @@ class Enemy(Character):
             fw = 0
         foreground = pygame.Surface((fw, h - (o * 2)))
         foreground.convert()
-        px = game.GameEnvironment.PLAYER.x
-        py = game.GameEnvironment.PLAYER.y
-        pw = game.GameEnvironment.PLAYER.width
-        ph = game.GameEnvironment.PLAYER.height
-        pr = game.GameEnvironment.PLAYER.rect
-        pc_x = px + (pw // 2)
-        pc_y = py + (ph // 2)
-        ec_x = self.x + (self.width // 2)
-        ec_y = self.y + (self.height // 2)
-        player_to_left = pc_x < ec_x + self.collision_padding
-        player_to_right = pc_x > ec_x - self.collision_padding
-        if player_to_left and player_to_right:
-            self.health_bar_color_foreground = (255, 255, 255)
-        elif player_to_right:
-            self.health_bar_color_foreground = (255, 0, 0)
-        elif player_to_left:
-            self.health_bar_color_foreground = (0, 255, 0)
-        else:
-            self.health_bar_color_foreground = (0, 0, 255)
-        foreground.fill(self.health_bar_color_foreground)
+        foreground.fill(self.hbc_foreground)
         self.health_bar_surface.blit(foreground, (o, o))
 
     def attack(self):
