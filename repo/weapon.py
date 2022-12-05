@@ -15,7 +15,7 @@ class Weapon(pygame.sprite.Sprite):
 class Sword(Weapon):
     def __init__(self):
         super().__init__()
-        self.damage = 10
+        self.damage = 20
         self.cooldown = 1
         self.range = 8
         self.is_animating = False
@@ -82,7 +82,7 @@ class Sword(Weapon):
 class Bow(Weapon):
     def __init__(self):
         super().__init__()
-        self.damage = 15
+        self.damage = 25
         self.image = pygame.image.load('src/sprites/Weapons/Bow/bow.png')
         self.image = pygame.transform.scale(self.image, (50,50))
         self.image = pygame.transform.rotate(self.image, 225)
@@ -90,6 +90,7 @@ class Bow(Weapon):
         self.x = 0
         self.y = 0
         self.angle = 0
+        self.cooldown = 1
 
     def character_position(self, x, y):
         self.x = x

@@ -1,4 +1,6 @@
 import pygame
+import os
+import collision
 import booster
 import game
 import weapon
@@ -29,6 +31,7 @@ def get_event_id():
 
 
 def build_animations():
+    #Melee Enemy Animations
     attacksheet = pygame.image.load("src/sprites/Enemies/Attacking/attacking.png")
     attacksheet.convert_alpha()
     walksheet = pygame.image.load("src/sprites/Enemies/Walking/walking.png")
@@ -41,6 +44,20 @@ def build_animations():
     Enemy.WALK_LEFT_FRAMES = build_frames(pygame.transform.flip(walksheet, True, False), 18, True)
     Enemy.DEATH_RIGHT_FRAMES = build_frames(deathsheet, 15)
     Enemy.DEATH_LEFT_FRAMES = build_frames(pygame.transform.flip(deathsheet, True, False), 15, True)
+
+    #Bow Enemy Animations
+    attacksheet = pygame.image.load("src/sprites/Bow_Enemies/bow_attack.png")
+    attacksheet.convert_alpha()
+    walksheet = pygame.image.load("src/sprites/Bow_Enemies/bow_walk.png")
+    walksheet.convert_alpha()
+    deathsheet = pygame.image.load("src/sprites/Bow_Enemies/bow_die.png")
+    deathsheet.convert_alpha()
+    Enemy.BOW_ATTACK_RIGHT_FRAMES = build_frames(attacksheet, 10)
+    Enemy.BOW_ATTACK_LEFT_FRAMES = build_frames(pygame.transform.flip(attacksheet, True, False), 10, True)
+    Enemy.BOW_WALK_RIGHT_FRAMES = build_frames(walksheet, 10)
+    Enemy.BOW_WALK_LEFT_FRAMES = build_frames(pygame.transform.flip(walksheet, True, False), 10, True)
+    Enemy.BOW_DEATH_RIGHT_FRAMES = build_frames(deathsheet, 10)
+    Enemy.BOW_DEATH_LEFT_FRAMES = build_frames(pygame.transform.flip(deathsheet, True, False), 10, True)
 
 
 class Character(pygame.sprite.Sprite):
@@ -97,6 +114,7 @@ class MainCharacter(Character):
         # map x/y are the top left of the map itself, changing when moving the map
         # "absolute" x/y or just x/y by itself, is where the thing is actually rendered
         # to in the display window (where all the surface.blit calls are)
+        self.arrow_count = 10
         self.name = name
         self.health = 100
         self.shield = 100
@@ -119,6 +137,8 @@ class MainCharacter(Character):
 
         self.width = 192 / 4
         self.height = 285 / 4
+        self.hover_height = 0
+        self.hover_dir = MainCharacter.UP
         self.combat_rect = pygame.Rect(0, 0, 0, 0)
         self.active_booster = [False] * 2  # 0 for attack 1 for speed
         self.direction = None
@@ -131,7 +151,7 @@ class MainCharacter(Character):
         # whether the player is blocked from going in a direction
         self.blocked = (False, False, False, False)
         # the player's tile position within the map
-        self.tile_pos = ()
+        self.tile_pos = (0, 0)
         self.attack_multiplier = 1
         # enemies that are currently within melee range
         self.enemies_in_range = []
@@ -143,6 +163,7 @@ class MainCharacter(Character):
         self.bow_group = pygame.sprite.Group()
         self.is_using_bow = False
         self.is_using_sword = True
+        self.sword_direction = -1
 
     def apply_booster(self, b):
         if isinstance(b, booster.HealthBooster):
@@ -182,34 +203,37 @@ class MainCharacter(Character):
     def isSpeedFull(self):
         i = 0
         for i in range(len(self.speedStack)):
-            if not self.speedStack[i]:
+            if self.speedStack[i] != True:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
     def isSpeedEmpty(self):
         i = 0
         for i in range(len(self.speedStack)):
-            if not self.speedStack[i]:
+            if self.speedStack[i] != False:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
+    
     def isAttackFull(self):
         i = 0
         for i in range(len(self.attackStack)):
-            if not self.attackStack[i]:
+            if self.attackStack[i] != True:
                 return False
-            i += 1
+            i+=1
         return True
-
+    
     def isAttackEmpty(self):
         i = 0
         for i in range(len(self.attackStack)):
-            if not self.attackStack[i]:
+            if self.attackStack[i] != False:
                 return False
-            i += 1
+            i+=1
         return True
+
+
 
     def cancel_active_booster(self, boosterID):
         if self.active_booster[0] and boosterID == booster.AttackBooster.BOOSTERID + (game.GameEnvironment.PLAYER.attackStackLast % game.GameEnvironment.PLAYER.attackStackLen):
@@ -257,13 +281,24 @@ class MainCharacter(Character):
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def render(self, surface):
-        surface.blit(self.sprite, (self.x, self.y))
+        if self.hover_dir == MainCharacter.DOWN:
+            self.hover_height += 0.1
+        else:
+            self.hover_height -= 0.1
+        
+        if self.hover_height > 4:
+            self.hover_dir = MainCharacter.UP
+        elif self.hover_height < -4:
+            self.hover_dir = MainCharacter.DOWN
+        
+        surface.blit(self.sprite, (self.x, self.y + math.floor(self.hover_height)))
         self.arrow_group.update()
         self.arrow_group.draw(surface)
         if (self.is_using_sword == False):
             self.sprite_bow(surface)
             self.is_using_bow = True
         elif pygame.mouse.get_pos()[0] >= (self.x + (self.width/2)):
+            self.sword_direction = MainCharacter.RIGHT
             self.is_using_sword = True
             self.weapon.directionSprite(self.x + 30, self.y + 15, "right")
             self.weapon_group.add(self.weapon)
@@ -276,6 +311,7 @@ class MainCharacter(Character):
                 self.weapon_group.draw(surface)
 
         elif pygame.mouse.get_pos()[0] < (self.x + (self.width/2)):
+            self.sword_direction = MainCharacter.LEFT
             self.is_using_sword = True
             self.weapon.directionSprite(self.x - 82, self.y + 15, "left")
             self.weapon_group.add(self.weapon)
@@ -293,10 +329,12 @@ class MainCharacter(Character):
         self.bow.move(surface)
 
     def create_arrow(self, target_pos):
-        return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1])
+        return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1], MazeEnvironment.MAP_X, MazeEnvironment.MAP_Y)
 
     def shoot(self, target_pos):
         if self.arrow_count > 0:
+            arrow_whoosh = pygame.mixer.Sound(os.path.join('src', 'sounds', 'shoot_arrow.mp3'))
+            pygame.mixer.Sound.play(arrow_whoosh)
             self.arrow_group.add(self.create_arrow(target_pos))
             self.arrow_count -= 1
 
@@ -322,6 +360,12 @@ class MainCharacter(Character):
             self.swinging_sword = True
             # do the actual damage to all enemies in range
             for e in self.enemies_in_range:
+                if self.sword_direction == MainCharacter.RIGHT and e.x + e.width < self.x:
+                    print("cant attack left")
+                    continue
+                elif self.sword_direction == MainCharacter.LEFT and e.x > self.x:
+                    print("cant attack right")
+                    continue
                 e.health -= self.weapon.damage * self.attack_multiplier
                 e.force_chase = True
 
@@ -354,27 +398,46 @@ class Enemy(Character):
     WALK_RIGHT_FRAMES = []
     DEATH_LEFT_FRAMES = []
     DEATH_RIGHT_FRAMES = []
+    BOW_ATTACK_LEFT_FRAMES = []
+    BOW_ATTACK_RIGHT_FRAMES = []
+    BOW_WALK_LEFT_FRAMES = []
+    BOW_WALK_RIGHT_FRAMES = []
+    BOW_DEATH_LEFT_FRAMES = []
+    BOW_DEATH_RIGHT_FRAMES = []
     loaded_frames = False
 
-    def __init__(self, damage, game_env, seed):
+    def __init__(self, damage, game_env, seed, enemy_type):
         super().__init__()
         self.game_environment = game_env
         self.weapon_type = None
         self.is_player_in_view = False
         self.player_in_combat_range = False
-        self.weapon = weapon.Sword()
-        self.width = 133
-        self.height = 118
-        self.collision_padding = 8
-        self.image = pygame.image.load("src/sprites/Enemies/idle.png")
-        self.image2 = pygame.transform.flip(self.image, True, False)
+        self.enemy_type = enemy_type
+
+        if(self.enemy_type == 0):
+            self.width = 133
+            self.height = 118
+            self.weapon = weapon.Sword()
+            self.image = pygame.image.load("src/sprites/Enemies/idle.png")
+            self.image2 = pygame.transform.flip(self.image, True, False)
+            self.collision_padding = 8
+        
+        else:
+            self.width = 95
+            self.height = 108
+            self.weapon = weapon.Bow()
+            self.image = pygame.image.load("src/sprites/Bow_Enemies/Elf_01__IDLE_000.png")
+            self.image2 = pygame.transform.flip(self.image, True, False)
+            self.arrow_group = pygame.sprite.Group()
+            self.collision_padding = 200
+
 
         self.damage = damage
         self.health_bar_surface = pygame.Surface((self.width / 2, 8))
         self.health_bar_surface.convert()
-        self.health_bar_color_background = (0, 0, 0)
-        self.health_bar_color_foreground = (255, 0, 0)
-        self.health_bar_color_outline = (255, 255, 255)
+        self.hbc_background = (0, 0, 0)
+        self.hbc_foreground = (255, 0, 0)
+        self.hbc_outline = (255, 255, 255)
         self.max_health = 100
         self.seed = seed
 
@@ -397,18 +460,26 @@ class Enemy(Character):
             build_animations()
             Enemy.loaded_frames = True
         delay = 40
-        self.walk_animation = [Animation(Enemy.WALK_LEFT_FRAMES, delay, True, get_event_id()),
+        if(self.enemy_type == 0):
+            self.walk_animation = [Animation(Enemy.WALK_LEFT_FRAMES, delay, True, get_event_id()),
                                Animation(Enemy.WALK_RIGHT_FRAMES, delay, True, get_event_id())]
-        self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, True, get_event_id()),
-                                 Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, True, get_event_id())]
-        self.death_animation = [Animation(Enemy.DEATH_LEFT_FRAMES, delay, False, get_event_id()),
+            self.attack_animation = [Animation(Enemy.ATTACK_LEFT_FRAMES, delay, False, get_event_id()),
+                                 Animation(Enemy.ATTACK_RIGHT_FRAMES, delay, False, get_event_id())]
+            self.death_animation = [Animation(Enemy.DEATH_LEFT_FRAMES, delay, False, get_event_id()),
                                 Animation(Enemy.DEATH_RIGHT_FRAMES, delay, False, get_event_id())]
+        else:
+            self.walk_animation = [Animation(Enemy.BOW_WALK_LEFT_FRAMES, delay, True, get_event_id()),
+                               Animation(Enemy.BOW_WALK_RIGHT_FRAMES, delay, True, get_event_id())]
+            self.attack_animation = [Animation(Enemy.BOW_ATTACK_LEFT_FRAMES, delay, False, get_event_id()),
+                                 Animation(Enemy.BOW_ATTACK_RIGHT_FRAMES, delay, False, get_event_id())]
+            self.death_animation = [Animation(Enemy.BOW_DEATH_LEFT_FRAMES, delay, False, get_event_id()),
+                                Animation(Enemy.BOW_DEATH_RIGHT_FRAMES, delay, False, get_event_id())]
         self.start_attack_animation = False
         self.current_animation = None
         self.alive = True
 
     def die(self):
-        self.x -= 20
+        self.x += 14 if self.direction == Enemy.LEFT else -20
         self.current_animation = self.death_animation[0 if self.direction == Enemy.LEFT else 1]
         self.current_animation.restart()
         self.alive = False
@@ -424,9 +495,9 @@ class Enemy(Character):
         pc_y = py + (ph // 2)
         ec_x = self.x + (self.width // 2)
         ec_y = self.y + (self.height // 2)
-        player_to_left = pc_x < ec_x + self.collision_padding
-        player_to_right = pc_x > ec_x - self.collision_padding
-        player_above = pc_y < ec_y + self.collision_padding
+        player_to_left = pc_x < ec_x + self.collision_padding 
+        player_to_right = pc_x > ec_x - self.collision_padding 
+        player_above = pc_y < ec_y + self.collision_padding 
         player_below = pc_y > ec_y - self.collision_padding
 
         wall_check_rect = pygame.Rect(self.relative_x + 56, self.relative_y + 10, 70, 104)
@@ -458,12 +529,13 @@ class Enemy(Character):
         if player_to_right and not self.blocked[3] and not pr.colliderect(next_move[3]):
             if not self.would_collide_with_other_enemy(next_move[3], 3):
                 self.x += self.speed
-
         if player_to_left:
+            #if self.direction == Enemy.RIGHT:
             self.direction = Enemy.LEFT
         elif player_to_right:
+            #if self.direction == Enemy.LEFT:
             self.direction = Enemy.RIGHT
-
+        
     def would_collide_with_other_enemy(self, r, d):
         would = False
         for e in self.game_environment.enemies:
@@ -509,20 +581,29 @@ class Enemy(Character):
             self.chasing = True
 
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
         # idle
         xoffset = 10 if self.direction == Enemy.RIGHT else 52
         if self.weapon.in_cooldown:
             # attack
             xoffset = 52 if self.direction == Enemy.LEFT else 12
-        self.collision_rect = pygame.Rect(self.x + xoffset, self.y + 22, 70, 94)
+
+        if self.enemy_type == 0:
+            self.collision_rect = pygame.Rect(self.x + xoffset, self.y + 22, 70, 70)
+        else:
+            self.collision_rect = pygame.Rect(self.x + 30, self.y + 30, self.width - 50, self.height - 50)
 
         if self.chasing or self.force_chase:
             if not self.chasing:
                 self.chasing = True
             self.chase_player()
 
-        if self.player_in_combat_range:
-            self.attack()
+        if self.enemy_type == 0:
+            if self.player_in_combat_range and self.chasing:
+                self.attack()
+        else:
+            if self.chasing:
+                self.attack()
 
     def render(self, surface):
         if not self.alive:
@@ -539,9 +620,8 @@ class Enemy(Character):
                     self.current_animation = self.attack_animation[0 if self.direction == Enemy.LEFT else 1]
                     self.current_animation.restart()
                     self.last_direction = self.direction
-                surface.blit(self.current_animation.frame, (self.x, self.y))
-            elif self.player_in_combat_range:
-                surface.blit(self.image if self.direction == Enemy.LEFT else self.image2, (self.x, self.y))
+                surface.blit(self.current_animation.frame, (self.x if self.current_animation.frame_index < len(self.current_animation.frames) - 1
+                              else self.x + 4, self.y))
             else:
                 i = 0 if self.direction == Enemy.LEFT else 1
                 if self.current_animation is None:
@@ -556,7 +636,11 @@ class Enemy(Character):
                 surface.blit(self.current_animation.frame, (self.x, self.y))
         else:
             surface.blit(self.image if self.direction == Enemy.RIGHT else self.image2, (self.x, self.y))
-        # pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
+        #pygame.draw.rect(surface, (255, 255, 255), self.collision_rect, 1)
+
+        if self.enemy_type == 1:
+            self.arrow_group.update()
+            self.arrow_group.draw(surface)
 
         # render health bar
         o = 1
@@ -564,17 +648,36 @@ class Enemy(Character):
         h = self.health_bar_surface.get_height()
         outline = pygame.Surface((w, h))
         outline.convert()
-        outline.fill(self.health_bar_color_outline)
+        outline.fill(self.hbc_outline)
         self.health_bar_surface.blit(outline, (0, 0))
         background = pygame.Surface((w - (o * 2), h - (o * 2)))
         background.convert()
-        background.fill(self.health_bar_color_background)
+        background.fill(self.hbc_background)
         self.health_bar_surface.blit(background, (o, o))
         fw = int((self.health / self.max_health) * w) - (o * 2)
         if fw < 0:
             fw = 0
         foreground = pygame.Surface((fw, h - (o * 2)))
         foreground.convert()
+        px = game.GameEnvironment.PLAYER.x
+        py = game.GameEnvironment.PLAYER.y
+        pw = game.GameEnvironment.PLAYER.width
+        ph = game.GameEnvironment.PLAYER.height
+        pr = game.GameEnvironment.PLAYER.rect
+        pc_x = px + (pw // 2)
+        pc_y = py + (ph // 2)
+        ec_x = self.x + (self.width // 2)
+        ec_y = self.y + (self.height // 2)
+        player_to_left = pc_x < ec_x + self.collision_padding
+        player_to_right = pc_x > ec_x - self.collision_padding
+        if player_to_left and player_to_right:
+            self.health_bar_color_foreground = (255, 255, 255)
+        elif player_to_right:
+            self.health_bar_color_foreground = (255, 0, 0)
+        elif player_to_left:
+            self.health_bar_color_foreground = (0, 255, 0)
+        else:
+            self.health_bar_color_foreground = (0, 0, 255)
         foreground.fill(self.health_bar_color_foreground)
         self.health_bar_surface.blit(foreground, (o, o))
 
@@ -582,17 +685,34 @@ class Enemy(Character):
         if not self.weapon.in_cooldown:
             self.weapon.in_cooldown = True
             self.start_attack_animation = True
+            splash = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-sword-slash-swoosh.mp3'))
+            pygame.mixer.Sound.play(splash)
             # start cooldown timer
             if game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_HARD:
                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (1000 + self.seed))
             elif game.GameEnvironment.DIFFICULTY_TRACKER == game.GameEnvironment.DIFFICULTY_MEDIUM:
-                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (2000 + self.seed))
+                pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (2000 + self.seed))
             else:
                 pygame.time.set_timer(self.unique_id, self.weapon.cooldown * (3000 + self.seed))
-            self.weapon.in_cooldown = True
-            self.start_attack_animation = True
             pygame.time.set_timer(self.unique_id, self.weapon.cooldown * 1000)
-            game.GameEnvironment.PLAYER.take_damage(self.damage)
+            if(self.enemy_type == 1):
+                self.bow_attack()
+            else:
+                game.GameEnvironment.PLAYER.take_damage(self.damage)
+
+    def create_arrow(self, target_pos):
+        return arrow.Arrow(self.x + 25, self.y + 35, target_pos[0], target_pos[1], MazeEnvironment.MAP_X, MazeEnvironment.MAP_Y)
+
+    def shoot(self, target_pos):
+        if self.arrow_count > 0:
+            arrow_whoosh = pygame.mixer.Sound(os.path.join('src', 'sounds', 'shoot_arrow.mp3'))
+            pygame.mixer.Sound.play(arrow_whoosh)
+            self.arrow_group.add(self.create_arrow(target_pos))
+            self.arrow_count -= 1
+
+    def bow_attack(self):
+        target_pos = [game.GameEnvironment.PLAYER.x, game.GameEnvironment.PLAYER.y]
+        self.shoot(target_pos)
 
     def on_death(self):
         self.walk_animation[0].stop()
