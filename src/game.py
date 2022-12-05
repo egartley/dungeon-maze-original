@@ -327,31 +327,21 @@ class GameEnvironment:
         dh = self.sh - nh
         mc = 0
         if not dw == 0:
-            if not GameEnvironment.PLAYER.at_center_x:
-                GameEnvironment.PLAYER.x -= dw
-                MazeEnvironment.MAP_X -= dw
-                mc = dw
-            else:
-                oldr = GameEnvironment.PLAYER.relative_x
-                GameEnvironment.PLAYER.x = (nw // 2) - (GameEnvironment.PLAYER.width // 2)
-                o = -1 * (oldr - GameEnvironment.PLAYER.x)
-                mc = MazeEnvironment.MAP_X - o
-                MazeEnvironment.MAP_X = o
+            oldr = GameEnvironment.PLAYER.relative_x
+            GameEnvironment.PLAYER.x = (nw // 2) - (GameEnvironment.PLAYER.width // 2)
+            o = -1 * (oldr - GameEnvironment.PLAYER.x)
+            mc = MazeEnvironment.MAP_X - o
+            MazeEnvironment.MAP_X = o
             for e in self.enemies:
                 e[0].x -= mc
             for b in self.boosters:
                 b[0].x -= mc
         if not dh == 0:
-            if not GameEnvironment.PLAYER.at_center_y:
-                GameEnvironment.PLAYER.y -= dh
-                MazeEnvironment.MAP_Y -= dh
-                mc = dh
-            else:
-                oldr = GameEnvironment.PLAYER.relative_y
-                GameEnvironment.PLAYER.y = (nh // 2) - (GameEnvironment.PLAYER.height // 2)
-                o = -1 * (oldr - GameEnvironment.PLAYER.y)
-                mc = MazeEnvironment.MAP_Y - o
-                MazeEnvironment.MAP_Y = o
+            oldr = GameEnvironment.PLAYER.relative_y
+            GameEnvironment.PLAYER.y = (nh // 2) - (GameEnvironment.PLAYER.height // 2)
+            o = -1 * (oldr - GameEnvironment.PLAYER.y)
+            mc = MazeEnvironment.MAP_Y - o
+            MazeEnvironment.MAP_Y = o
             for e in self.enemies:
                 e[0].y -= mc
             for b in self.boosters:
