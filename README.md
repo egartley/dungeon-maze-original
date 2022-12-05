@@ -1,5 +1,8 @@
 # Maze Game Project
 
+## Project status
+Closed 12/05
+
 # Authors
         # Team Leads
         Cameron Gower Computer Science/Information Technology
@@ -25,6 +28,8 @@ Software Engineering semester long project. The project is open to what a team d
 # Software 
 Python 3-10
 Script for installing dependencies
+Git
+Suite of Google applications for documentation and accessible documentation between the team
 
 ##  Modules
         https://github.com/john-science/mazelib
@@ -58,6 +63,23 @@ Script for installing dependencies
         sword swing sound- https://mixkit.co/free-sound-effects/sword/
         victory sound - https://pixabay.com/sound-effects/search/victory/
         defeat sound - https://pixabay.com/sound-effects/search/death/
+
+        The link will not allow for manual links per sound here is the site plus artifact we are referencing. https://mixkit.co/free-sound-effects/scream/
+        click sounds - Explainer Videogame Alert Sweep 236
+        enemy sword - Swift Sword Strike 2166 
+        booster -  
+                health - Game Treasure Coin 2038
+                shield - Game Treasure Coin 2038
+                speed - Arcade Rising 231
+                attack - Boss fight Arcade 232
+        Enemy Death 
+                Minotaur - Battle Man Scream 2175
+                Archer - Human Fighter Pain Scream 2768
+
+        Introduction Song - Suspense Mystery Base 685
+        Winning - Medieval Show Fanfare Announcement 226
+        Player Death - Player Losing or Failing 2042
+
         
 
 ## Developer Installation Tools Before running
@@ -69,28 +91,4 @@ run the script environment.sh by using the git bash terminal and enter bash envi
 ## License
 The main project module used comes from a open source GNU Licensed project. The project modified is and will be free for anyone who may find it but the use is a class assignment and any modifications and broken use of the module on our copy is to be blamed by the Developers who Modified for the class assignment. This game is free for public use.
 
-## Project status
-Open
 
-## Game Development concepts and ideas
-
-##      Character Development
-                - At max <= 10ft
-                - Some features that could exist is apart of further development would be designability for certain clothing colors
-
-                - What is the main character? Person? Minotaur? what?
-                - Enemies Zombies? People? Mini-Minotaurs? Feature one after basic game is made
-                - Minimap
-##      Character Weapons 
-                - One or many weapons? 
-                - What weapon(s) main character have 
-                - Weapon(s) enemies have
-                - Weapon type ie basic rare legendary
-##      Character Findable Boosters 
-                - Health
-                - Shield
-
-##      Main game feature
-                difficulty selector how many diffiulties?
-                day and night feature
-                                         
