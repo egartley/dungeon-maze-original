@@ -1,5 +1,6 @@
 import game
 import pygame
+import os
 
 
 class Collision:
@@ -25,6 +26,8 @@ class BoosterCollision(Collision):
         self.booster = booster
 
     def collision_occurrence(self):
+        booster_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-game-treasure-coin-2038.wav'))
+        pygame.mixer.Sound.play(booster_sound)
         self.booster.booster_collision()
 
 

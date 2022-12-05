@@ -105,6 +105,10 @@ class Screen:
     def startView(self):
         pygame.mouse.set_cursor(self.cursor)
         #nick name button
+        if not self.start_music:
+            self.start_music = True
+            pygame.mixer.music.load(os.path.join('src', 'sounds', 'mixkit-suspense-mystery-bass-685.mp3'))
+            pygame.mixer.music.play(-1)
         surface = pygame.display.get_surface()  ## since hard coded position values, if this change it changes in game.py event handler
         surface.blit(self.start_bg_img, (0,0))
         surface.blit(self.victory_font.render("Dungeon Maze", True, white), (270, 8))
@@ -202,8 +206,11 @@ class Screen:
     def activeGameView(self):
         if not self.start_music:
             self.start_music = True
+            pygame.mixer.music.stop()
+            pygame.mixer.music.unload()
             pygame.mixer.music.load(os.path.join('src', 'sounds', 'Adventure-320bit.mp3'))
             pygame.mixer.music.play(-1, self.music_count)
+            pygame.mixer.music.rewind()
         self.music_count += 0.016
         self.reset_background_music()
         if self.start_time_glitch == 0:
@@ -213,7 +220,9 @@ class Screen:
         surface = pygame.display.get_surface() 
         self.maze_environment.render(surface)
         self.draw_minimap(surface)
-        surface.blit(self.font.render("Score: " + str(self.score.player_score), True, red), (5,20))
+        self.score.cal_score()
+        s = self.score.player_score
+        surface.blit(self.font.render("Score: " + str(s), True, red), (5,20))
         surface.blit(self.shield,(5,50))
         surface.blit(self.health,(5,70))
         surface.blit(self.speed, (5, 95))
@@ -289,8 +298,6 @@ class Screen:
             self.victory_time_glitch = 1
             self.start_time_glitch = 0
             pygame.mixer.music.stop()
-            victory_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-video-game-win-2016.wav'))
-            pygame.mixer.Sound.play(victory_sound)
         surface = pygame.display.get_surface()
         surface.blit(self.victory_bg_img, (0,0))
         surface.blit(self.victory_font.render("VICTORY CIRCLE", True, Screen.TEXT_COLOR), (270, 8))
@@ -324,7 +331,7 @@ class Screen:
             self.score.end_time()
             self.victory_time_glitch = 1
             self.start_time_glitch = 1
-            failure_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'videogame-death-sound-43894.mp3'))
+            failure_sound = pygame.mixer.Sound(os.path.join('src', 'sounds', 'mixkit-player-losing-or-failing-2042.wav'))
             pygame.mixer.Sound.play(failure_sound)
         pygame.mouse.set_cursor(self.cursor)
         surface.blit(self.death_bg_img, (0,0))
