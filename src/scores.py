@@ -34,8 +34,7 @@ class Score:
         return full_path
 
     def cal_score(self):
-        if self.player_score == 0:
-            self.player_score = math.ceil((self.kill_count * 100) + (self.total * self.total_multiplier))
+        self.player_score = math.ceil((self.kill_count * 100) + (self.total * self.total_multiplier))
 
     def read_score(self):
         if self.read:
